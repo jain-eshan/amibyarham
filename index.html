@@ -1246,13 +1246,27 @@ a { color:inherit; text-decoration:none; }
    COMMISSION OVERLAY
    ============================================================ */
 
-// ── BACKEND CREDENTIALS ── replace before go-live ──
+// ── BACKEND CREDENTIALS ──
 var SUPABASE_URL        = 'https://bkigritfxabsvpgzgajs.supabase.co';
 var SUPABASE_ANON_KEY   = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJraWdyaXRmeGFic3ZwZ3pnYWpzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0Nzc5MTgsImV4cCI6MjA5NjA1MzkxOH0.QKydFM5Ik3hot2TknoMU1uh9EmISAG5A3G7azFv7Yu4';
 var EMAILJS_SERVICE_ID  = 'service_k9er721';
 var EMAILJS_TEMPLATE_ID = 'template_sv5a7me';
 var EMAILJS_PUBLIC_KEY  = 'BN9G4BAog_5ZQLYPq';
 var WHATSAPP_NUMBER     = '919958863129';
+
+// single shared Supabase client
+var _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// single source of truth for budget labels
+function budgetLabel(key) {
+  return {
+    'under-5k': 'Under Rs 5,000',
+    '5k-10k':   'Rs 5,000–10,000',
+    '10k-20k':  'Rs 10,000–20,000',
+    '20k-40k':  'Rs 20,000–40,000',
+    '40k-plus': 'Rs 40,000+'
+  }[key] || key;
+}
 // ─────────────────────────────────────────────────────
 
 // ── PRICING TIERS ── update after confirming with Amit & karigar ──
@@ -1390,12 +1404,8 @@ function renderEstimate() {
   var tier = PRICING_TIERS[coState.budget] || PRICING_TIERS['10k-20k'];
   var cards = document.getElementById('estCards');
   cards.innerHTML = '';
-  var budgetLabel = {
-    'under-5k':'Under Rs 5,000','5k-10k':'Rs 5,000–10,000',
-    '10k-20k':'Rs 10,000–20,000','20k-40k':'Rs 20,000–40,000','40k-plus':'Rs 40,000+'
-  }[coState.budget] || '';
   document.getElementById('estIntro').textContent =
-    'With a budget of ' + budgetLabel + ', here are the pieces our karigar can craft for you.';
+    'With a budget of ' + budgetLabel(coState.budget) + ', here are the pieces our karigar can craft for you.';
   if(tier.silver) cards.appendChild(makeEstCard(tier.silver, 'silver', false));
   if(tier.gold)   cards.appendChild(makeEstCard(tier.gold, 'gold', true));
 }
@@ -1431,22 +1441,18 @@ async function submitCommission() {
   btn.disabled = true;
 
   try {
-    // 1. upload image to Supabase Storage (if real keys set)
+    // 1. upload image to Supabase Storage
     var imageUrl = '';
-    if(coState.image && SUPABASE_URL !== 'YOUR_SUPABASE_URL') {
+    if(coState.image) {
       imageUrl = await uploadImageToSupabase(coState.image);
     }
     coState.imageUrl = imageUrl;
 
     // 2. save lead to Supabase
-    if(SUPABASE_URL !== 'YOUR_SUPABASE_URL') {
-      await saveLeadToSupabase();
-    }
+    await saveLeadToSupabase();
 
     // 3. email notification via EmailJS
-    if(EMAILJS_PUBLIC_KEY !== 'YOUR_EMAILJS_PUBLIC_KEY') {
-      await sendEmailNotification();
-    }
+    await sendEmailNotification();
 
     // 4. show confirmation
     buildConfirmation();
@@ -1466,18 +1472,16 @@ async function submitCommission() {
 function showErr(el, msg) { el.textContent = msg; el.style.display = ''; }
 
 async function uploadImageToSupabase(file) {
-  var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  var ext = file.name.split('.').pop();
+  var ext = file.name.includes('.') ? file.name.split('.').pop() : 'jpg';
   var fname = Date.now() + '-' + Math.random().toString(36).slice(2,6) + '.' + ext;
-  var { data, error } = await supabase.storage.from('commission-images').upload(fname, file, { upsert:false });
+  var { data, error } = await _supabase.storage.from('commission-images').upload(fname, file, { upsert:false });
   if(error) throw error;
-  var { data: pub } = supabase.storage.from('commission-images').getPublicUrl(fname);
+  var { data: pub } = _supabase.storage.from('commission-images').getPublicUrl(fname);
   return pub.publicUrl;
 }
 
 async function saveLeadToSupabase() {
-  var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  var { error } = await supabase.from('commission_leads').insert({
+  var { error } = await _supabase.from('commission_leads').insert({
     name: coState.name, phone: coState.phone, email: coState.email || null,
     city: coState.city || null, occasion: coState.occasion, occasion_note: coState.occasionNote,
     budget_range: coState.budget, image_url: coState.imageUrl || null
@@ -1486,28 +1490,19 @@ async function saveLeadToSupabase() {
 }
 
 async function sendEmailNotification() {
-  var budgetLabel = {
-    'under-5k':'Under Rs 5,000','5k-10k':'Rs 5,000–10,000',
-    '10k-20k':'Rs 10,000–20,000','20k-40k':'Rs 20,000–40,000','40k-plus':'Rs 40,000+'
-  }[coState.budget] || coState.budget;
   await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
     name: coState.name, phone: coState.phone, email: coState.email || 'Not provided',
     city: coState.city || 'Not provided', occasion: coState.occasion,
-    occasion_note: coState.occasionNote || 'None', budget: budgetLabel,
+    occasion_note: coState.occasionNote || 'None', budget: budgetLabel(coState.budget),
     image_url: coState.imageUrl || 'No image uploaded'
   }, EMAILJS_PUBLIC_KEY);
 }
 
 function buildConfirmation() {
-  // WhatsApp pre-fill
-  var budgetLabel = {
-    'under-5k':'under Rs 5,000','5k-10k':'Rs 5,000–10,000',
-    '10k-20k':'Rs 10,000–20,000','20k-40k':'Rs 20,000–40,000','40k-plus':'Rs 40,000+'
-  }[coState.budget] || coState.budget;
   var waMsg = encodeURIComponent(
     'Hi ami — I just submitted my reference on amibyarham.com.\n' +
     'Name: ' + coState.name + '\n' +
-    'Budget: ' + budgetLabel + '\n' +
+    'Budget: ' + budgetLabel(coState.budget) + '\n' +
     'Occasion: ' + (coState.occasion || 'Not specified')
   );
   document.getElementById('waLink').href = 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + waMsg;
