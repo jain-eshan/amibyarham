@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ami by arham — The beloved, made by hand.</title>
+<meta name="description" content="A jewellery house with no catalogue. You bring the design you love — a Pinterest save, a sketch — and our master karigars handcraft it in lab-grown diamonds. IGI certified, BIS hallmarked, priced in full.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@400;500;600;700&family=Caveat:wght@500;600&family=Noto+Serif+Devanagari:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   ami by arham — Website v2 (oxblood brand world)
+   ============================================================ */
+
+*,*::before,*::after { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  /* palette */
+  --oxblood:#6E1B2E;
+  --lac:#4A0F1E;
+  --oxblood-soft:#8B2A3E;
+  --silk:#F0E6D2;
+  --silk-light:#F7F1E4;
+  --silk-deep:#E6D9C2;
+  --kohl:#1A1411;
+  --kohl-soft:#3A2A22;
+  --gold:#B5944A;
+  --gold-lit:#CBA85C;
+  --gold-muted:rgba(181,148,74,.55);
+  --champa:#E7C9C2;
+  --champa-deep:#D4ACA2;
+
+  /* type */
+  --f-display:'Bodoni Moda','Playfair Display',Georgia,serif;
+  --f-body:'EB Garamond',Georgia,serif;
+  --f-ui:'DM Sans',system-ui,sans-serif;
+  --f-script:'Caveat',cursive;
+  --f-hindi:'Noto Serif Devanagari',serif;
+
+  --ease:cubic-bezier(0.16,1,0.3,1);
+}
+
+html { font-size:16px; }
+body {
+  background:var(--silk);
+  color:var(--kohl);
+  font-family:var(--f-body);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  overflow-x:hidden;
+}
+::selection { background:var(--oxblood); color:var(--silk); }
+img { display:block; max-width:100%; }
+a { color:inherit; text-decoration:none; }
+
+.wrap { max-width:1080px; margin:0 auto; padding:0 clamp(1.5rem,5vw,4rem); }
+.sec { padding:clamp(5rem,12vw,9rem) 0; }
+
+.eyebrow {
+  font:500 10.5px var(--f-ui);
+  text-transform:uppercase;
+  letter-spacing:.32em;
+}
+.sec-title {
+  font-family:var(--f-display);
+  font-weight:400; font-style:italic;
+  font-size:clamp(2rem,4.5vw,3rem);
+  line-height:1.15;
+  margin-top:16px;
+  text-wrap:balance;
+}
+.sec-title em { font-style:normal; font-weight:600; }
+.body-col {
+  font-size:clamp(1.02rem,1.4vw,1.16rem);
+  line-height:1.82;
+  color:var(--kohl-soft);
+}
+
+/* reveal-on-scroll */
+.rv { opacity:0; transform:translateY(22px); transition:opacity .9s var(--ease), transform .9s var(--ease); }
+.rv.in { opacity:1; transform:none; }
+.rv-d1 { transition-delay:.08s; }
+.rv-d2 { transition-delay:.16s; }
+.rv-d3 { transition-delay:.24s; }
+
+/* textures */
+.grain::after {
+  content:''; position:absolute; inset:0; pointer-events:none; opacity:.11; mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:200px 200px;
+}
+.arch-bg::before {
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg width='72' height='100' viewBox='0 0 72 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 100 L12 52 Q12 42 22 38 Q30 34 36 18 Q42 34 50 38 Q60 42 60 52 L60 100' fill='none' stroke='%23B5944A' stroke-width='0.9'/%3E%3C/svg%3E");
+  background-size:72px 100px;
+  opacity:.08;
+}
+
+/* ============================================================
+   Buttons
+   ============================================================ */
+.btn {
+  display:inline-flex; align-items:center; gap:.6rem;
+  font:500 11px var(--f-ui);
+  text-transform:uppercase; letter-spacing:.16em;
+  padding:1rem 1.9rem;
+  border-radius:3px;
+  cursor:pointer; border:none;
+  transition:background .3s var(--ease), color .3s var(--ease), transform .25s var(--ease), box-shadow .3s var(--ease), border-color .3s var(--ease);
+}
+.btn-gold { background:var(--gold-lit); color:var(--kohl); }
+.btn-gold:hover { background:var(--gold); transform:translateY(-2px); box-shadow:0 10px 26px rgba(74,15,30,.25); }
+.btn-oxblood { background:var(--oxblood); color:var(--silk); }
+.btn-oxblood:hover { background:var(--oxblood-soft); transform:translateY(-2px); box-shadow:0 10px 26px rgba(74,15,30,.3); }
+.btn-ghost {
+  background:rgba(26,20,17,.28); color:var(--silk);
+  border:1px solid rgba(240,230,210,.32);
+  backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+}
+.btn-ghost:hover { color:#fff; border-color:rgba(240,230,210,.6); background:rgba(26,20,17,.45); }
+.btn-line { background:transparent; color:var(--oxblood); border:1px solid rgba(110,27,46,.4); }
+.btn-line:hover { border-color:var(--oxblood); background:rgba(110,27,46,.06); }
+
+/* ============================================================
+   Navigation
+   ============================================================ */
+.nav {
+  position:fixed; top:0; left:0; right:0; z-index:60;
+  padding:0 clamp(1.25rem,4vw,3rem);
+  transition:background .5s var(--ease), border-color .5s var(--ease);
+  border-bottom:1px solid transparent;
+}
+.nav.scrolled {
+  background:rgba(26,20,17,.82);
+  backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+  border-bottom:1px solid rgba(181,148,74,.16);
+}
+.nav-inner {
+  max-width:1200px; margin:0 auto; height:74px;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.nav-logo img { height:38px; width:auto; }
+.nav-right { display:flex; align-items:center; gap:clamp(1.25rem,3vw,2.25rem); }
+.nav-links { display:flex; align-items:center; gap:clamp(1.25rem,3vw,2rem); list-style:none; }
+.nav-links a {
+  font:500 11px var(--f-ui);
+  text-transform:uppercase; letter-spacing:.14em;
+  color:rgba(240,230,210,.72);
+  transition:color .3s;
+}
+.nav-links a:hover { color:var(--gold-lit); }
+.nav-cta {
+  font:500 10.5px var(--f-ui);
+  text-transform:uppercase; letter-spacing:.14em;
+  color:var(--kohl); background:var(--gold-lit);
+  padding:.6rem 1.2rem; border-radius:3px;
+  transition:background .3s, transform .2s;
+}
+.nav-cta:hover { background:var(--gold); transform:translateY(-1px); }
+@media (max-width:680px){ .nav-links li:not(:last-child){ display:none; } }
+
+/* ============================================================
+   HERO — scroll-scrubbed film
+   ============================================================ */
+.hero-runway { position:relative; height:340vh; }
+@media (max-width:768px){ .hero-runway { height:100vh; height:100dvh; } }
+
+.hero-sticky {
+  position:sticky; top:0;
+  height:100vh; height:100dvh;
+  overflow:hidden;
+  background:var(--lac);
+}
+
+.hero-video {
+  position:absolute; inset:0;
+  width:100%; height:100%;
+  object-fit:cover;
+  transform:scale(1.02);
+  will-change:transform;
+  background:var(--lac);
+}
+
+/* light atmospheric overlays — keep the imagery vivid up top */
+.hero-edge {
+  position:absolute; inset:0; z-index:2; pointer-events:none;
+  background:radial-gradient(ellipse 100% 100% at 50% 40%, transparent 60%, rgba(74,15,30,.34) 100%);
+}
+.hero-topfade {
+  position:absolute; left:0; right:0; top:0; height:24%; z-index:3; pointer-events:none;
+  background:linear-gradient(to bottom, rgba(26,20,17,.6) 0%, transparent 100%);
+}
+.hero-veil {
+  position:absolute; left:0; right:0; bottom:0; height:64%; z-index:3; pointer-events:none;
+  background:linear-gradient(to top,
+    rgba(40,9,18,.95) 0%,
+    rgba(74,15,30,.78) 26%,
+    rgba(74,15,30,.34) 52%,
+    transparent 100%);
+}
+.hero-glow {
+  position:absolute; inset:0; z-index:3; pointer-events:none; opacity:0;
+  background:radial-gradient(ellipse 55% 60% at 58% 38%, rgba(203,168,92,.20) 0%, transparent 70%);
+  will-change:opacity;
+}
+.hero-grain {
+  position:absolute; inset:0; z-index:4; pointer-events:none; opacity:.13; mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:200px 200px;
+}
+
+/* floating gold dust */
+.hero-particles { position:absolute; inset:0; z-index:5; pointer-events:none; }
+.hero-particle {
+  position:absolute; width:3px; height:3px; border-radius:50%;
+  background:var(--gold-lit); opacity:0;
+  box-shadow:0 0 6px 1px rgba(203,168,92,.4);
+  animation:float-up linear infinite;
+}
+.hero-particle:nth-child(1){ left:16%; animation-duration:15s; animation-delay:0s; }
+.hero-particle:nth-child(2){ left:31%; animation-duration:19s; animation-delay:3s; width:2px; height:2px; }
+.hero-particle:nth-child(3){ left:49%; animation-duration:16s; animation-delay:7s; }
+.hero-particle:nth-child(4){ left:64%; animation-duration:21s; animation-delay:2s; width:2px; height:2px; }
+.hero-particle:nth-child(5){ left:80%; animation-duration:15s; animation-delay:5s; }
+.hero-particle:nth-child(6){ left:39%; animation-duration:23s; animation-delay:9s; width:1.5px; height:1.5px; }
+@keyframes float-up {
+  0%{ transform:translateY(100vh) scale(0); opacity:0; }
+  10%{ opacity:.5; } 50%{ opacity:.22; } 90%{ opacity:.4; }
+  100%{ transform:translateY(-20vh) scale(1); opacity:0; }
+}
+
+/* scroll-driven copy beats (cinematic lower-third) */
+.hero-copy {
+  position:absolute; z-index:10;
+  left:clamp(1.5rem,6vw,5.5rem);
+  right:clamp(1.5rem,6vw,5.5rem);
+  bottom:clamp(4rem,12vh,7.5rem);
+}
+.hero-beat {
+  position:absolute; left:0; bottom:0; max-width:680px;
+  opacity:0; transform:translateY(28px);
+  transition:opacity .8s var(--ease), transform .8s var(--ease);
+  pointer-events:none; will-change:opacity,transform;
+}
+.hero-beat.active { opacity:1; transform:none; pointer-events:auto; }
+
+.b-hindi {
+  font-family:var(--f-hindi); font-weight:400;
+  font-size:clamp(.85rem,1.5vw,1rem);
+  color:var(--gold-lit); letter-spacing:.03em;
+  margin-bottom:1.1rem;
+  text-shadow:0 1px 14px rgba(26,20,17,.7);
+}
+.b-logo { width:clamp(190px,26vw,300px); }
+.b-tagline {
+  font-family:var(--f-display); font-style:italic; font-weight:400;
+  font-size:clamp(1.15rem,2.2vw,1.6rem);
+  color:var(--silk); margin-top:1.1rem; letter-spacing:.02em;
+  text-shadow:0 1px 14px rgba(26,20,17,.55);
+}
+.b-title {
+  font-family:var(--f-display); font-style:italic; font-weight:400;
+  font-size:clamp(2.6rem,6.5vw,5rem); line-height:1.0;
+  color:var(--silk); letter-spacing:.01em; text-wrap:balance;
+  text-shadow:0 2px 26px rgba(26,20,17,.55);
+}
+.b-title em { font-style:normal; font-weight:600; color:var(--gold-lit); }
+.b-story {
+  font-family:var(--f-display); font-style:italic; font-weight:400;
+  font-size:clamp(1.6rem,3.6vw,2.6rem); line-height:1.28;
+  color:var(--silk); max-width:20ch; text-wrap:balance;
+  text-shadow:0 2px 20px rgba(26,20,17,.55);
+}
+.b-story .pq-dot { display:block; color:var(--gold-lit); font-size:1.6em; line-height:0; margin-bottom:.2em; }
+.b-cta-heading {
+  font-family:var(--f-display); font-style:italic; font-weight:400;
+  font-size:clamp(2rem,4.6vw,3.4rem); line-height:1.1;
+  color:var(--silk); margin-bottom:1.6rem; max-width:16ch; text-wrap:balance;
+  text-shadow:0 2px 20px rgba(26,20,17,.55);
+}
+.b-cta-heading em { font-style:normal; font-weight:600; color:var(--gold-lit); }
+.b-actions { display:flex; gap:1rem; flex-wrap:wrap; }
+
+/* mobile / reduced-motion static hero */
+.hero-static {
+  display:none; position:absolute; z-index:10;
+  left:clamp(1.5rem,6vw,5rem); right:clamp(1.5rem,6vw,5rem);
+  bottom:clamp(3rem,12vh,6rem);
+}
+.hero-static .b-logo { width:min(260px,64vw); }
+.hero-static .b-actions { margin-top:1.6rem; }
+
+/* scrub bar */
+.hero-scrubbar { position:absolute; left:0; right:0; bottom:0; height:3px; z-index:11; background:rgba(240,230,210,.14); }
+.hero-scrubbar-fill { height:100%; width:0%; background:var(--gold-lit); box-shadow:0 0 12px rgba(203,168,92,.5); }
+
+/* scroll hint */
+.hero-hint {
+  position:absolute; bottom:1.4rem; right:clamp(1.5rem,6vw,5rem); z-index:12;
+  display:flex; align-items:center; gap:.6rem; opacity:.72; transition:opacity .4s;
+}
+.hero-hint.hidden { opacity:0; pointer-events:none; }
+.hero-hint-text { font:500 9.5px var(--f-ui); text-transform:uppercase; letter-spacing:.2em; color:var(--silk); }
+.hero-hint-line { width:30px; height:1px; background:linear-gradient(to right, transparent, var(--gold-lit)); animation:hint 2s ease-in-out infinite; }
+@keyframes hint { 0%,100%{ opacity:.4; transform:scaleX(1);} 50%{ opacity:.9; transform:scaleX(1.25);} }
+
+@media (max-width:768px){
+  .hero-copy,.hero-scrubbar,.hero-hint { display:none; }
+  .hero-static { display:block; }
+  .hero-veil { height:78%; }
+}
+@media (prefers-reduced-motion:reduce){
+  .hero-runway { height:100vh; height:100dvh; }
+  .hero-video { transform:scale(1)!important; }
+  .hero-particle { display:none; }
+  .hero-glow { opacity:0!important; }
+  .hero-copy,.hero-scrubbar,.hero-hint { display:none; }
+  .hero-static { display:block; }
+}
+
+/* ============================================================
+   STORY (silk)
+   ============================================================ */
+.story { background:var(--silk); }
+.story .eyebrow { color:var(--oxblood); }
+.story-lead {
+  font-family:var(--f-display); font-weight:400; font-style:italic;
+  font-size:clamp(2.2rem,5vw,3.6rem); line-height:1.12;
+  color:var(--kohl); max-width:16ch; margin-top:18px; text-wrap:balance;
+}
+.story-lead strong { font-weight:600; font-style:normal; color:var(--oxblood); }
+.story-cols {
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:clamp(2rem,5vw,4.5rem); margin-top:clamp(2.5rem,5vw,3.5rem);
+}
+@media (max-width:760px){ .story-cols { grid-template-columns:1fr; } }
+.story-cols p { margin-bottom:1.1rem; }
+.dropcap::first-letter {
+  font-family:var(--f-display); font-weight:600; font-size:4.2em; line-height:.76;
+  float:left; color:var(--oxblood); padding:6px 12px 0 0;
+}
+.pullquote {
+  margin-top:clamp(3rem,6vw,4.5rem); text-align:center;
+  font-family:var(--f-display); font-style:italic; font-weight:400;
+  font-size:clamp(1.5rem,3.4vw,2.2rem); line-height:1.3; color:var(--oxblood);
+}
+.pq-dot { display:block; color:var(--gold); font-size:2.2em; line-height:0; margin-bottom:.15em; }
+
+/* ============================================================
+   PROCESS (champa-tinted silk)
+   ============================================================ */
+.process { background:var(--silk-light); }
+.process .eyebrow { color:var(--oxblood); }
+.process .sec-title em { color:var(--oxblood); }
+.process-head { max-width:540px; }
+.process-lead { margin-top:1rem; font-size:clamp(1.02rem,1.4vw,1.14rem); line-height:1.8; color:var(--kohl-soft); }
+.steps {
+  display:grid; grid-template-columns:repeat(3,1fr);
+  gap:clamp(1.5rem,3vw,2.5rem); margin-top:clamp(3rem,6vw,4.5rem);
+}
+@media (max-width:760px){ .steps { grid-template-columns:1fr; gap:2.75rem; } }
+.step { position:relative; padding-top:1.5rem; border-top:1px solid rgba(110,27,46,.18); }
+.step-no {
+  font-family:var(--f-display); font-style:italic; font-weight:500;
+  font-size:1.4rem; color:var(--gold);
+}
+.step-title {
+  font-family:var(--f-display); font-weight:600; font-size:1.4rem;
+  color:var(--kohl); margin:.5rem 0 .6rem; line-height:1.2;
+}
+.step-desc { font-size:1rem; line-height:1.7; color:var(--kohl-soft); max-width:34ch; }
+.step-tag { font-family:var(--f-script); font-size:1.25rem; color:var(--oxblood); margin-top:.75rem; }
+
+/* ============================================================
+   TRUST (kohl, dark)
+   ============================================================ */
+.trust { position:relative; background:var(--kohl); color:var(--silk); overflow:hidden; }
+.trust .eyebrow { color:var(--gold); position:relative; z-index:2; }
+.trust .sec-title { color:var(--silk); position:relative; z-index:2; }
+.trust .sec-title em { color:var(--gold-lit); }
+.trust-lead {
+  position:relative; z-index:2;
+  font-size:clamp(1.02rem,1.4vw,1.14rem); line-height:1.8;
+  color:rgba(240,230,210,.78); max-width:46ch; margin-top:1rem;
+}
+.trust-grid {
+  position:relative; z-index:2;
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+  gap:16px; margin-top:clamp(3rem,6vw,4rem);
+}
+.trust-item {
+  border:1px solid rgba(181,148,74,.22); border-radius:8px; padding:26px;
+  background:rgba(240,230,210,.025);
+  transition:border-color .3s, background .3s, transform .3s;
+}
+.trust-item:hover { border-color:rgba(181,148,74,.45); background:rgba(240,230,210,.05); transform:translateY(-3px); }
+.ti-title { font-family:var(--f-display); font-style:italic; font-size:1.3rem; color:var(--gold-lit); margin-bottom:.5rem; }
+.ti-desc { font-size:.98rem; line-height:1.65; color:rgba(240,230,210,.72); }
+
+/* ============================================================
+   PRICING PEEK (silk)
+   ============================================================ */
+.pricing { background:var(--silk); }
+.pricing .eyebrow { color:var(--oxblood); }
+.pricing .sec-title em { color:var(--oxblood); }
+.pricing-grid {
+  display:grid; grid-template-columns:1fr 1fr; gap:clamp(2rem,5vw,4rem);
+  align-items:center; margin-top:clamp(2.5rem,5vw,3.5rem);
+}
+@media (max-width:760px){ .pricing-grid { grid-template-columns:1fr; } }
+.pricing-say { font-size:clamp(1.05rem,1.5vw,1.2rem); line-height:1.8; color:var(--kohl-soft); }
+.pricing-say em { font-style:italic; color:var(--oxblood); }
+.peek {
+  background:var(--silk-light); border:1px solid rgba(181,148,74,.25);
+  border-radius:12px; padding:clamp(1.75rem,4vw,2.5rem);
+}
+.peek-title { font-family:var(--f-display); font-style:italic; font-size:1.25rem; color:var(--kohl); margin-bottom:1.25rem; }
+.peek-row { display:flex; justify-content:space-between; align-items:baseline; gap:1rem; padding:.55rem 0; border-bottom:1px solid rgba(26,20,17,.07); }
+.peek-row:last-of-type { border-bottom:none; }
+.peek-label { font-size:.98rem; color:var(--kohl-soft); }
+.peek-val { font:500 .92rem var(--f-ui); color:var(--kohl); font-variant-numeric:tabular-nums; letter-spacing:.02em; }
+.peek-total { margin-top:.4rem; padding-top:.85rem; border-top:1px solid rgba(181,148,74,.4); }
+.peek-total .peek-label { font-family:var(--f-display); font-style:italic; font-size:1.3rem; color:var(--kohl); }
+.peek-total .peek-val { font-family:var(--f-display); font-size:1.4rem; color:var(--oxblood); }
+.peek-note { font-family:var(--f-script); font-size:1.2rem; color:var(--oxblood); margin-top:1rem; text-align:center; }
+
+/* ============================================================
+   CTA (oxblood band)
+   ============================================================ */
+.cta { position:relative; background:var(--oxblood); color:var(--silk); text-align:center; overflow:hidden; }
+.cta::before {
+  content:''; position:absolute; inset:0;
+  background:radial-gradient(ellipse 60% 60% at 50% 30%, rgba(203,168,92,.14), transparent 65%);
+}
+.cta-inner { position:relative; z-index:2; max-width:640px; margin:0 auto; }
+.cta .eyebrow { color:var(--gold-muted); }
+.cta-title {
+  font-family:var(--f-display); font-style:italic; font-weight:400;
+  font-size:clamp(2.2rem,5vw,3.4rem); line-height:1.12;
+  color:var(--silk); margin-top:14px; text-wrap:balance;
+}
+.cta-title em { font-style:normal; font-weight:600; color:var(--gold-lit); }
+.cta-desc { font-size:clamp(1.02rem,1.4vw,1.16rem); line-height:1.8; color:rgba(240,230,210,.78); margin:1.25rem auto 2.25rem; max-width:46ch; }
+.cta-actions { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; }
+
+/* ============================================================
+   FOOTER (kohl)
+   ============================================================ */
+.footer { position:relative; background:var(--kohl); color:var(--silk); padding:clamp(3.5rem,7vw,5rem) clamp(1.25rem,4vw,3rem) 2.25rem; overflow:hidden; }
+.footer-inner { position:relative; z-index:2; max-width:1080px; margin:0 auto; display:grid; grid-template-columns:1.4fr 1fr 1fr; gap:2.5rem; align-items:start; }
+@media (max-width:680px){ .footer-inner { grid-template-columns:1fr; gap:2.25rem; text-align:center; } }
+.footer-logo { width:160px; }
+@media (max-width:680px){ .footer-logo { margin:0 auto; } }
+.footer-tag { font-family:var(--f-display); font-style:italic; font-size:1.2rem; color:var(--gold-lit); margin-top:1.1rem; }
+.footer-whisper { font-size:.95rem; line-height:1.7; color:rgba(240,230,210,.6); margin-top:.75rem; max-width:34ch; }
+@media (max-width:680px){ .footer-whisper { margin-left:auto; margin-right:auto; } }
+.footer-col-title { font:500 10px var(--f-ui); text-transform:uppercase; letter-spacing:.2em; color:var(--gold); margin-bottom:1rem; }
+.footer-col a { display:block; font-size:.95rem; color:rgba(240,230,210,.62); padding:.3rem 0; transition:color .3s; }
+.footer-col a:hover { color:var(--gold-lit); }
+.footer-base { position:relative; z-index:2; max-width:1080px; margin:2.5rem auto 0; padding-top:1.5rem; border-top:1px solid rgba(181,148,74,.16); display:flex; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+.footer-base span { font:400 11px var(--f-ui); letter-spacing:.06em; color:rgba(240,230,210,.4); }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo" aria-label="ami by arham — home">
+      <img src="./assets/ami-wordmark-silk.png" alt="ami by arham">
+    </a>
+    <div class="nav-right">
+      <ul class="nav-links">
+        <li><a href="#story">The House</a></li>
+        <li><a href="#process">How It Works</a></li>
+        <li><a href="#trust">Our Promise</a></li>
+      </ul>
+      <a href="#cta" class="nav-cta">Start your piece</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero-runway" id="heroRunway">
+  <div class="hero-sticky">
+    <video class="hero-video" id="heroVideo" muted playsinline preload="auto" poster="./assets/hero-karigar.jpg"
+           aria-label="A master karigar hammers gold at his workbench as light streams through an ornate jaali window.">
+      <source src="./assets/hero-karigar.mp4" type="video/mp4">
+    </video>
+
+    <div class="hero-edge" aria-hidden="true"></div>
+    <div class="hero-topfade" aria-hidden="true"></div>
+    <div class="hero-glow" id="heroGlow" aria-hidden="true"></div>
+    <div class="hero-veil" aria-hidden="true"></div>
+    <div class="hero-grain" aria-hidden="true"></div>
+
+    <div class="hero-particles" aria-hidden="true">
+      <span class="hero-particle"></span><span class="hero-particle"></span><span class="hero-particle"></span>
+      <span class="hero-particle"></span><span class="hero-particle"></span><span class="hero-particle"></span>
+    </div>
+
+    <!-- scroll beats (desktop) -->
+    <div class="hero-copy" id="heroCopy">
+      <div class="hero-beat" id="beat1">
+        <p class="b-hindi">हस्तनिर्मित, दिल से</p>
+        <img class="b-logo" src="./assets/ami-wordmark-silk.png" alt="ami by arham">
+        <p class="b-tagline">The beloved, made by hand.</p>
+      </div>
+      <div class="hero-beat" id="beat2">
+        <h1 class="b-title">Your design,<br><em>made by hand.</em></h1>
+      </div>
+      <div class="hero-beat" id="beat3">
+        <p class="b-story"><span class="pq-dot">·</span>We do not sell what we have made.<br>We make what you love.</p>
+      </div>
+      <div class="hero-beat" id="beat4">
+        <p class="b-cta-heading">Show us what you love. <em>We'll make it real.</em></p>
+        <div class="b-actions">
+          <a href="#cta" class="btn btn-gold">Start your piece</a>
+          <a href="#process" class="btn btn-ghost">How it works</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- static hero (mobile / reduced motion) -->
+    <div class="hero-static">
+      <p class="b-hindi">हस्तनिर्मित, दिल से</p>
+      <img class="b-logo" src="./assets/ami-wordmark-silk.png" alt="ami by arham">
+      <p class="b-tagline">The beloved, made by hand.</p>
+      <div class="b-actions">
+        <a href="#cta" class="btn btn-gold">Start your piece</a>
+        <a href="#process" class="btn btn-ghost">How it works</a>
+      </div>
+    </div>
+
+    <div class="hero-hint" id="heroHint" aria-hidden="true">
+      <span class="hero-hint-text">Scroll to watch</span>
+      <span class="hero-hint-line"></span>
+    </div>
+    <div class="hero-scrubbar" aria-hidden="true"><div class="hero-scrubbar-fill" id="scrubFill"></div></div>
+  </div>
+</div>
+
+<!-- STORY -->
+<section class="story sec" id="story">
+  <div class="wrap">
+    <span class="eyebrow rv">The house</span>
+    <h2 class="story-lead rv">Ami means <strong>beloved</strong> — and the first drop of <strong>amrit.</strong></h2>
+    <div class="story-cols">
+      <div class="rv rv-d1">
+        <p class="body-col dropcap">For forty years a small silver shop in Ashok Vihar, Old Delhi, made jewellery the slow way — by hand, by name, by trust. Rajesh Jewellers. Its sons carried that trade outward: to Surat, to learn the language of diamonds at the Indian Diamond Institute; to the United Nations, to learn the worth of an honest ledger.</p>
+        <p class="body-col">AMI is what they brought home. Not a showroom. Not a shelf of finished things waiting for a buyer. A house built around a single, old-fashioned idea — that the most precious piece you will ever own is the one made only for you.</p>
+      </div>
+      <div class="rv rv-d2">
+        <p class="body-col">You arrive with a picture you have been keeping — a Pinterest save, a sketch, your grandmother's ring drawn from memory. We answer with a hand. A karigar we can name takes your wish to the bench and returns it as a piece: lab-grown diamond, IGI certified, BIS hallmarked, priced in full and without apology.</p>
+        <p class="body-col">No fixed catalogue. No factory. No showroom markup. Old soul, honest hands, modern proof. A legacy small enough to be intimate, and sure enough to cross any border.</p>
+      </div>
+    </div>
+    <blockquote class="pullquote rv">
+      <span class="pq-dot">·</span>
+      We do not sell what we have made.<br>We make what you love.
+    </blockquote>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section class="process sec" id="process">
+  <div class="wrap">
+    <span class="eyebrow rv">How it works</span>
+    <div class="process-head">
+      <h2 class="sec-title rv">Three steps, from a picture <em>to your hands.</em></h2>
+      <p class="process-lead rv rv-d1">No showroom visits. No stock waiting on a shelf. Every piece begins with what you love, and ends with what one named pair of hands makes for you.</p>
+    </div>
+    <div class="steps">
+      <div class="step rv">
+        <div class="step-no">01</div>
+        <h3 class="step-title">Share what you love</h3>
+        <p class="step-desc">A Pinterest save, a photo, a sketch on paper. Tell us the occasion, the metal, the budget. Whatever you've been keeping.</p>
+      </div>
+      <div class="step rv rv-d1">
+        <div class="step-no">02</div>
+        <h3 class="step-title">We answer with a price</h3>
+        <p class="step-desc">Within a day, a mockup of your piece, a transparent cost breakdown — metal, stone, making — and the name of the karigar who will craft it.</p>
+        <p class="step-tag">a day, not a fortnight</p>
+      </div>
+      <div class="step rv rv-d2">
+        <div class="step-no">03</div>
+        <h3 class="step-title">Handcrafted, then home</h3>
+        <p class="step-desc">Confirm, and the bench begins. Shaped by hand in 7 to 21 days. Delivered with its IGI certificate and BIS hallmark.</p>
+        <p class="step-tag">signed by its maker</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST -->
+<section class="trust sec grain arch-bg" id="trust">
+  <div class="wrap">
+    <span class="eyebrow rv">Our promise</span>
+    <h2 class="sec-title rv">Old soul, honest hands, <em>modern proof.</em></h2>
+    <p class="trust-lead rv rv-d1">Real diamonds, real certificates, real people. No showroom markup, no hidden cost, nothing you cannot verify yourself.</p>
+    <div class="trust-grid">
+      <div class="trust-item rv">
+        <div class="ti-title">Forty years of family craft</div>
+        <div class="ti-desc">From Rajesh Jewellers in Ashok Vihar to ami. Founder Amit Jain trained in diamonds at the Indian Diamond Institute, Surat.</div>
+      </div>
+      <div class="trust-item rv rv-d1">
+        <div class="ti-title">IGI-certified lab-grown</div>
+        <div class="ti-desc">Every diamond carries an International Gemological Institute certificate. Same carbon, same fire — just without the mine.</div>
+      </div>
+      <div class="trust-item rv rv-d2">
+        <div class="ti-title">BIS hallmarked</div>
+        <div class="ti-desc">Every silver and gold piece carries a BIS HUID hallmark — purity you can check yourself on the BIS Care app.</div>
+      </div>
+      <div class="trust-item rv rv-d3">
+        <div class="ti-title">Priced in full</div>
+        <div class="ti-desc">Metal at the day's rate, the stone, the making charge. Every rupee accounted for. Never "request a quote."</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing sec" id="pricing">
+  <div class="wrap">
+    <span class="eyebrow rv">No surprises</span>
+    <h2 class="sec-title rv">Here's what a piece <em>actually costs.</em></h2>
+    <div class="pricing-grid">
+      <div class="rv rv-d1">
+        <p class="pricing-say">We show you the breakdown before you commit a rupee — the silver by weight at the day's rate, the lab-grown diamond by its certificate, and the karigar's making charge. <em>Then you decide.</em></p>
+      </div>
+      <div class="peek rv rv-d2">
+        <div class="peek-title">A solitaire ring, for instance</div>
+        <div class="peek-row"><span class="peek-label">925 silver · 8g at today's rate</span><span class="peek-val">Rs 720</span></div>
+        <div class="peek-row"><span class="peek-label">Lab-grown diamond · 0.5ct, VS1, IGI</span><span class="peek-val">Rs 4,200</span></div>
+        <div class="peek-row"><span class="peek-label">Making charge · handcrafted</span><span class="peek-val">Rs 1,800</span></div>
+        <div class="peek-row"><span class="peek-label">IGI certificate + packaging</span><span class="peek-val">Rs 500</span></div>
+        <div class="peek-row peek-total"><span class="peek-label">Your piece</span><span class="peek-val">Rs 7,220</span></div>
+        <p class="peek-note">no showroom markup, no hidden fees</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta sec grain" id="cta">
+  <div class="cta-inner">
+    <span class="eyebrow rv">Begin</span>
+    <h2 class="cta-title rv">Show us what you love. <em>We'll make it by hand.</em></h2>
+    <p class="cta-desc rv rv-d1">Send a photo, a Pinterest link, or a rough sketch. Within a day you'll have a mockup, a clear price, and the name of the karigar who will craft your piece. Take your time — we'll be here when you're ready.</p>
+    <div class="cta-actions rv rv-d2">
+      <a href="https://wa.me/919999999999?text=Hi%20ami%2C%20I'd%20love%20to%20get%20a%20custom%20piece%20made." class="btn btn-gold" target="_blank" rel="noopener">
+        Start on WhatsApp
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+      <a href="mailto:hello@amibyarham.com" class="btn btn-ghost">Write to us</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer grain arch-bg">
+  <div class="footer-inner">
+    <div>
+      <img class="footer-logo" src="./assets/ami-wordmark-silk.png" alt="ami by arham">
+      <div class="footer-tag">The beloved, made by hand.</div>
+      <p class="footer-whisper">A house with no catalogue. You bring the piece — we make it real, by one named pair of hands. Old Delhi · est. 2026.</p>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">The house</div>
+      <a href="#story">Our story</a>
+      <a href="#process">How it works</a>
+      <a href="#trust">Our promise</a>
+      <a href="#pricing">Pricing</a>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">Reach us</div>
+      <a href="https://instagram.com/amibyarham" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://wa.me/919999999999" target="_blank" rel="noopener">WhatsApp</a>
+      <a href="mailto:hello@amibyarham.com">hello@amibyarham.com</a>
+    </div>
+  </div>
+  <div class="footer-base">
+    <span>© 2026 Arham Diamonds. All rights reserved.</span>
+    <span>Made by hand in Old Delhi.</span>
+  </div>
+</footer>
+
+<!-- ============================================================
+     Scripts
+     ============================================================ -->
+<script>
+(function(){
+  'use strict';
+  var nav = document.getElementById('nav');
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var canScrub = window.innerWidth > 768 && !reduce;
+
+  // nav background on scroll (all modes)
+  var navTick = false;
+  window.addEventListener('scroll', function(){
+    if(!navTick){ requestAnimationFrame(function(){ nav.classList.toggle('scrolled', window.scrollY > 60); navTick=false; }); navTick=true; }
+  }, {passive:true});
+
+  var video = document.getElementById('heroVideo');
+
+  if(!canScrub){
+    if(video && !reduce){ video.loop=true; video.muted=true; video.play().catch(function(){}); }
+  } else {
+    var runway = document.getElementById('heroRunway');
+    var glow   = document.getElementById('heroGlow');
+    var fill   = document.getElementById('scrubFill');
+    var hint   = document.getElementById('heroHint');
+    var beats  = [document.getElementById('beat1'),document.getElementById('beat2'),document.getElementById('beat3'),document.getElementById('beat4')];
+    var ranges = [[0.00,0.18],[0.22,0.46],[0.50,0.72],[0.76,1.01]];
+
+    var duration = 10, targetTime = 0, curTime = 0, domTick = false;
+    video.pause();
+    if(video.readyState >= 1){ duration = video.duration || 10; }
+    video.addEventListener('loadedmetadata', function(){ duration = video.duration || 10; });
+
+    function progressNow(){
+      var rect = runway.getBoundingClientRect();
+      var h = runway.offsetHeight - window.innerHeight;
+      return Math.max(0, Math.min(1, (-rect.top)/h));
+    }
+    function updateDOM(){
+      var p = progressNow();
+      targetTime = p * (duration - 0.05);
+      video.style.transform = 'scale(' + (1.02 + p*0.06) + ')';
+      glow.style.opacity = (p*0.55).toFixed(3);
+      fill.style.width = (p*100) + '%';
+      for(var i=0;i<beats.length;i++){
+        beats[i].classList.toggle('active', p >= ranges[i][0] && p < ranges[i][1]);
+      }
+      hint.classList.toggle('hidden', p > 0.04);
+      domTick = false;
+    }
+    window.addEventListener('scroll', function(){
+      if(!domTick){ requestAnimationFrame(updateDOM); domTick=true; }
+    }, {passive:true});
+
+    function seekLoop(){
+      curTime += (targetTime - curTime) * 0.12;
+      if(Math.abs(targetTime - curTime) > 0.015 && video.readyState >= 2){
+        try { video.currentTime = curTime; } catch(e){}
+      }
+      requestAnimationFrame(seekLoop);
+    }
+    requestAnimationFrame(function(){ requestAnimationFrame(function(){
+      updateDOM(); curTime = targetTime;
+      try { video.currentTime = curTime; } catch(e){}
+      seekLoop();
+    }); });
+  }
+
+  // reveal-on-scroll (all modes)
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold:0.12, rootMargin:'0px 0px -6% 0px' });
+  document.querySelectorAll('.rv').forEach(function(el){ io.observe(el); });
+})();
+</script>
+</body>
+</html>
