@@ -7,6 +7,8 @@
 <meta name="description" content="A jewellery house with no catalogue. You bring the design you love — a Pinterest save, a sketch — and our master karigars handcraft it in lab-grown diamonds. IGI certified, BIS hallmarked, priced in full.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@400;500;600;700&family=Caveat:wght@500;600&family=Noto+Serif+Devanagari:wght@400;600&display=swap" rel="stylesheet">
 <style>
 /* ============================================================
@@ -461,6 +463,296 @@ a { color:inherit; text-decoration:none; }
 .footer-col a:hover { color:var(--gold-lit); }
 .footer-base { position:relative; z-index:2; max-width:1080px; margin:2.5rem auto 0; padding-top:1.5rem; border-top:1px solid rgba(181,148,74,.16); display:flex; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
 .footer-base span { font:400 11px var(--f-ui); letter-spacing:.06em; color:rgba(240,230,210,.4); }
+
+/* ============================================================
+   FLOATING CTA
+   ============================================================ */
+.fab {
+  position:fixed; bottom:1.75rem; right:1.75rem; z-index:55;
+  display:flex; align-items:center; gap:.55rem;
+  font:600 10.5px var(--f-ui); text-transform:uppercase; letter-spacing:.14em;
+  color:var(--kohl); background:var(--gold-lit);
+  padding:.85rem 1.5rem; border-radius:999px; border:none; cursor:pointer;
+  box-shadow:0 6px 28px rgba(74,15,30,.3);
+  opacity:0; transform:translateY(12px);
+  transition:opacity .5s var(--ease), transform .5s var(--ease),
+             background .3s, box-shadow .3s;
+  will-change:opacity,transform;
+}
+.fab.visible { opacity:1; transform:translateY(0); }
+.fab:hover { background:var(--gold); box-shadow:0 8px 36px rgba(74,15,30,.42); }
+.fab.pulse { animation:fab-pulse 1.2s var(--ease) forwards; }
+@keyframes fab-pulse {
+  0%   { box-shadow:0 6px 28px rgba(74,15,30,.3); }
+  50%  { box-shadow:0 6px 44px rgba(181,148,74,.65), 0 0 0 8px rgba(181,148,74,.12); }
+  100% { box-shadow:0 6px 28px rgba(74,15,30,.3); }
+}
+.fab svg { flex-shrink:0; }
+@media (max-width:480px){ .fab { bottom:1.25rem; right:1.25rem; padding:.75rem 1.2rem; font-size:9.5px; } }
+
+/* ============================================================
+   COMMISSION OVERLAY
+   ============================================================ */
+.co {
+  position:fixed; inset:0; z-index:100;
+  background:var(--lac);
+  display:flex; flex-direction:column;
+  opacity:0; pointer-events:none;
+  transition:opacity .45s var(--ease);
+  overflow:hidden;
+}
+.co.open { opacity:1; pointer-events:auto; }
+/* grain texture on overlay */
+.co::after {
+  content:''; position:absolute; inset:0; pointer-events:none; opacity:.09; mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:200px 200px;
+}
+/* radial glow */
+.co::before {
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background:radial-gradient(ellipse 65% 55% at 50% 20%, rgba(203,168,92,.10), transparent 65%);
+}
+
+/* top bar: progress + close */
+.co-bar {
+  position:relative; z-index:2;
+  display:flex; align-items:center; gap:1.5rem;
+  padding:1.25rem clamp(1.25rem,5vw,3rem);
+  border-bottom:1px solid rgba(181,148,74,.14);
+  flex-shrink:0;
+}
+.co-logo img { height:28px; }
+.co-progress {
+  flex:1;
+  display:flex; align-items:center; gap:6px;
+}
+.co-dot {
+  flex:1; height:2px; border-radius:999px;
+  background:rgba(240,230,210,.15);
+  transition:background .5s var(--ease);
+}
+.co-dot.done { background:var(--gold-lit); }
+.co-dot.active { background:var(--gold); }
+.co-step-label {
+  font:500 9.5px var(--f-ui); text-transform:uppercase; letter-spacing:.18em;
+  color:rgba(240,230,210,.45); white-space:nowrap;
+}
+.co-close {
+  width:36px; height:36px; border-radius:50%; border:1px solid rgba(240,230,210,.2);
+  background:transparent; cursor:pointer; color:rgba(240,230,210,.7);
+  display:flex; align-items:center; justify-content:center;
+  transition:background .3s, border-color .3s, color .3s;
+  flex-shrink:0;
+}
+.co-close:hover { background:rgba(240,230,210,.1); border-color:rgba(240,230,210,.4); color:var(--silk); }
+
+/* scrollable body */
+.co-body {
+  flex:1; overflow-y:auto; position:relative; z-index:2;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+}
+.co-body::-webkit-scrollbar { display:none; }
+
+/* each step panel */
+.co-step {
+  display:none;
+  min-height:100%;
+  padding:clamp(2.5rem,6vw,4rem) clamp(1.25rem,5vw,3rem) 2rem;
+  max-width:640px; margin:0 auto;
+  animation:step-in .4s var(--ease) both;
+}
+.co-step.active { display:flex; flex-direction:column; gap:2rem; }
+@keyframes step-in {
+  from{ opacity:0; transform:translateY(20px); }
+  to  { opacity:1; transform:none; }
+}
+
+.co-eyebrow {
+  font:500 9.5px var(--f-ui); text-transform:uppercase; letter-spacing:.26em;
+  color:var(--gold-muted);
+}
+.co-heading {
+  font-family:var(--f-display); font-style:italic; font-weight:400;
+  font-size:clamp(1.8rem,5vw,2.8rem); line-height:1.1;
+  color:var(--silk); text-wrap:balance;
+}
+.co-heading em { font-style:normal; font-weight:600; color:var(--gold-lit); }
+.co-subtext {
+  font-family:var(--f-body); font-size:1rem; line-height:1.7;
+  color:rgba(240,230,210,.65);
+}
+
+/* Step 1: image upload */
+.upload-zone {
+  position:relative; cursor:pointer;
+  border:1.5px dashed rgba(181,148,74,.35); border-radius:12px;
+  min-height:240px; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:1rem; text-align:center;
+  padding:2rem; transition:border-color .3s, background .3s;
+  background:rgba(240,230,210,.03);
+  overflow:hidden;
+}
+.upload-zone:hover, .upload-zone.dragover {
+  border-color:var(--gold-lit); background:rgba(203,168,92,.06);
+}
+.upload-zone input { position:absolute; inset:0; opacity:0; cursor:pointer; }
+.uz-icon { color:var(--gold); opacity:.7; }
+.uz-label {
+  font-family:var(--f-display); font-style:italic; font-size:1.2rem;
+  color:var(--silk); opacity:.85;
+}
+.uz-sub { font:400 12.5px var(--f-ui); color:rgba(240,230,210,.45); letter-spacing:.04em; }
+.upload-preview {
+  position:absolute; inset:0; overflow:hidden; border-radius:10px;
+}
+.upload-preview img {
+  width:100%; height:100%; object-fit:cover;
+  filter:brightness(.7) saturate(.8);
+}
+.upload-preview-label {
+  position:absolute; bottom:0; left:0; right:0;
+  background:linear-gradient(to top, rgba(74,15,30,.85), transparent);
+  padding:1.5rem 1rem .75rem;
+  font:500 10px var(--f-ui); letter-spacing:.14em; text-transform:uppercase;
+  color:var(--gold-lit);
+}
+.upload-change {
+  position:absolute; top:.75rem; right:.75rem; z-index:3;
+  font:500 9.5px var(--f-ui); text-transform:uppercase; letter-spacing:.12em;
+  color:var(--silk); background:rgba(26,20,17,.6);
+  border:1px solid rgba(240,230,210,.25); border-radius:4px;
+  padding:.35rem .75rem; cursor:pointer; backdrop-filter:blur(4px);
+}
+
+/* Step 2: occasion chips */
+.chips { display:flex; flex-wrap:wrap; gap:.6rem; }
+.chip {
+  font:500 12px var(--f-ui); letter-spacing:.06em;
+  color:rgba(240,230,210,.75); background:rgba(240,230,210,.06);
+  border:1px solid rgba(240,230,210,.18); border-radius:999px;
+  padding:.55rem 1.2rem; cursor:pointer;
+  transition:background .25s, border-color .25s, color .25s;
+}
+.chip:hover { border-color:rgba(203,168,92,.45); color:var(--silk); }
+.chip.selected { background:var(--oxblood); border-color:var(--oxblood-soft); color:var(--silk); }
+.co-textarea {
+  width:100%; background:rgba(240,230,210,.05);
+  border:1px solid rgba(240,230,210,.15); border-radius:8px;
+  padding:.9rem 1rem; color:var(--silk); font:400 1rem var(--f-body);
+  line-height:1.6; resize:none; outline:none;
+  transition:border-color .3s;
+}
+.co-textarea::placeholder { color:rgba(240,230,210,.35); }
+.co-textarea:focus { border-color:rgba(203,168,92,.45); }
+
+/* Step 3: budget buttons */
+.budget-grid { display:grid; grid-template-columns:1fr 1fr; gap:.75rem; }
+@media(max-width:400px){ .budget-grid { grid-template-columns:1fr; } }
+.budget-btn {
+  font:500 13px var(--f-ui); text-transform:uppercase; letter-spacing:.06em;
+  color:rgba(240,230,210,.8); background:rgba(240,230,210,.05);
+  border:1px solid rgba(240,230,210,.18); border-radius:8px;
+  padding:1.1rem 1.25rem; cursor:pointer; text-align:center;
+  transition:background .25s, border-color .25s, color .25s;
+}
+.budget-btn:hover { border-color:rgba(203,168,92,.45); color:var(--silk); }
+.budget-btn.selected { background:var(--oxblood); border-color:var(--oxblood-soft); color:var(--silk); }
+.budget-btn-wide { grid-column:1/-1; }
+
+/* Step 4: estimate cards */
+.est-cards { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+@media(max-width:480px){ .est-cards { grid-template-columns:1fr; } }
+.est-card {
+  border-radius:10px; padding:1.5rem;
+  border:1px solid rgba(181,148,74,.25);
+  background:rgba(240,230,210,.04);
+  display:flex; flex-direction:column; gap:.6rem;
+}
+.est-card.gold-card { background:rgba(181,148,74,.07); border-color:rgba(181,148,74,.35); }
+.est-metal {
+  font:600 10px var(--f-ui); letter-spacing:.2em; text-transform:uppercase;
+  color:var(--gold-lit);
+}
+.est-stone {
+  font-family:var(--f-display); font-style:italic; font-size:1.35rem;
+  color:var(--silk); line-height:1.15;
+}
+.est-clarity {
+  font:400 12.5px var(--f-ui); color:rgba(240,230,210,.55); letter-spacing:.04em;
+}
+.est-total {
+  margin-top:.25rem; padding-top:.75rem;
+  border-top:1px solid rgba(181,148,74,.2);
+  font-family:var(--f-display); font-style:italic; font-size:1.25rem;
+  color:var(--gold-lit);
+}
+.est-disclaimer {
+  font-family:var(--f-script); font-size:1.05rem;
+  color:rgba(240,230,210,.5); text-align:center; line-height:1.4;
+}
+
+/* Step 5: contact form */
+.co-field { display:flex; flex-direction:column; gap:.45rem; }
+.co-label {
+  font:500 9.5px var(--f-ui); text-transform:uppercase; letter-spacing:.2em;
+  color:var(--gold-muted);
+}
+.co-input {
+  background:rgba(240,230,210,.06);
+  border:1px solid rgba(240,230,210,.18); border-radius:8px;
+  padding:.85rem 1rem; color:var(--silk);
+  font:400 1rem var(--f-body); line-height:1.5; outline:none;
+  transition:border-color .3s;
+}
+.co-input::placeholder { color:rgba(240,230,210,.3); font-style:italic; }
+.co-input:focus { border-color:rgba(203,168,92,.5); }
+.co-input.error { border-color:#e05555; }
+.field-row { display:grid; grid-template-columns:1fr 1fr; gap:.75rem; }
+@media(max-width:440px){ .field-row { grid-template-columns:1fr; } }
+.co-field-opt .co-label::after { content:' (optional)'; opacity:.5; }
+.co-error-msg {
+  font:400 12px var(--f-ui); color:#e07070; margin-top:-.25rem;
+}
+
+/* Step 6: confirmation */
+.co-confirm {
+  display:none; min-height:100%; padding:clamp(3rem,8vw,5rem) clamp(1.25rem,5vw,3rem);
+  max-width:560px; margin:0 auto;
+  flex-direction:column; align-items:center; text-align:center; gap:1.75rem;
+}
+.co-confirm.active { display:flex; animation:step-in .5s var(--ease) both; }
+.confirm-dot { font-size:2.5rem; line-height:1; color:var(--gold-lit); }
+.confirm-heading {
+  font-family:var(--f-display); font-style:italic; font-weight:400;
+  font-size:clamp(2rem,5.5vw,3rem); line-height:1.1;
+  color:var(--silk); text-wrap:balance;
+}
+.confirm-body {
+  font-family:var(--f-body); font-size:1.1rem; line-height:1.78;
+  color:rgba(240,230,210,.75); max-width:36ch; text-wrap:balance;
+}
+.confirm-actions { display:flex; flex-direction:column; gap:.75rem; width:100%; max-width:320px; }
+.confirm-actions .btn { justify-content:center; width:100%; }
+.confirm-sign { font-family:var(--f-script); font-size:1.3rem; color:var(--gold-lit); opacity:.75; }
+
+/* loading state */
+.btn.loading { opacity:.6; pointer-events:none; position:relative; }
+.btn.loading::after {
+  content:''; width:14px; height:14px; border-radius:50%;
+  border:2px solid rgba(255,255,255,.3); border-top-color:currentColor;
+  animation:spin .7s linear infinite;
+}
+@keyframes spin { to{ transform:rotate(360deg); } }
+
+/* nav CTA override */
+.nav-cta[data-action="commission"] { cursor:pointer; }
+
+/* CTA section updated style */
+.cta-sub-note {
+  font:400 13px var(--f-ui); color:rgba(240,230,210,.45); margin-top:1.5rem; letter-spacing:.04em;
+}
 </style>
 </head>
 <body>
@@ -477,7 +769,7 @@ a { color:inherit; text-decoration:none; }
         <li><a href="#process">How It Works</a></li>
         <li><a href="#trust">Our Promise</a></li>
       </ul>
-      <a href="#cta" class="nav-cta">Start your piece</a>
+      <button class="nav-cta" onclick="openCommission()">Start your piece</button>
     </div>
   </div>
 </nav>
@@ -517,7 +809,7 @@ a { color:inherit; text-decoration:none; }
       <div class="hero-beat" id="beat4">
         <p class="b-cta-heading">Show us what you love. <em>We'll make it real.</em></p>
         <div class="b-actions">
-          <a href="#cta" class="btn btn-gold">Start your piece</a>
+          <button onclick="openCommission()" class="btn btn-gold">Start your piece</button>
           <a href="#process" class="btn btn-ghost">How it works</a>
         </div>
       </div>
@@ -529,7 +821,7 @@ a { color:inherit; text-decoration:none; }
       <img class="b-logo" src="./assets/ami-wordmark-silk.png" alt="ami by arham">
       <p class="b-tagline">The beloved, made by hand.</p>
       <div class="b-actions">
-        <a href="#cta" class="btn btn-gold">Start your piece</a>
+        <button onclick="openCommission()" class="btn btn-gold">Start your piece</button>
         <a href="#process" class="btn btn-ghost">How it works</a>
       </div>
     </div>
@@ -650,12 +942,13 @@ a { color:inherit; text-decoration:none; }
     <h2 class="cta-title rv">Show us what you love. <em>We'll make it by hand.</em></h2>
     <p class="cta-desc rv rv-d1">Send a photo, a Pinterest link, or a rough sketch. Within a day you'll have a mockup, a clear price, and the name of the karigar who will craft your piece. Take your time — we'll be here when you're ready.</p>
     <div class="cta-actions rv rv-d2">
-      <a href="https://wa.me/919999999999?text=Hi%20ami%2C%20I'd%20love%20to%20get%20a%20custom%20piece%20made." class="btn btn-gold" target="_blank" rel="noopener">
-        Start on WhatsApp
+      <button onclick="openCommission()" class="btn btn-gold">
+        Start your piece
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-      </a>
+      </button>
       <a href="mailto:hello@amibyarham.com" class="btn btn-ghost">Write to us</a>
     </div>
+    <p class="cta-sub-note rv rv-d3">Or write to us at hello@amibyarham.com — we reply within a day.</p>
   </div>
 </section>
 
@@ -686,6 +979,182 @@ a { color:inherit; text-decoration:none; }
     <span>Made by hand in Old Delhi.</span>
   </div>
 </footer>
+
+<!-- FLOATING CTA -->
+<button class="fab" id="fab" onclick="openCommission()" aria-label="Start your piece">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7-7 7 7"/></svg>
+  Start your piece
+</button>
+
+<!-- COMMISSION OVERLAY -->
+<div class="co" id="co" role="dialog" aria-modal="true" aria-label="Start your custom piece">
+
+  <!-- top bar -->
+  <div class="co-bar">
+    <div class="co-logo"><img src="./assets/ami-wordmark-silk.png" alt="ami by arham"></div>
+    <div class="co-progress" id="coProgress">
+      <div class="co-dot active" data-step="1"></div>
+      <div class="co-dot" data-step="2"></div>
+      <div class="co-dot" data-step="3"></div>
+      <div class="co-dot" data-step="4"></div>
+      <div class="co-dot" data-step="5"></div>
+    </div>
+    <span class="co-step-label" id="coStepLabel">Step 1 of 5</span>
+    <button class="co-close" onclick="closeCommission()" aria-label="Close">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+
+  <!-- scrollable body -->
+  <div class="co-body">
+
+    <!-- STEP 1: upload -->
+    <div class="co-step active" id="coStep1">
+      <span class="co-eyebrow">Your inspiration</span>
+      <h2 class="co-heading">Show us what <em>you love.</em></h2>
+      <p class="co-subtext">A Pinterest save, a photo, a sketch — whatever you've been keeping. We'll take it from here.</p>
+
+      <div class="upload-zone" id="uploadZone">
+        <input type="file" id="imageInput" accept="image/jpeg,image/png,image/webp" aria-label="Upload inspiration image">
+        <div class="upload-empty" id="uploadEmpty">
+          <svg class="uz-icon" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <p class="uz-label">Drag &amp; drop your inspiration</p>
+          <p class="uz-sub">or tap to choose · JPG, PNG, WEBP · max 10MB</p>
+        </div>
+        <div class="upload-preview" id="uploadPreview" style="display:none">
+          <img id="uploadThumb" src="" alt="Your inspiration">
+          <div class="upload-preview-label">Your inspiration — looking beautiful</div>
+        </div>
+        <button class="upload-change" id="uploadChange" style="display:none" onclick="clearImage(event)">Change</button>
+      </div>
+
+      <button class="btn btn-gold" id="step1Next" onclick="goStep(2)" style="align-self:flex-start">
+        Continue
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+
+    <!-- STEP 2: occasion -->
+    <div class="co-step" id="coStep2">
+      <span class="co-eyebrow">The occasion</span>
+      <h2 class="co-heading">What's the story <em>behind this piece?</em></h2>
+
+      <div class="chips" id="occasionChips">
+        <button class="chip" data-val="For myself">For myself</button>
+        <button class="chip" data-val="Gift for her">Gift for her</button>
+        <button class="chip" data-val="Gift for him">Gift for him</button>
+        <button class="chip" data-val="Anniversary">Anniversary</button>
+        <button class="chip" data-val="Engagement">Engagement</button>
+        <button class="chip" data-val="Wedding">Wedding</button>
+        <button class="chip" data-val="Just because">Just because</button>
+        <button class="chip" data-val="Other">Other</button>
+      </div>
+
+      <textarea class="co-textarea" id="occasionNote" rows="3" placeholder="Tell us a little more (optional) — any details that might help..."></textarea>
+
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap">
+        <button class="btn btn-ghost" onclick="goStep(1)">Back</button>
+        <button class="btn btn-gold" onclick="goStep(3)">
+          Continue
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- STEP 3: budget -->
+    <div class="co-step" id="coStep3">
+      <span class="co-eyebrow">Your budget</span>
+      <h2 class="co-heading">What are you <em>looking to spend?</em></h2>
+      <p class="co-subtext">We'll show you exactly what this can make — the metal, the stone, the karigar's making charge.</p>
+
+      <div class="budget-grid" id="budgetGrid">
+        <button class="budget-btn" data-val="under-5k">Under Rs 5,000</button>
+        <button class="budget-btn" data-val="5k-10k">Rs 5,000 – 10,000</button>
+        <button class="budget-btn" data-val="10k-20k">Rs 10,000 – 20,000</button>
+        <button class="budget-btn" data-val="20k-40k">Rs 20,000 – 40,000</button>
+        <button class="budget-btn budget-btn-wide" data-val="40k-plus">Rs 40,000 and above</button>
+      </div>
+
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap">
+        <button class="btn btn-ghost" onclick="goStep(2)">Back</button>
+        <button class="btn btn-gold" onclick="goToEstimate()">
+          Show me what's possible
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- STEP 4: estimate -->
+    <div class="co-step" id="coStep4">
+      <span class="co-eyebrow">What your budget makes</span>
+      <h2 class="co-heading">Here's what we can <em>craft for you.</em></h2>
+      <p class="co-subtext" id="estIntro"></p>
+
+      <div class="est-cards" id="estCards"><!-- rendered by JS --></div>
+
+      <p class="est-disclaimer">indicative — your karigar confirms the exact spec and price before you commit a rupee</p>
+
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap">
+        <button class="btn btn-ghost" onclick="goStep(3)">Back</button>
+        <button class="btn btn-gold" onclick="goStep(5)">
+          Looks good, continue
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- STEP 5: contact -->
+    <div class="co-step" id="coStep5">
+      <span class="co-eyebrow">Almost done</span>
+      <h2 class="co-heading">Last step — <em>how do we reach you?</em></h2>
+
+      <div class="field-row">
+        <div class="co-field">
+          <label class="co-label" for="fName">Your name</label>
+          <input class="co-input" id="fName" type="text" placeholder="Priya Sharma" autocomplete="given-name">
+        </div>
+        <div class="co-field">
+          <label class="co-label" for="fPhone">Phone number</label>
+          <input class="co-input" id="fPhone" type="tel" placeholder="98765 43210" autocomplete="tel">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="co-field co-field-opt">
+          <label class="co-label" for="fEmail">Email</label>
+          <input class="co-input" id="fEmail" type="email" placeholder="priya@email.com" autocomplete="email">
+        </div>
+        <div class="co-field co-field-opt">
+          <label class="co-label" for="fCity">City</label>
+          <input class="co-input" id="fCity" type="text" placeholder="Delhi" autocomplete="address-level2">
+        </div>
+      </div>
+      <div id="submitError" class="co-error-msg" style="display:none"></div>
+
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap">
+        <button class="btn btn-ghost" onclick="goStep(4)">Back</button>
+        <button class="btn btn-gold" id="submitBtn" onclick="submitCommission()">
+          <em style="font-family:var(--f-display);font-style:italic;letter-spacing:.02em">Pin my reference to the bench</em>
+        </button>
+      </div>
+    </div>
+
+    <!-- STEP 6: confirmation -->
+    <div class="co-confirm" id="coConfirm">
+      <div class="confirm-dot">·</div>
+      <h2 class="confirm-heading">Your reference is pinned to the bench.</h2>
+      <p class="confirm-body" id="confirmBody">Raju bhai in Old Delhi will review your reference and come back with a confirmed design, exact spec, and price — within 24 hours.</p>
+      <div class="confirm-actions">
+        <a class="btn btn-gold" id="waLink" href="#" target="_blank" rel="noopener">
+          Message us on WhatsApp
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+        <button class="btn btn-ghost" onclick="closeCommission()">I'll wait for your call</button>
+      </div>
+      <p class="confirm-sign">With warmth, Team AMI</p>
+    </div>
+
+  </div><!-- /co-body -->
+</div><!-- /co -->
 
 <!-- ============================================================
      Scripts
@@ -760,7 +1229,292 @@ a { color:inherit; text-decoration:none; }
     entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
   }, { threshold:0.12, rootMargin:'0px 0px -6% 0px' });
   document.querySelectorAll('.rv').forEach(function(el){ io.observe(el); });
+
+  // floating CTA visibility + pulse every 8s
+  var fab = document.getElementById('fab');
+  setTimeout(function(){
+    fab.classList.add('visible');
+    setInterval(function(){
+      fab.classList.remove('pulse');
+      void fab.offsetWidth; // force reflow to restart animation
+      fab.classList.add('pulse');
+    }, 8000);
+  }, 800);
 })();
+
+/* ============================================================
+   COMMISSION OVERLAY
+   ============================================================ */
+
+// ── BACKEND CREDENTIALS ── replace before go-live ──
+var SUPABASE_URL        = 'https://bkigritfxabsvpgzgajs.supabase.co';
+var SUPABASE_ANON_KEY   = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJraWdyaXRmeGFic3ZwZ3pnYWpzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0Nzc5MTgsImV4cCI6MjA5NjA1MzkxOH0.QKydFM5Ik3hot2TknoMU1uh9EmISAG5A3G7azFv7Yu4';
+var EMAILJS_SERVICE_ID  = 'service_k9er721';
+var EMAILJS_TEMPLATE_ID = 'template_sv5a7me';
+var EMAILJS_PUBLIC_KEY  = 'BN9G4BAog_5ZQLYPq';
+var WHATSAPP_NUMBER     = '919958863129';
+// ─────────────────────────────────────────────────────
+
+// ── PRICING TIERS ── update after confirming with Amit & karigar ──
+var PRICING_TIERS = {
+  'under-5k': {
+    silver: { purity:'925 sterling silver', stoneRange:'0.05–0.10 ct', clarity:'SI1 lab-grown', totalRange:'Rs 2,000–4,500' },
+    gold: null
+  },
+  '5k-10k': {
+    silver: { purity:'925 sterling silver', stoneRange:'0.15–0.35 ct', clarity:'VS1 lab-grown', totalRange:'Rs 5,000–9,500' },
+    gold: null
+  },
+  '10k-20k': {
+    silver: { purity:'925 sterling silver', stoneRange:'0.30–0.50 ct', clarity:'VS1 lab-grown', totalRange:'Rs 9,000–14,000' },
+    gold:   { purity:'14k gold',            stoneRange:'0.10–0.20 ct', clarity:'VS1 lab-grown', totalRange:'Rs 12,000–19,000' }
+  },
+  '20k-40k': {
+    silver: { purity:'925 sterling silver', stoneRange:'0.50–0.80 ct', clarity:'VS1 lab-grown', totalRange:'Rs 18,000–30,000' },
+    gold:   { purity:'14k / 18k gold',      stoneRange:'0.30–0.50 ct', clarity:'VS1 lab-grown', totalRange:'Rs 22,000–38,000' }
+  },
+  '40k-plus': {
+    silver: null,
+    gold:   { purity:'18k gold',            stoneRange:'0.60 ct – 1.2 ct+', clarity:'VVS1 lab-grown', totalRange:'Rs 40,000+' }
+  }
+};
+// ─────────────────────────────────────────────────────
+
+var coState = {
+  step: 1, image: null, occasion: '', occasionNote: '',
+  budget: '', name: '', phone: '', email: '', city: '',
+  imageUrl: ''
+};
+
+function openCommission() {
+  document.getElementById('co').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  showStep(1);
+}
+function closeCommission() {
+  document.getElementById('co').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeCommission(); });
+
+function showStep(n) {
+  coState.step = n;
+  // hide all steps and confirm
+  document.querySelectorAll('.co-step').forEach(function(s){ s.classList.remove('active'); });
+  document.getElementById('coConfirm').classList.remove('active');
+  // show target
+  if(n === 6) {
+    document.getElementById('coConfirm').classList.add('active');
+  } else {
+    var s = document.getElementById('coStep' + n);
+    if(s) s.classList.add('active');
+  }
+  // progress dots
+  var dots = document.querySelectorAll('.co-dot');
+  dots.forEach(function(d, i){
+    var ds = i + 1;
+    d.classList.remove('done','active');
+    if(ds < n) d.classList.add('done');
+    else if(ds === n) d.classList.add('active');
+  });
+  // label
+  if(n <= 5) document.getElementById('coStepLabel').textContent = 'Step ' + n + ' of 5';
+  else document.getElementById('coStepLabel').textContent = '';
+  // scroll body to top
+  document.getElementById('co').querySelector('.co-body').scrollTop = 0;
+}
+
+function goStep(n) { showStep(n); }
+
+// ── image upload ──
+var imageInput = document.getElementById('imageInput');
+var uploadZone = document.getElementById('uploadZone');
+imageInput.addEventListener('change', function(){ handleFile(this.files[0]); });
+uploadZone.addEventListener('dragover', function(e){ e.preventDefault(); this.classList.add('dragover'); });
+uploadZone.addEventListener('dragleave', function(){ this.classList.remove('dragover'); });
+uploadZone.addEventListener('drop', function(e){
+  e.preventDefault(); this.classList.remove('dragover');
+  handleFile(e.dataTransfer.files[0]);
+});
+function handleFile(file) {
+  if(!file || !file.type.startsWith('image/')) return;
+  if(file.size > 10 * 1024 * 1024) { alert('Image too large — please use one under 10MB.'); return; }
+  coState.image = file;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    document.getElementById('uploadThumb').src = e.target.result;
+    document.getElementById('uploadPreview').style.display = '';
+    document.getElementById('uploadEmpty').style.display = 'none';
+    document.getElementById('uploadChange').style.display = '';
+  };
+  reader.readAsDataURL(file);
+}
+function clearImage(e) {
+  e.stopPropagation();
+  coState.image = null;
+  document.getElementById('uploadThumb').src = '';
+  document.getElementById('uploadPreview').style.display = 'none';
+  document.getElementById('uploadEmpty').style.display = '';
+  document.getElementById('uploadChange').style.display = 'none';
+  document.getElementById('imageInput').value = '';
+}
+
+// ── occasion chips ──
+document.querySelectorAll('#occasionChips .chip').forEach(function(chip){
+  chip.addEventListener('click', function(){
+    document.querySelectorAll('#occasionChips .chip').forEach(function(c){ c.classList.remove('selected'); });
+    this.classList.add('selected');
+    coState.occasion = this.dataset.val;
+  });
+});
+
+// ── budget buttons ──
+document.querySelectorAll('#budgetGrid .budget-btn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    document.querySelectorAll('#budgetGrid .budget-btn').forEach(function(b){ b.classList.remove('selected'); });
+    this.classList.add('selected');
+    coState.budget = this.dataset.val;
+  });
+});
+
+function goToEstimate() {
+  if(!coState.budget) {
+    var first = document.querySelector('#budgetGrid .budget-btn');
+    first.classList.add('selected'); coState.budget = first.dataset.val;
+  }
+  renderEstimate();
+  showStep(4);
+}
+
+function renderEstimate() {
+  var tier = PRICING_TIERS[coState.budget] || PRICING_TIERS['10k-20k'];
+  var cards = document.getElementById('estCards');
+  cards.innerHTML = '';
+  var budgetLabel = {
+    'under-5k':'Under Rs 5,000','5k-10k':'Rs 5,000–10,000',
+    '10k-20k':'Rs 10,000–20,000','20k-40k':'Rs 20,000–40,000','40k-plus':'Rs 40,000+'
+  }[coState.budget] || '';
+  document.getElementById('estIntro').textContent =
+    'With a budget of ' + budgetLabel + ', here are the pieces our karigar can craft for you.';
+  if(tier.silver) cards.appendChild(makeEstCard(tier.silver, 'silver', false));
+  if(tier.gold)   cards.appendChild(makeEstCard(tier.gold, 'gold', true));
+}
+function makeEstCard(t, type, isGold) {
+  var c = document.createElement('div');
+  c.className = 'est-card' + (isGold ? ' gold-card' : '');
+  c.innerHTML =
+    '<div class="est-metal">' + (isGold ? 'Gold · ' : 'Silver · ') + t.purity + '</div>' +
+    '<div class="est-stone">' + t.stoneRange + ' lab-grown diamond</div>' +
+    '<div class="est-clarity">' + t.clarity + ' · IGI certified</div>' +
+    '<div class="est-total">' + t.totalRange + '</div>';
+  return c;
+}
+
+// ── submission ──
+async function submitCommission() {
+  var name  = document.getElementById('fName').value.trim();
+  var phone = document.getElementById('fPhone').value.replace(/\D/g,'');
+  var email = document.getElementById('fEmail').value.trim();
+  var city  = document.getElementById('fCity').value.trim();
+  var errEl = document.getElementById('submitError');
+  var btn   = document.getElementById('submitBtn');
+
+  errEl.style.display = 'none';
+  if(name.length < 2)   { showErr(errEl, 'Please enter your name.'); return; }
+  if(phone.length !== 10){ showErr(errEl, 'Please enter a valid 10-digit Indian mobile number.'); return; }
+
+  coState.name = name; coState.phone = phone;
+  coState.email = email; coState.city = city;
+  coState.occasionNote = document.getElementById('occasionNote').value.trim();
+
+  btn.classList.add('loading');
+  btn.disabled = true;
+
+  try {
+    // 1. upload image to Supabase Storage (if real keys set)
+    var imageUrl = '';
+    if(coState.image && SUPABASE_URL !== 'YOUR_SUPABASE_URL') {
+      imageUrl = await uploadImageToSupabase(coState.image);
+    }
+    coState.imageUrl = imageUrl;
+
+    // 2. save lead to Supabase
+    if(SUPABASE_URL !== 'YOUR_SUPABASE_URL') {
+      await saveLeadToSupabase();
+    }
+
+    // 3. email notification via EmailJS
+    if(EMAILJS_PUBLIC_KEY !== 'YOUR_EMAILJS_PUBLIC_KEY') {
+      await sendEmailNotification();
+    }
+
+    // 4. show confirmation
+    buildConfirmation();
+    showStep(6);
+
+  } catch(err) {
+    console.error('Commission submission error:', err);
+    // graceful fallback: still show confirmation
+    buildConfirmation();
+    showStep(6);
+  } finally {
+    btn.classList.remove('loading');
+    btn.disabled = false;
+  }
+}
+
+function showErr(el, msg) { el.textContent = msg; el.style.display = ''; }
+
+async function uploadImageToSupabase(file) {
+  var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  var ext = file.name.split('.').pop();
+  var fname = Date.now() + '-' + Math.random().toString(36).slice(2,6) + '.' + ext;
+  var { data, error } = await supabase.storage.from('commission-images').upload(fname, file, { upsert:false });
+  if(error) throw error;
+  var { data: pub } = supabase.storage.from('commission-images').getPublicUrl(fname);
+  return pub.publicUrl;
+}
+
+async function saveLeadToSupabase() {
+  var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  var { error } = await supabase.from('commission_leads').insert({
+    name: coState.name, phone: coState.phone, email: coState.email || null,
+    city: coState.city || null, occasion: coState.occasion, occasion_note: coState.occasionNote,
+    budget_range: coState.budget, image_url: coState.imageUrl || null
+  });
+  if(error) throw error;
+}
+
+async function sendEmailNotification() {
+  var budgetLabel = {
+    'under-5k':'Under Rs 5,000','5k-10k':'Rs 5,000–10,000',
+    '10k-20k':'Rs 10,000–20,000','20k-40k':'Rs 20,000–40,000','40k-plus':'Rs 40,000+'
+  }[coState.budget] || coState.budget;
+  await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+    name: coState.name, phone: coState.phone, email: coState.email || 'Not provided',
+    city: coState.city || 'Not provided', occasion: coState.occasion,
+    occasion_note: coState.occasionNote || 'None', budget: budgetLabel,
+    image_url: coState.imageUrl || 'No image uploaded'
+  }, EMAILJS_PUBLIC_KEY);
+}
+
+function buildConfirmation() {
+  // WhatsApp pre-fill
+  var budgetLabel = {
+    'under-5k':'under Rs 5,000','5k-10k':'Rs 5,000–10,000',
+    '10k-20k':'Rs 10,000–20,000','20k-40k':'Rs 20,000–40,000','40k-plus':'Rs 40,000+'
+  }[coState.budget] || coState.budget;
+  var waMsg = encodeURIComponent(
+    'Hi ami — I just submitted my reference on amibyarham.com.\n' +
+    'Name: ' + coState.name + '\n' +
+    'Budget: ' + budgetLabel + '\n' +
+    'Occasion: ' + (coState.occasion || 'Not specified')
+  );
+  document.getElementById('waLink').href = 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + waMsg;
+  // personalise confirmation copy
+  document.getElementById('confirmBody').textContent =
+    'We have your reference, ' + coState.name + '. Our karigar in Old Delhi will review it and come back with a confirmed design, exact spec, and price — within 24 hours.';
+}
 </script>
 </body>
 </html>
