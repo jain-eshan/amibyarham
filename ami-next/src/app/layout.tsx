@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import NavBar from "@/components/layout/NavBar";
 import {
   Bodoni_Moda,
   EB_Garamond,
@@ -67,7 +68,10 @@ export default function RootLayout({
         notoDevanagari.variable,
       ].join(" ")}
     >
-      <body className="min-h-full">{children}</body>
+      <body className="min-h-full">
+        <NavBar onStartPiece={() => {}} />
+        {children}
+      </body>
     </html>
   );
 }
