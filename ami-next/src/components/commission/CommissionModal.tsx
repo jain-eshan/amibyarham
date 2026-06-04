@@ -6,6 +6,7 @@ import emailjs from "@emailjs/browser";
 import { supabase } from "@/lib/supabase";
 import { EMAILJS_CONFIG, WHATSAPP_NUMBER } from "@/lib/emailjs";
 import { useModal } from "@/context/ModalContext";
+import { showToast } from "@/lib/toast";
 
 /* ─── types ─────────────────────────────────────────────── */
 interface FormState {
@@ -46,6 +47,109 @@ const slideVariants = {
   center: { x: 0, opacity: 1 },
   exit: (dir: number) => ({ x: dir > 0 ? -48 : 48, opacity: 0 }),
 };
+
+/* ─── step labels ─────────────────────────────────────────── */
+const STEP_LABELS = ["Vision", "Budget", "You", "Done"];
+
+function Stepper({ step }: { step: number }) {
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 0,
+        marginBottom: "1.5rem",
+      }}
+    >
+      {STEP_LABELS.map((label, i) => {
+        const stepNum = i + 1;
+        const done = step > stepNum;
+        const active = step === stepNum;
+        const isLast = i === STEP_LABELS.length - 1;
+        return (
+          <div
+            key={label}
+            style={{ display: "flex", alignItems: "center", flex: isLast ? 0 : 1 }}
+          >
+            {/* dot + label */}
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 5 }}>
+              <motion.div
+                animate={{
+                  background: done
+                    ? "var(--color-gold-lit)"
+                    : active
+                    ? "var(--color-gold-lit)"
+                    : "rgba(240,230,210,.15)",
+                  borderColor: done || active
+                    ? "var(--color-gold-lit)"
+                    : "rgba(240,230,210,.2)",
+                  scale: active ? 1.15 : 1,
+                }}
+                transition={{ duration: 0.3 }}
+                style={{
+                  width: 22,
+                  height: 22,
+                  borderRadius: "50%",
+                  border: "2px solid",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                }}
+              >
+                {done ? (
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--color-kohl)" strokeWidth="3" strokeLinecap="round">
+                    <path d="M20 6L9 17l-5-5" />
+                  </svg>
+                ) : (
+                  <span
+                    style={{
+                      font: `600 9px var(--font-ui)`,
+                      color: active ? "var(--color-kohl)" : "rgba(240,230,210,.4)",
+                      lineHeight: 1,
+                    }}
+                  >
+                    {stepNum}
+                  </span>
+                )}
+              </motion.div>
+              <span
+                style={{
+                  font: "500 9px var(--font-ui)",
+                  textTransform: "uppercase",
+                  letterSpacing: ".14em",
+                  color: active || done
+                    ? "rgba(203,168,92,.9)"
+                    : "rgba(240,230,210,.3)",
+                  whiteSpace: "nowrap",
+                  transition: "color .3s",
+                }}
+              >
+                {label}
+              </span>
+            </div>
+            {/* connector */}
+            {!isLast && (
+              <div
+                style={{
+                  flex: 1,
+                  height: 1,
+                  marginBottom: 14,
+                  background: done
+                    ? "var(--color-gold-lit)"
+                    : "rgba(240,230,210,.15)",
+                  transition: "background .35s",
+                  marginLeft: 4,
+                  marginRight: 4,
+                }}
+              />
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
 /* ─── sub-components ─────────────────────────────────────── */
 function FieldLabel({ children }: { children: React.ReactNode }) {
@@ -594,8 +698,10 @@ export default function CommissionModal() {
 
       setDirection(1);
       setStep(4);
+      showToast("Request received — we'll be in touch within 24 hours.");
     } catch (err) {
       console.error(err);
+      showToast("Something went wrong. Please try again.", "error");
       setError("Something went wrong. Please try again or WhatsApp us directly.");
     } finally {
       setSubmitting(false);
@@ -674,28 +780,8 @@ export default function CommissionModal() {
             flexShrink: 0,
           }}
         >
-          {/* progress bar */}
-          {step < 4 && (
-            <div
-              style={{
-                height: 2,
-                background: "rgba(240,230,210,.1)",
-                borderRadius: 1,
-                marginBottom: "1.5rem",
-                overflow: "hidden",
-              }}
-            >
-              <motion.div
-                style={{
-                  height: "100%",
-                  background: "var(--color-gold-lit)",
-                  borderRadius: 1,
-                }}
-                animate={{ width: `${((step - 1) / (TOTAL_STEPS - 1)) * 100}%` }}
-                transition={{ duration: 0.4, ease: "easeInOut" }}
-              />
-            </div>
-          )}
+          {/* stepper */}
+          {step < 4 && <Stepper step={step} />}
 
           <div
             style={{
@@ -705,20 +791,6 @@ export default function CommissionModal() {
             }}
           >
             <div>
-              {step < 4 && (
-                <span
-                  style={{
-                    display: "block",
-                    font: "500 10px var(--font-ui)",
-                    textTransform: "uppercase",
-                    letterSpacing: ".28em",
-                    color: "rgba(181,148,74,.6)",
-                    marginBottom: 6,
-                  }}
-                >
-                  Step {step} of {TOTAL_STEPS - 1}
-                </span>
-              )}
               {stepTitles[step] && (
                 <h2
                   style={{

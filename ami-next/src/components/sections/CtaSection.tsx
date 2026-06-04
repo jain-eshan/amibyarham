@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { useModal } from "@/context/ModalContext";
+import MagneticButton from "@/components/ui/MagneticButton";
 
 const REVEAL_VARIANTS = {
   hidden: { opacity: 0, y: 22 },
@@ -128,37 +129,37 @@ export default function CtaSection() {
               flexWrap: "wrap",
             }}
           >
-            <button
-              onClick={openModal}
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: ".5rem",
-                font: "500 11px var(--font-ui)",
-                textTransform: "uppercase",
-                letterSpacing: ".14em",
-                color: "var(--color-kohl)",
-                background: "var(--color-gold-lit)",
-                padding: ".85rem 1.6rem",
-                borderRadius: 3,
-                border: "none",
-                cursor: "pointer",
-                transition: "background .3s, transform .3s",
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.background = "var(--color-gold)";
-                (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)";
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.background = "var(--color-gold-lit)";
-                (e.currentTarget as HTMLElement).style.transform = "none";
-              }}
-            >
-              Start your piece
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M5 12h14M12 5l7 7-7 7" />
-              </svg>
-            </button>
+            <MagneticButton>
+              <button
+                onClick={openModal}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: ".5rem",
+                  font: "500 11px var(--font-ui)",
+                  textTransform: "uppercase",
+                  letterSpacing: ".14em",
+                  color: "var(--color-kohl)",
+                  background: "var(--color-gold-lit)",
+                  padding: ".85rem 1.6rem",
+                  borderRadius: 3,
+                  border: "none",
+                  cursor: "pointer",
+                  transition: "background .3s",
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.background = "var(--color-gold)";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.background = "var(--color-gold-lit)";
+                }}
+              >
+                Start your piece
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </button>
+            </MagneticButton>
             <a
               href="mailto:hello@amibyarham.com"
               style={{

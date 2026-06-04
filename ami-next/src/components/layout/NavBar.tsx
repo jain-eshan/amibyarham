@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useModal } from "@/context/ModalContext";
+import MagneticButton from "@/components/ui/MagneticButton";
 
 const LINKS = [
   { label: "The House", href: "#story" },
@@ -101,29 +102,33 @@ export default function NavBar() {
             ))}
           </ul>
 
-          <button
-            onClick={openModal}
-            className="transition-[background,transform] duration-300 hover:-translate-y-px"
-            style={{
-              font: "500 10.5px var(--font-ui)",
-              textTransform: "uppercase",
-              letterSpacing: ".14em",
-              color: "var(--color-kohl)",
-              background: "var(--color-gold-lit)",
-              padding: ".6rem 1.2rem",
-              borderRadius: 3,
-            }}
-            onMouseEnter={(e) =>
-              ((e.currentTarget as HTMLElement).style.background =
-                "var(--color-gold)")
-            }
-            onMouseLeave={(e) =>
-              ((e.currentTarget as HTMLElement).style.background =
-                "var(--color-gold-lit)")
-            }
-          >
-            Start your piece
-          </button>
+          <MagneticButton>
+            <button
+              onClick={openModal}
+              className="transition-[background] duration-300"
+              style={{
+                font: "500 10.5px var(--font-ui)",
+                textTransform: "uppercase",
+                letterSpacing: ".14em",
+                color: "var(--color-kohl)",
+                background: "var(--color-gold-lit)",
+                padding: ".6rem 1.2rem",
+                borderRadius: 3,
+                border: "none",
+                cursor: "pointer",
+              }}
+              onMouseEnter={(e) =>
+                ((e.currentTarget as HTMLElement).style.background =
+                  "var(--color-gold)")
+              }
+              onMouseLeave={(e) =>
+                ((e.currentTarget as HTMLElement).style.background =
+                  "var(--color-gold-lit)")
+              }
+            >
+              Start your piece
+            </button>
+          </MagneticButton>
         </div>
       </div>
     </nav>

@@ -3,6 +3,8 @@ import NavBar from "@/components/layout/NavBar";
 import Footer from "@/components/layout/Footer";
 import CommissionModal from "@/components/commission/CommissionModal";
 import { ModalProvider } from "@/context/ModalContext";
+import Preloader from "@/components/layout/Preloader";
+import Toast from "@/components/ui/Toast";
 import {
   Bodoni_Moda,
   EB_Garamond,
@@ -73,10 +75,12 @@ export default function RootLayout({
     >
       <body className="min-h-full">
         <ModalProvider>
+          <Preloader />
           <NavBar />
           {children}
           <Footer />
           <CommissionModal />
+          <Toast />
         </ModalProvider>
       </body>
     </html>

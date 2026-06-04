@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
+import WordReveal from "@/components/ui/WordReveal";
 
 const REVEAL_VARIANTS = {
   hidden: { opacity: 0, y: 22 },
@@ -163,36 +164,42 @@ export default function StorySection() {
           </Reveal>
         </div>
 
-        <Reveal>
-          <blockquote
+        <blockquote
+          style={{
+            marginTop: "clamp(3rem,6vw,4.5rem)",
+            textAlign: "center",
+            fontFamily: "var(--font-display)",
+            fontStyle: "italic",
+            fontWeight: 400,
+            fontSize: "clamp(1.5rem,3.4vw,2.2rem)",
+            lineHeight: 1.3,
+            color: "var(--color-oxblood)",
+          }}
+        >
+          <span
+            aria-hidden="true"
             style={{
-              marginTop: "clamp(3rem,6vw,4.5rem)",
-              textAlign: "center",
+              display: "block",
+              color: "var(--color-gold)",
+              fontSize: "2.2em",
+              lineHeight: 0,
+              marginBottom: ".4em",
+            }}
+          >
+            ·
+          </span>
+          <WordReveal
+            text="We do not sell what we have made. We make what you love."
+            style={{
               fontFamily: "var(--font-display)",
               fontStyle: "italic",
               fontWeight: 400,
               fontSize: "clamp(1.5rem,3.4vw,2.2rem)",
-              lineHeight: 1.3,
+              lineHeight: 1.4,
               color: "var(--color-oxblood)",
             }}
-          >
-            <span
-              aria-hidden="true"
-              style={{
-                display: "block",
-                color: "var(--color-gold)",
-                fontSize: "2.2em",
-                lineHeight: 0,
-                marginBottom: ".4em",
-              }}
-            >
-              ·
-            </span>
-            We do not sell what we have made.
-            <br />
-            We make what you love.
-          </blockquote>
-        </Reveal>
+          />
+        </blockquote>
       </div>
     </section>
   );
