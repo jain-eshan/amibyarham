@@ -1,7 +1,10 @@
+import HeroSection from "@/components/sections/HeroSection";
+
 export default function Home() {
   return (
     <main>
-      {/* Sections dropped in here one by one during migration */}
+      <HeroSection onStartPiece={() => {}} />
+      {/* Remaining sections will be added here */}
     </main>
   );
 }

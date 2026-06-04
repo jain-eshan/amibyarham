@@ -16,8 +16,8 @@
   --color-champa-deep: #D4ACA2;
 
   /* Brand fonts */
-  --font-display: var(--font-bodoni), 'Playfair Display', Georgia, serif;
-  --font-body: var(--font-garamond), Georgia, serif;
+  --font-display: var(--font-bodoni), 'Playfair Display', georgia, serif;
+  --font-body: var(--font-garamond), georgia, serif;
   --font-ui: var(--font-dm-sans), system-ui, sans-serif;
   --font-script: var(--font-caveat), cursive;
   --font-hindi: var(--font-noto-devanagari), serif;
