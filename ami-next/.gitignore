@@ -40,3 +40,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# pnpm lockfile — Vercel uses npm ci via vercel.json
+pnpm-lock.yaml
