@@ -1,0 +1,66 @@
+@import "tailwindcss";
+
+@theme inline {
+  /* Brand palette */
+  --color-oxblood: #6E1B2E;
+  --color-lac: #4A0F1E;
+  --color-oxblood-soft: #8B2A3E;
+  --color-silk: #F0E6D2;
+  --color-silk-light: #F7F1E4;
+  --color-silk-deep: #E6D9C2;
+  --color-kohl: #1A1411;
+  --color-kohl-soft: #3A2A22;
+  --color-gold: #B5944A;
+  --color-gold-lit: #CBA85C;
+  --color-champa: #E7C9C2;
+  --color-champa-deep: #D4ACA2;
+
+  /* Brand fonts */
+  --font-display: var(--font-bodoni), 'Playfair Display', Georgia, serif;
+  --font-body: var(--font-garamond), Georgia, serif;
+  --font-ui: var(--font-dm-sans), system-ui, sans-serif;
+  --font-script: var(--font-caveat), cursive;
+  --font-hindi: var(--font-noto-devanagari), serif;
+}
+
+:root {
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  overflow-x: hidden;
+}
+
+body {
+  background-color: #F0E6D2;
+  color: #1A1411;
+  font-family: var(--font-body);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: #6E1B2E;
+  color: #F0E6D2;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
