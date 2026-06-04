@@ -20,11 +20,8 @@ const BEATS = [
 const GRAIN_SVG =
   "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")";
 
-interface HeroSectionProps {
-  onStartPiece: () => void;
-}
 
-export default function HeroSection({ onStartPiece }: HeroSectionProps) {
+export default function HeroSection() {
   const prefersReducedMotion = useReducedMotion();
   const runwayRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -363,7 +360,12 @@ export default function HeroSection({ onStartPiece }: HeroSectionProps) {
                   </em>
                 </p>
                 <div className="flex gap-4 flex-wrap">
-                  <button onClick={onStartPiece} className="btn btn-gold">
+                  <button
+  onClick={() => {
+    window.location.href = "/custom-order";
+  }}
+  className="btn btn-gold"
+>
                     Start your piece
                   </button>
                   <a href="#process" className="btn btn-ghost">
@@ -417,7 +419,12 @@ export default function HeroSection({ onStartPiece }: HeroSectionProps) {
               The beloved, made by hand.
             </p>
             <div className="flex gap-4 flex-wrap mt-[1.6rem]">
-              <button onClick={onStartPiece} className="btn btn-gold">
+              <button
+  onClick={() => {
+    window.location.href = "/custom-order";
+  }}
+  className="btn btn-gold"
+>
                 Start your piece
               </button>
               <a href="#process" className="btn btn-ghost">
