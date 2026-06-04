@@ -42,6 +42,7 @@ function FaqItem({
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-4% 0px" });
+  const contentId = `faq-answer-${index}`;
 
   return (
     <motion.div
@@ -58,6 +59,7 @@ function FaqItem({
       <button
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
+        aria-controls={contentId}
         style={{
           width: "100%",
           display: "flex",
@@ -111,6 +113,7 @@ function FaqItem({
       <AnimatePresence initial={false}>
         {open && (
           <motion.div
+            id={contentId}
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
 interface ToastItem {
@@ -11,18 +11,23 @@ interface ToastItem {
 
 export default function Toast() {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
+  const timeoutIds = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   useEffect(() => {
     function handler(e: Event) {
       const { message, type } = (e as CustomEvent<{ message: string; type: "success" | "error" }>).detail;
       const id = Date.now();
       setToasts((prev) => [...prev, { id, message, type }]);
-      setTimeout(() => {
+      const tid = setTimeout(() => {
         setToasts((prev) => prev.filter((t) => t.id !== id));
       }, 4500);
+      timeoutIds.current.push(tid);
     }
     window.addEventListener("ami-toast", handler);
-    return () => window.removeEventListener("ami-toast", handler);
+    return () => {
+      window.removeEventListener("ami-toast", handler);
+      timeoutIds.current.forEach(clearTimeout);
+    };
   }, []);
 
   return (

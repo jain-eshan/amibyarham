@@ -1,0 +1,6 @@
+{
+  "framework": "nextjs",
+  "buildCommand": "cd ami-next && pnpm run build",
+  "installCommand": "cd ami-next && pnpm install",
+  "outputDirectory": "ami-next/.next"
+}

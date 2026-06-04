@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useInView } from "framer-motion";
 
 /* ─── piece data ─────────────────────────────────────────── */
@@ -221,12 +221,24 @@ function Lightbox({
   onClose: () => void;
 }) {
   const overlayRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!piece) return;
+    closeButtonRef.current?.focus();
+    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [piece, onClose]);
 
   if (!piece) return null;
 
   return (
     <motion.div
       ref={overlayRef}
+      role="dialog"
+      aria-modal="true"
+      aria-label={piece.name}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -262,6 +274,7 @@ function Lightbox({
       >
         {/* close */}
         <button
+          ref={closeButtonRef}
           onClick={onClose}
           aria-label="Close"
           style={{
@@ -397,6 +410,7 @@ export default function GallerySection() {
         style={{
           background: "var(--color-kohl)",
           padding: "clamp(5rem,12vw,9rem) clamp(1.5rem,5vw,4rem)",
+          position: "relative",
         }}
       >
         {/* arch overlay */}

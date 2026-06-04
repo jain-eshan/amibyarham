@@ -8,11 +8,7 @@ interface ModalContextValue {
   closeModal: () => void;
 }
 
-const ModalContext = createContext<ModalContextValue>({
-  open: false,
-  openModal: () => {},
-  closeModal: () => {},
-});
+const ModalContext = createContext<ModalContextValue | null>(null);
 
 export function ModalProvider({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
@@ -29,4 +25,8 @@ export function ModalProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-export const useModal = () => useContext(ModalContext);
+export function useModal() {
+  const ctx = useContext(ModalContext);
+  if (!ctx) throw new Error("useModal must be used within ModalProvider");
+  return ctx;
+}

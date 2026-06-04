@@ -8,13 +8,17 @@ export default function Preloader() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    if (sessionStorage.getItem("ami-visited")) return;
-    setVisible(true);
-    const t = setTimeout(() => {
-      setVisible(false);
-      sessionStorage.setItem("ami-visited", "1");
-    }, 2000);
-    return () => clearTimeout(t);
+    try {
+      if (sessionStorage.getItem("ami-visited")) return;
+      setVisible(true);
+      const t = setTimeout(() => {
+        setVisible(false);
+        try { sessionStorage.setItem("ami-visited", "1"); } catch { /* restricted */ }
+      }, 2000);
+      return () => clearTimeout(t);
+    } catch {
+      // sessionStorage unavailable (e.g. restricted private browsing)
+    }
   }, []);
 
   return (

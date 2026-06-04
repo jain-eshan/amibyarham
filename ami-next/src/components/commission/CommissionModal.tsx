@@ -11,7 +11,6 @@ import { showToast } from "@/lib/toast";
 /* ─── types ─────────────────────────────────────────────── */
 interface FormState {
   occasion: string;
-  occasionNote: string;
   description: string;
   imageUrl: string;
   budgetRange: string;
@@ -38,8 +37,6 @@ const BUDGETS = [
   { label: "₹3L+", value: "3l_plus" },
   { label: "Let's discuss", value: "discuss" },
 ];
-
-const TOTAL_STEPS = 4;
 
 /* ─── variants ───────────────────────────────────────────── */
 const slideVariants = {
@@ -587,7 +584,6 @@ export default function CommissionModal() {
 
   const [form, setForm] = useState<FormState>({
     occasion: "",
-    occasionNote: "",
     description: "",
     imageUrl: "",
     budgetRange: "",
@@ -606,7 +602,6 @@ export default function CommissionModal() {
       setSubmitting(false);
       setForm({
         occasion: "",
-        occasionNote: "",
         description: "",
         imageUrl: "",
         budgetRange: "",
@@ -677,7 +672,7 @@ export default function CommissionModal() {
         status: "new",
       });
 
-      if (dbError) console.error("Supabase insert error:", dbError);
+      if (dbError) throw new Error(dbError.message);
 
       /* EmailJS notification */
       await emailjs.send(
@@ -700,7 +695,7 @@ export default function CommissionModal() {
       setStep(4);
       showToast("Request received — we'll be in touch within 24 hours.");
     } catch (err) {
-      console.error(err);
+      console.error((err as Error).message ?? "Commission submit failed");
       showToast("Something went wrong. Please try again.", "error");
       setError("Something went wrong. Please try again or WhatsApp us directly.");
     } finally {
