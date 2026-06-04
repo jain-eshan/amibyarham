@@ -44,16 +44,13 @@ export default function HeroSection() {
   const seekTargetRef = useRef(0);
   const seekCurrentRef = useRef(0);
   const rafRef = useRef<number>(0);
+  const durationRef = useRef<number>(0); // populated once metadata loads
 
   const seekLoop = useCallback(() => {
     const video = videoRef.current;
     seekCurrentRef.current +=
       (seekTargetRef.current - seekCurrentRef.current) * 0.12;
-    if (
-      Math.abs(seekTargetRef.current - seekCurrentRef.current) > 0.015 &&
-      video &&
-      video.readyState >= 2
-    ) {
+    if (video && Math.abs(seekTargetRef.current - seekCurrentRef.current) > 0.01) {
       try {
         video.currentTime = seekCurrentRef.current;
       } catch {}
@@ -62,25 +59,33 @@ export default function HeroSection() {
   }, []);
 
   useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
     if (!canScrub) {
-      const video = videoRef.current;
-      if (video) {
-        video.loop = true;
-        video.muted = true;
-        video.play().catch(() => {});
-      }
+      video.loop = true;
+      video.muted = true;
+      video.play().catch(() => {});
       return;
     }
+
+    // Keep video paused — we scrub manually
+    const pause = () => video.pause();
+    video.addEventListener("play", pause);
+    video.load();
+
     rafRef.current = requestAnimationFrame(seekLoop);
-    return () => cancelAnimationFrame(rafRef.current);
+    return () => {
+      video.removeEventListener("play", pause);
+      cancelAnimationFrame(rafRef.current);
+    };
   }, [canScrub, seekLoop]);
 
   useMotionValueEvent(scrollYProgress, "change", (p) => {
     if (!canScrub) return;
 
-    const video = videoRef.current;
-    const duration = video?.duration || 10;
-    seekTargetRef.current = p * (duration - 0.05);
+    const duration = durationRef.current;
+    if (duration > 0) seekTargetRef.current = p * (duration - 0.05);
 
     if (glowRef.current)
       glowRef.current.style.opacity = (p * 0.55).toFixed(3);
@@ -124,6 +129,10 @@ export default function HeroSection() {
             preload="auto"
             poster="/assets/hero-karigar.jpg"
             aria-label="A master karigar hammers gold at his workbench as light streams through an ornate jaali window."
+            onLoadedMetadata={() => {
+              const video = videoRef.current;
+              if (video) durationRef.current = video.duration;
+            }}
           >
             <source src="/assets/hero-karigar.mp4" type="video/mp4" />
           </motion.video>
