@@ -100,7 +100,11 @@ export default function NavBar() {
           </ul>
 
           <button
-            onClick={() => {/* commission modal — wired when modal is built */}}
+            onClick={() => {
+              const cta = document.querySelector("#cta");
+              if (cta) { cta.scrollIntoView({ behavior: "smooth", block: "start" }); return; }
+              window.location.href = "mailto:hello@amibyarham.com";
+            }}
             className="transition-[background,transform] duration-300 hover:-translate-y-px"
             style={{
               font: "500 10.5px var(--font-ui)",

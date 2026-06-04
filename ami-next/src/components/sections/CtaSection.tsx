@@ -127,7 +127,7 @@ export default function CtaSection() {
             }}
           >
             <button
-              onClick={() => {/* commission modal — wired when modal is built */}}
+              onClick={() => { window.location.href = "mailto:hello@amibyarham.com"; }}
               style={{
                 display: "inline-flex",
                 alignItems: "center",
