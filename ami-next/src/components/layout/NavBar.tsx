@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { useModal } from "@/context/ModalContext";
 
 const LINKS = [
   { label: "The House", href: "#story" },
@@ -12,6 +13,7 @@ const LINKS = [
 export default function NavBar() {
   const [scrolled, setScrolled] = useState(false);
   const ticking = useRef(false);
+  const { openModal } = useModal();
 
   useEffect(() => {
     function onScroll() {
@@ -100,11 +102,7 @@ export default function NavBar() {
           </ul>
 
           <button
-            onClick={() => {
-              const cta = document.querySelector("#cta");
-              if (cta) { cta.scrollIntoView({ behavior: "smooth", block: "start" }); return; }
-              window.location.href = "mailto:hello@amibyarham.com";
-            }}
+            onClick={openModal}
             className="transition-[background,transform] duration-300 hover:-translate-y-px"
             style={{
               font: "500 10.5px var(--font-ui)",

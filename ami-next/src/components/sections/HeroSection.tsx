@@ -9,6 +9,7 @@ import {
   motion,
   useReducedMotion,
 } from "framer-motion";
+import { useModal } from "@/context/ModalContext";
 
 const BEATS = [
   { id: "beat1", range: [0.0, 0.18] as [number, number] },
@@ -22,6 +23,7 @@ const GRAIN_SVG =
 
 
 export default function HeroSection() {
+  const { openModal } = useModal();
   const prefersReducedMotion = useReducedMotion();
   const runwayRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -370,9 +372,7 @@ export default function HeroSection() {
                 </p>
                 <div className="flex gap-4 flex-wrap">
                   <button
-  onClick={() => {
-    window.location.href = "/custom-order";
-  }}
+  onClick={openModal}
   className="btn btn-gold"
 >
                     Start your piece
@@ -429,9 +429,7 @@ export default function HeroSection() {
             </p>
             <div className="flex gap-4 flex-wrap mt-[1.6rem]">
               <button
-  onClick={() => {
-    window.location.href = "/custom-order";
-  }}
+  onClick={openModal}
   className="btn btn-gold"
 >
                 Start your piece

@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
+import { useModal } from "@/context/ModalContext";
 
 const REVEAL_VARIANTS = {
   hidden: { opacity: 0, y: 22 },
@@ -34,6 +35,7 @@ function Reveal({
 }
 
 export default function CtaSection() {
+  const { openModal } = useModal();
   return (
     <section
       id="cta"
@@ -127,7 +129,7 @@ export default function CtaSection() {
             }}
           >
             <button
-              onClick={() => { window.location.href = "mailto:hello@amibyarham.com"; }}
+              onClick={openModal}
               style={{
                 display: "inline-flex",
                 alignItems: "center",

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import NavBar from "@/components/layout/NavBar";
 import Footer from "@/components/layout/Footer";
+import CommissionModal from "@/components/commission/CommissionModal";
+import { ModalProvider } from "@/context/ModalContext";
 import {
   Bodoni_Moda,
   EB_Garamond,
@@ -70,9 +72,12 @@ export default function RootLayout({
       ].join(" ")}
     >
       <body className="min-h-full">
-        <NavBar />
-        {children}
-        <Footer />
+        <ModalProvider>
+          <NavBar />
+          {children}
+          <Footer />
+          <CommissionModal />
+        </ModalProvider>
       </body>
     </html>
   );
