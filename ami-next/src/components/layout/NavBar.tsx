@@ -3,17 +3,13 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 
-interface NavBarProps {
-  onStartPiece: () => void;
-}
-
 const LINKS = [
   { label: "The House", href: "#story" },
   { label: "How It Works", href: "#process" },
   { label: "Our Promise", href: "#trust" },
 ] as const;
 
-export default function NavBar({ onStartPiece }: NavBarProps) {
+export default function NavBar() {
   const [scrolled, setScrolled] = useState(false);
   const ticking = useRef(false);
 
@@ -27,13 +23,15 @@ export default function NavBar({ onStartPiece }: NavBarProps) {
       });
     }
     window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   function handleAnchor(e: React.MouseEvent<HTMLAnchorElement>, href: string) {
-    e.preventDefault();
     const target = document.querySelector(href);
-    if (target) target.scrollIntoView({ behavior: "smooth" });
+    if (!target) return;
+    e.preventDefault();
+    target.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   return (
@@ -102,7 +100,7 @@ export default function NavBar({ onStartPiece }: NavBarProps) {
           </ul>
 
           <button
-            onClick={onStartPiece}
+            onClick={() => {/* commission modal — wired when modal is built */}}
             className="transition-[background,transform] duration-300 hover:-translate-y-px"
             style={{
               font: "500 10.5px var(--font-ui)",

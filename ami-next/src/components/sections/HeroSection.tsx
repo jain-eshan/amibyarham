@@ -378,7 +378,7 @@ export default function HeroSection() {
 
           {/* ── STATIC HERO (mobile / reduced-motion) ── */}
           <div
-            className="absolute z-[10] md:hidden"
+            className={`absolute z-[10] ${canScrub ? "md:hidden" : ""}`}
             style={{
               left: "clamp(1.5rem,6vw,5rem)",
               right: "clamp(1.5rem,6vw,5rem)",

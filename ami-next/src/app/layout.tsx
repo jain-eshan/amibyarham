@@ -69,7 +69,7 @@ export default function RootLayout({
       ].join(" ")}
     >
       <body className="min-h-full">
-        <NavBar onStartPiece={() => {}} />
+        <NavBar />
         {children}
       </body>
     </html>
