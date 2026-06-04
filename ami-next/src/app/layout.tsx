@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import NavBar from "@/components/layout/NavBar";
+import Footer from "@/components/layout/Footer";
 import {
   Bodoni_Moda,
   EB_Garamond,
@@ -71,6 +72,7 @@ export default function RootLayout({
       <body className="min-h-full">
         <NavBar />
         {children}
+        <Footer />
       </body>
     </html>
   );
