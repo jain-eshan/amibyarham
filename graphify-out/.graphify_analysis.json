@@ -1,0 +1,83 @@
+{
+  "communities": {
+    "0": [
+      "ami_logo",
+      "hero_karigar",
+      "index_html",
+      "pricing_tiers",
+      "supabase_commission_images",
+      "supabase_commission_leads"
+    ],
+    "1": [
+      "arham_diamonds",
+      "eshan_jain",
+      "readme_ami"
+    ],
+    "2": [
+      "amit_jain",
+      "emailjs_template"
+    ]
+  },
+  "cohesion": {
+    "0": 0.3333333333333333,
+    "1": 0.6666666666666666,
+    "2": 1.0
+  },
+  "gods": [
+    {
+      "id": "readme_ami",
+      "label": "AMI by Arham",
+      "degree": 3
+    },
+    {
+      "id": "emailjs_template",
+      "label": "EmailJS Template (template_sv5a7me)",
+      "degree": 2
+    },
+    {
+      "id": "supabase_commission_leads",
+      "label": "commission_leads table",
+      "degree": 1
+    },
+    {
+      "id": "supabase_commission_images",
+      "label": "commission-images bucket",
+      "degree": 1
+    },
+    {
+      "id": "pricing_tiers",
+      "label": "PRICING_TIERS object",
+      "degree": 1
+    },
+    {
+      "id": "arham_diamonds",
+      "label": "Arham Diamonds",
+      "degree": 1
+    },
+    {
+      "id": "eshan_jain",
+      "label": "Eshan Jain",
+      "degree": 1
+    },
+    {
+      "id": "amit_jain",
+      "label": "Amit Jain",
+      "degree": 1
+    },
+    {
+      "id": "ami_logo",
+      "label": "AMI Logo",
+      "degree": 1
+    },
+    {
+      "id": "hero_karigar",
+      "label": "Hero Karigar Image",
+      "degree": 1
+    }
+  ],
+  "surprises": [],
+  "tokens": {
+    "input": 146431,
+    "output": 1562
+  }
+}
