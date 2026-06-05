@@ -26,7 +26,9 @@ Warm, honest, unhurried. Like your family jeweller's son who went to design scho
 
 ## What's built (current state)
 
-Everything lives in a single file: `index.html`. No framework, no build step, no npm. Pure HTML + CSS + JS, deployed as a static site on Vercel.
+The site is a **Next.js app** that lives in [`ami-next/`](ami-next/). See [`ami-next/README.md`](ami-next/README.md) for local dev and build instructions. It is deployed on Vercel from the `ami-next/` root directory.
+
+> The original single-file static prototype (`index.html`) has been retired in favour of the Next.js app.
 
 ### Marketing site (scrollable)
 - **Hero section** — scroll-scrubbed video (desktop) / autoplay loop (mobile). 4 beat moments as you scroll, each revealing brand copy.
@@ -64,7 +66,7 @@ Fixed gold pill bottom-right. Appears 800ms after page load, pulses a gold glow 
 
 | Layer | Tool | Why |
 |-------|------|-----|
-| Frontend | Vanilla HTML/CSS/JS | No build step. Eshan can edit in any text editor. |
+| Frontend | Next.js (React, TypeScript) | App lives in `ami-next/`. Component-based, server rendering, OG image generation. |
 | Database | Supabase (Postgres) | Stores commission leads. Free tier sufficient for MVP. |
 | File storage | Supabase Storage | Stores inspiration images uploaded by customers. |
 | Email | EmailJS | Client-side email — no backend server needed. 200 emails/month free. |
@@ -76,7 +78,7 @@ Fixed gold pill bottom-right. Appears 800ms after page load, pulses a gold glow 
 
 ## Credentials & services
 
-All credentials are set as JS constants at the top of the script block in `index.html` (~line 1237). They are safe to be public because:
+Credentials live in the `ami-next/` app (see `ami-next/src/lib/` and environment configuration). They are safe to be public because:
 - The Supabase anon key only has permission to INSERT into `commission_leads` and upload to `commission-images` — it cannot read other tables or delete anything.
 - EmailJS public keys are designed to be client-side.
 
@@ -139,7 +141,7 @@ Body variables: {{name}} {{phone}} {{email}} {{city}} {{occasion}} {{occasion_no
 
 ## Pricing tiers (update before go-live)
 
-The estimate cards in Step 4 are powered by the `PRICING_TIERS` object in `index.html` (~line 1246). **These are placeholder numbers.** Before going live, Eshan needs to confirm the real numbers with Amit and the karigar and update this object. Nothing else needs to change — the UI reads from it dynamically.
+The estimate cards in Step 4 are powered by a `PRICING_TIERS` configuration in the `ami-next/` app (see `ami-next/src/components/sections/PricingSection.tsx`). **These are placeholder numbers.** Before going live, Eshan needs to confirm the real numbers with Amit and the karigar and update this object. Nothing else needs to change — the UI reads from it dynamically.
 
 Questions to confirm with Amit/karigar before updating:
 - Silver: weight in grams at each tier, current 925 silver rate, diamond carat + clarity available
@@ -149,13 +151,20 @@ Questions to confirm with Amit/karigar before updating:
 
 ## How to make changes
 
-**Editing text, prices, copy:** Open `index.html`, use Cmd+F to find the text, change it, save, commit, push. Vercel deploys automatically within ~60 seconds.
+**Editing text, prices, copy:** Edit the relevant component in `ami-next/src/components/`, then commit and push. Vercel deploys automatically within ~60 seconds.
 
-**Editing the commission flow steps:** All overlay HTML is in `index.html` around lines 990–1150. CSS for the overlay is around lines 490–760. JS is from line 1232 onwards.
+**Editing the commission flow steps:** The overlay lives in `ami-next/src/components/commission/CommissionModal.tsx`. Page sections live in `ami-next/src/components/sections/`.
+
+**Local development:**
+```
+cd ami-next
+npm install
+npm run dev
+```
 
 **Deploying:**
 ```
-git add index.html
+git add -A
 git commit -m "what you changed"
 git push origin main
 ```
@@ -188,7 +197,7 @@ These were explicitly out of scope for the MVP:
 
 ## Design system
 
-Brand tokens are CSS custom properties at the top of the `<style>` block:
+Brand tokens are CSS custom properties in `ami-next/src/app/globals.css`:
 
 ```css
 --oxblood: #6E1B2E    /* primary brand colour */
