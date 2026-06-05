@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useRef, useEffect, useCallback } from "react";
+import { useRef, useEffect } from "react";
 import {
   useScroll,
   useTransform,
@@ -20,6 +20,9 @@ const BEATS = [
 
 const GRAIN_SVG =
   "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")";
+
+// Time constant for the scrub easing (seconds). Smaller = tighter scroll tracking.
+const SMOOTH_TAU = 0.08;
 
 
 export default function HeroSection() {
@@ -43,22 +46,11 @@ export default function HeroSection() {
   const videoScale = useTransform(scrollYProgress, [0, 1], [1.02, 1.08]);
 
   // Imperatively drive video currentTime and other DOM refs for performance
-  const seekTargetRef = useRef(0);
-  const seekCurrentRef = useRef(0);
+  const progressRef = useRef(0); // latest scroll progress 0→1
+  const seekCurrentRef = useRef(0); // smoothed video time we're easing toward target
+  const lastFrameRef = useRef(0); // timestamp of previous RAF, for time-based smoothing
   const rafRef = useRef<number>(0);
   const durationRef = useRef<number>(0); // populated once metadata loads
-
-  const seekLoop = useCallback(() => {
-    const video = videoRef.current;
-    seekCurrentRef.current +=
-      (seekTargetRef.current - seekCurrentRef.current) * 0.12;
-    if (video && Math.abs(seekTargetRef.current - seekCurrentRef.current) > 0.01) {
-      try {
-        video.currentTime = seekCurrentRef.current;
-      } catch {}
-    }
-    rafRef.current = requestAnimationFrame(seekLoop);
-  }, []);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -76,18 +68,53 @@ export default function HeroSection() {
     video.addEventListener("play", pause);
     video.load();
 
+    // Hoisted declaration so the loop can re-request itself without tripping
+    // the "used before declared" hooks rule a useCallback self-reference hits.
+    function seekLoop(now: number) {
+      const duration = durationRef.current;
+
+      // Frame-rate-independent delta. Clamp so a backgrounded tab doesn't jump.
+      const last = lastFrameRef.current || now;
+      const dt = Math.min((now - last) / 1000, 0.05);
+      lastFrameRef.current = now;
+
+      if (video && duration > 0) {
+        // Recompute target from the current duration every frame, so a late
+        // loadedmetadata never leaves us mapping scroll → 0.
+        const target = progressRef.current * (duration - 0.05);
+        // Exponential smoothing, driven by elapsed time rather than frame count.
+        const k = 1 - Math.exp(-dt / SMOOTH_TAU);
+        seekCurrentRef.current += (target - seekCurrentRef.current) * k;
+
+        // Only issue a seek when the previous one has finished — avoids queueing
+        // seeks the decoder will drop, which is what makes the video trail scroll.
+        if (!video.seeking) {
+          const settled = Math.abs(target - seekCurrentRef.current) <= 0.01;
+          const next = settled ? target : seekCurrentRef.current;
+          if (Math.abs(video.currentTime - next) > 0.01) {
+            try {
+              video.currentTime = next;
+            } catch {}
+          }
+        }
+      }
+      rafRef.current = requestAnimationFrame(seekLoop);
+    }
+
+    lastFrameRef.current = 0;
     rafRef.current = requestAnimationFrame(seekLoop);
     return () => {
       video.removeEventListener("play", pause);
       cancelAnimationFrame(rafRef.current);
     };
-  }, [canScrub, seekLoop]);
+  }, [canScrub]);
 
   useMotionValueEvent(scrollYProgress, "change", (p) => {
     if (!canScrub) return;
 
-    const duration = durationRef.current;
-    if (duration > 0) seekTargetRef.current = p * (duration - 0.05);
+    // The RAF loop reads this every frame and maps it through the current
+    // video duration — no need to know the duration here.
+    progressRef.current = p;
 
     if (glowRef.current)
       glowRef.current.style.opacity = (p * 0.55).toFixed(3);
