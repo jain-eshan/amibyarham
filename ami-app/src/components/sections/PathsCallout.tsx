@@ -53,7 +53,7 @@ export function PathsCallout() {
               <div>
                 <div className="flex items-baseline justify-between">
                   <p className="caption-uppercase text-muted">Path B</p>
-                  <span aria-hidden className="text-primary">
+                  <span aria-hidden className="text-brand-gold">
                     ✦
                   </span>
                 </div>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  AMI by Arham wordmark — SVG recreation of the brand logo.
+  Wine #6E1B2E type with a gold #B5944A 4-point sparkle for the i-dot.
+  Uses the document's loaded display serif (Cormorant Garamond) when
+  rendered inline; the system serif stack is the fallback.
+-->
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 240 160"
+  fill="none"
+  role="img"
+  aria-label="AMI by Arham"
+>
+  <text
+    x="0"
+    y="118"
+    font-family="Cormorant Garamond, Tiempos Headline, EB Garamond, Garamond, serif"
+    font-size="148"
+    font-weight="500"
+    fill="#6E1B2E"
+    letter-spacing="-3"
+  >ami</text>
+
+  <!-- 4-point sparkle replacing the i-dot. Positioned above the right stem. -->
+  <path
+    d="M 215 18
+       L 220 38
+       L 240 43
+       L 220 48
+       L 215 68
+       L 210 48
+       L 190 43
+       L 210 38 Z"
+    fill="#B5944A"
+  />
+
+  <text
+    x="240"
+    y="155"
+    text-anchor="end"
+    font-family="Cormorant Garamond, Tiempos Headline, EB Garamond, Garamond, serif"
+    font-size="32"
+    font-weight="500"
+    fill="#6E1B2E"
+    letter-spacing="0"
+  >by arham</text>
+</svg>

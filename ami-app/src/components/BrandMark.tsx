@@ -1,59 +1,71 @@
-import type { CSSProperties } from "react";
-
 type BrandMarkProps = {
-  /** Size of the wordmark in pixels (height of the cap-height letters). */
+  /** Rendered height in pixels. Width derives from the SVG aspect ratio (1.5). */
   size?: number;
-  /** Tone — light variant is used on dark surfaces (footer). */
+  /** Light variant for use on the dark footer. Wine glyphs flip to cream. */
   tone?: "ink" | "cream";
   className?: string;
 };
 
+const VIEWBOX_W = 240;
+const VIEWBOX_H = 160;
+const SVG_ASPECT = VIEWBOX_W / VIEWBOX_H;
+
 /**
- * Placeholder AMI by Arham wordmark. Swap with the official SVG drop-in at
- * `public/brand/ami-mark.svg` once provided.
+ * AMI by Arham wordmark. Inline SVG so we can recolour the wine glyphs to
+ * cream on dark surfaces without a second asset, and so it loads with zero
+ * network requests. The serif type is hard-coded into the SVG so the mark
+ * never depends on whether Cormorant Garamond has finished loading.
  */
 export function BrandMark({
-  size = 22,
+  size = 28,
   tone = "ink",
   className,
 }: BrandMarkProps) {
-  const color = tone === "ink" ? "var(--color-ink)" : "var(--color-on-dark)";
-  const subColor =
-    tone === "ink" ? "var(--color-muted)" : "var(--color-on-dark-soft)";
-
-  const style: CSSProperties = { color };
+  const typeColor = tone === "ink" ? "#6e1b2e" : "#faf9f5";
+  const goldColor = "#b5944a";
+  const width = Math.round(size * SVG_ASPECT);
+  const serif =
+    "Cormorant Garamond, Tiempos Headline, EB Garamond, Garamond, 'Times New Roman', serif";
 
   return (
-    <span
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={width}
+      height={size}
+      viewBox={`0 0 ${VIEWBOX_W} ${VIEWBOX_H}`}
+      role="img"
       aria-label="AMI by Arham"
       className={className}
-      style={{ display: "inline-flex", alignItems: "baseline", gap: 8 }}
     >
-      <span
-        style={{
-          ...style,
-          fontFamily: "var(--font-display)",
-          fontWeight: 400,
-          fontSize: size,
-          letterSpacing: "0.04em",
-          lineHeight: 1,
-        }}
+      <text
+        x="0"
+        y="118"
+        fontFamily={serif}
+        fontSize="148"
+        fontWeight={500}
+        fill={typeColor}
+        letterSpacing="-3"
       >
-        AMI
-      </span>
-      <span
-        style={{
-          color: subColor,
-          fontFamily: "var(--font-sans)",
-          fontWeight: 500,
-          fontSize: Math.max(10, Math.round(size * 0.45)),
-          letterSpacing: "0.18em",
-          textTransform: "uppercase",
-          lineHeight: 1,
-        }}
+        ami
+      </text>
+
+      {/* 4-point sparkle replacing the i-dot. */}
+      <path
+        d="M 215 18 L 220 38 L 240 43 L 220 48 L 215 68 L 210 48 L 190 43 L 210 38 Z"
+        fill={goldColor}
+      />
+
+      <text
+        x={VIEWBOX_W}
+        y="155"
+        textAnchor="end"
+        fontFamily={serif}
+        fontSize="32"
+        fontWeight={500}
+        fill={typeColor}
       >
-        by Arham
-      </span>
-    </span>
+        by arham
+      </text>
+    </svg>
   );
 }

@@ -31,7 +31,7 @@ export function Footer() {
     <footer className="bg-surface-dark text-on-dark-soft">
       <div className="mx-auto grid max-w-[1200px] gap-12 px-6 py-16 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div>
-          <BrandMark tone="cream" size={26} />
+          <BrandMark tone="cream" size={44} />
           <p className="mt-6 max-w-xs text-sm leading-relaxed">
             Bespoke lab-grown diamonds set in heritage gold. Each piece is
             commissioned, never catalogued.

@@ -61,7 +61,7 @@ export function Header() {
             className="absolute left-1/2 -translate-x-1/2 transform"
             aria-label="AMI by Arham home"
           >
-            <BrandMark size={22} />
+            <BrandMark size={36} />
           </Link>
 
           <button
@@ -87,7 +87,7 @@ export function Header() {
         >
           <div className="flex h-16 items-center justify-between border-b border-hairline-soft px-6">
             <span className="w-10" aria-hidden />
-            <BrandMark size={22} />
+            <BrandMark size={36} />
             <button
               type="button"
               onClick={() => setOpen(false)}

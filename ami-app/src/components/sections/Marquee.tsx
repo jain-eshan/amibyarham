@@ -24,7 +24,7 @@ export function Marquee() {
             >
               {p}
             </span>
-            <span className="text-primary" aria-hidden>
+            <span className="text-brand-gold" aria-hidden>
               ✦
             </span>
           </span>
