@@ -66,14 +66,14 @@
   --spacing-section: 96px;
 }
 
-/* ── Resets ─────────────────────────────────────────────────────────────── */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+/* ── Resets ───────────────────────────────────────────────────────────────
+   Tailwind's preflight (loaded by `@import "tailwindcss"`) already gives us
+   `box-sizing: border-box` on *, `margin: 0` on body and on common block
+   elements (h1-h6, p, dl, etc.). A universal `* { margin: 0; padding: 0 }`
+   reset here would be UNLAYERED, which under CSS cascade layers beats every
+   Tailwind utility regardless of specificity — silently breaking mx-auto,
+   px-6, py-section, mt-* and every other margin/padding utility. Don't
+   re-add it. */
 
 html {
   font-size: 16px;
@@ -82,8 +82,7 @@ html {
 
 html,
 body {
-  width: 100%;
-  overflow-x: clip;
+  overflow-x: hidden;
   background-color: var(--color-canvas);
   color: var(--color-ink);
   font-family: var(--font-sans);
