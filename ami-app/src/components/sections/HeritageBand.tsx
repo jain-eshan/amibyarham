@@ -20,7 +20,7 @@ export function HeritageBand() {
           <Reveal delay={0.05}>
             <h2 className="display-lg mt-6 max-w-[18ch] text-on-dark">
               Gold, the way it was always{" "}
-              <em className="not-italic text-brand-gold-lit">meant</em> to be worn.
+              <em className="not-italic text-accent-amber">meant</em> to be worn.
             </h2>
           </Reveal>
           <Reveal delay={0.12}>
@@ -37,7 +37,7 @@ export function HeritageBand() {
             <div className="rounded-lg border border-white/10 bg-surface-dark-elevated p-8">
               <div className="flex items-baseline justify-between">
                 <p className="caption-uppercase text-on-dark-soft">House Spec</p>
-                <span aria-hidden className="text-brand-gold-lit">
+                <span aria-hidden className="text-primary">
                   ✦
                 </span>
               </div>
@@ -76,7 +76,7 @@ function Halo() {
       className="pointer-events-none absolute -top-32 left-1/2 h-[600px] w-[900px] -translate-x-1/2 opacity-40"
       style={{
         background:
-          "radial-gradient(ellipse at center, rgba(181,148,74,0.22), transparent 60%)",
+          "radial-gradient(ellipse at center, rgba(204,120,92,0.20), transparent 60%)",
       }}
     />
   );
