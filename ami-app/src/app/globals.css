@@ -1,0 +1,25 @@
+/* Phase 1 placeholder. Full design tokens (cream canvas, coral primary,
+   Copernicus/Cormorant serif, StyreneB/Inter sans) land in Phase 2. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  background: #faf9f5;
+  color: #141413;
+  font-family:
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
