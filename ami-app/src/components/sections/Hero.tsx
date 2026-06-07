@@ -1,29 +1,15 @@
 "use client";
 
-import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
+import { motion } from "framer-motion";
 
 import { Button } from "@/components/Button";
 
 const easeOut = [0.16, 1, 0.3, 1] as const;
 
 export function Hero() {
-  const ref = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start start", "end start"],
-  });
-  const artifactY = useTransform(scrollYProgress, [0, 1], [0, -60]);
-  const artifactOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0.4]);
-
   return (
-    <section
-      ref={ref}
-      className="relative overflow-hidden bg-canvas pt-20 pb-16 md:pt-32 md:pb-section"
-    >
-      <BackdropGrid />
-
-      <div className="relative mx-auto grid max-w-[1200px] grid-cols-12 gap-8 px-6">
+    <section className="relative overflow-x-clip bg-canvas pt-20 pb-16 md:pt-32 md:pb-section">
+      <div className="mx-auto grid max-w-[1200px] grid-cols-12 gap-8 px-6">
         <div className="col-span-12 md:col-span-7">
           <motion.span
             initial={{ opacity: 0, y: 10 }}
@@ -82,7 +68,6 @@ export function Hero() {
         </div>
 
         <motion.div
-          style={{ y: artifactY, opacity: artifactOpacity }}
           initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.2, delay: 0.1, ease: easeOut }}
@@ -99,8 +84,6 @@ function HeroArtifact() {
   return (
     <div className="relative aspect-[3/4] w-full overflow-hidden rounded-xl bg-surface-cream-strong">
       <div className="pointer-events-none absolute inset-6 border border-hairline" />
-      <div className="pointer-events-none absolute inset-10 border-t border-hairline" />
-      <div className="pointer-events-none absolute inset-10 bottom-auto top-auto" />
 
       <div className="absolute inset-0 flex items-center justify-center">
         <span
@@ -108,7 +91,7 @@ function HeroArtifact() {
           className="block leading-none text-ink"
           style={{
             fontFamily: "var(--font-display)",
-            fontSize: "min(40vw, 320px)",
+            fontSize: "clamp(7rem, 16vw, 16rem)",
             letterSpacing: "-0.04em",
           }}
         >
@@ -133,23 +116,6 @@ function HeroArtifact() {
         ✦
       </span>
     </div>
-  );
-}
-
-function BackdropGrid() {
-  return (
-    <div
-      aria-hidden
-      className="pointer-events-none absolute inset-0 opacity-[0.35]"
-      style={{
-        backgroundImage:
-          "linear-gradient(to right, var(--color-hairline-soft) 1px, transparent 1px)",
-        backgroundSize: "calc((100% - 48px) / 12) 100%",
-        backgroundPosition: "24px 0",
-        maskImage:
-          "radial-gradient(ellipse 80% 60% at 50% 30%, black 30%, transparent 80%)",
-      }}
-    />
   );
 }
 

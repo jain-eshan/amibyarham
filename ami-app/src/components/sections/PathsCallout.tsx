@@ -43,7 +43,7 @@ export function PathsCallout() {
               </Button>
               <div
                 aria-hidden
-                className="pointer-events-none absolute -right-20 -bottom-32 h-72 w-72 rounded-full bg-white/5 transition-transform duration-700 ease-out group-hover:scale-110"
+                className="pointer-events-none absolute -right-16 -bottom-24 h-56 w-56 rounded-full bg-white/5 transition-transform duration-700 ease-out group-hover:scale-110"
               />
             </article>
           </Reveal>
@@ -71,7 +71,7 @@ export function PathsCallout() {
               </Button>
               <div
                 aria-hidden
-                className="pointer-events-none absolute -right-24 -bottom-32 h-72 w-72 rounded-full bg-surface-card transition-transform duration-700 ease-out group-hover:scale-110"
+                className="pointer-events-none absolute -right-16 -bottom-24 h-56 w-56 rounded-full bg-surface-card transition-transform duration-700 ease-out group-hover:scale-110"
               />
             </article>
           </Reveal>
