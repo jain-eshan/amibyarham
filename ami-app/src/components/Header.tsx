@@ -15,10 +15,19 @@ const MENU_LINKS = [
  * Header: brand wordmark centered, hamburger toggle on the right that opens a
  * full-screen cream sheet with the three top-level links. Per APP_FLOW the
  * primary navigation is always hidden behind the toggle — there is no
- * persistent horizontal menu.
+ * persistent horizontal menu. The bar tightens (stronger blur + visible
+ * hairline) once the user has scrolled past the hero.
  */
 export function Header() {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -36,9 +45,15 @@ export function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 h-16 w-full border-b border-hairline-soft bg-canvas/85 backdrop-blur">
+      <header
+        className={[
+          "sticky top-0 z-40 h-16 w-full transition-all duration-300",
+          scrolled
+            ? "border-b border-hairline bg-canvas/90 backdrop-blur-md"
+            : "border-b border-transparent bg-canvas/40 backdrop-blur-sm",
+        ].join(" ")}
+      >
         <div className="relative mx-auto flex h-full max-w-[1200px] items-center justify-between px-6">
-          {/* Left spacer keeps the wordmark visually centered without absolute positioning. */}
           <span className="w-10" aria-hidden />
 
           <Link

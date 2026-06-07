@@ -152,3 +152,25 @@ a {
   letter-spacing: 0.094rem;
   text-transform: uppercase;
 }
+
+/* ── Marquee ──────────────────────────────────────────────────────────────
+   Used by the landing footer band. Content is duplicated 2× and we translate
+   by -50% so the loop is seamless. */
+@keyframes ami-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.ami-marquee {
+  animation: ami-marquee 45s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ami-marquee {
+    animation: none;
+  }
+}
