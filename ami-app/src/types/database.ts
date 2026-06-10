@@ -218,7 +218,34 @@ export type Database = {
       };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      match_inspiration: {
+        Args: {
+          query: string;
+          exclude_ids?: string[];
+          match_limit?: number;
+        };
+        Returns: {
+          id: string;
+          image_url: string;
+          alt_text: string | null;
+          category: string | null;
+          jewelry_type: string | null;
+          occasions: string[];
+          metals: string[];
+          styles: string[];
+          stones: string[];
+          motif: string[];
+          source_name: string | null;
+          source_url: string | null;
+          attribution: string | null;
+          featured: boolean;
+          is_own_catalog: boolean;
+          created_at: string;
+          similarity: number;
+        }[];
+      };
+    };
     Enums: {
       custom_request_type: "external_link" | "direct_upload" | "swipe_board";
       custom_request_status: "pending" | "contacted" | "converted" | "closed";

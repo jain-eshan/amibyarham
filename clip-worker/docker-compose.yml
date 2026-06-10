@@ -1,0 +1,17 @@
+# Sits alongside an n8n container (Phase 3). For local dev:
+#   docker compose -f clip-worker/docker-compose.yml up --build
+# then the backfill script and n8n point at http://localhost:8000.
+
+services:
+  clip-worker:
+    build: .
+    image: ami/clip-worker:latest
+    container_name: ami-clip-worker
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/healthz', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3

@@ -9,7 +9,7 @@ import {
   useMotionValue,
   useTransform,
 } from "framer-motion";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -36,6 +36,12 @@ type ContactData = z.infer<typeof contactSchema>;
 const SWIPE_THRESHOLD = 110; // px past which a release commits
 const FLING_VELOCITY = 0.4; // px/ms that also commits regardless of distance
 
+// Re-ranking thresholds. Wait for ≥5 swipes (with ≥1 like) before the first
+// recommendation call so the taste vector isn't noise. After that, refresh
+// every 5 further swipes so the deck keeps adapting as the user signals more.
+const RERANK_INITIAL_SWIPES = 5;
+const RERANK_REFRESH_EVERY = 5;
+
 const inputCls =
   "w-full rounded-lg border border-hairline bg-canvas px-4 py-3 text-ink " +
   "placeholder:text-muted/50 outline-none transition " +
@@ -44,7 +50,7 @@ const inputCls =
 type HistoryEntry = { item: InspirationItem; liked: boolean };
 
 export function SwipeEngine({
-  deck,
+  deck: initialDeck,
   filterSummary,
   onAdjustFilters,
 }: {
@@ -60,6 +66,28 @@ export function SwipeEngine({
   const [phase, setPhase] = useState<"swipe" | "review" | "done">("swipe");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [deck, setDeck] = useState<InspirationItem[]>(initialDeck);
+
+  // Stable per-mount session id so swipe_events / recommend calls correlate.
+  // crypto.randomUUID is widely available in modern browsers; gracefully fall
+  // back to a non-uuid string if it isn't (the event logger silently drops it).
+  const sessionIdRef = useRef<string>("");
+  if (!sessionIdRef.current) {
+    sessionIdRef.current =
+      typeof crypto !== "undefined" && "randomUUID" in crypto
+        ? crypto.randomUUID()
+        : `s-${Math.random().toString(36).slice(2)}-${Date.now()}`;
+  }
+
+  // Re-rank bookkeeping: decisions accumulated per session, plus the count of
+  // swipes at the last successful /api/recommend call so we can refresh on a
+  // fixed cadence rather than every swipe.
+  const likedIdsRef = useRef<string[]>([]);
+  const dislikedIdsRef = useRef<string[]>([]);
+  const seenIdsRef = useRef<string[]>([]);
+  const totalSwipesRef = useRef(0);
+  const lastRerankAtRef = useRef(0);
+  const isRerankingRef = useRef(false);
 
   const x = useMotionValue(0);
   const rotate = useTransform(x, [-220, 220], [-14, 14]);
@@ -69,6 +97,84 @@ export function SwipeEngine({
   const atEnd = index >= deck.length;
   const topCard = deck[index];
 
+  // ─── Recommendation splice ────────────────────────────────────────────────
+  // Fire after a configurable swipe budget (with ≥1 like) and splice the ranked
+  // tail into deck[index+1 …]. De-dupes against already-seen ids so the user
+  // never re-sees a card mid-flow. Fully non-blocking; failures are silent.
+
+  const maybeRerank = useCallback(async () => {
+    if (isRerankingRef.current) return;
+    if (likedIdsRef.current.length === 0) return;
+    const total = totalSwipesRef.current;
+    if (total < RERANK_INITIAL_SWIPES) return;
+    if (total - lastRerankAtRef.current < RERANK_REFRESH_EVERY) return;
+
+    isRerankingRef.current = true;
+    try {
+      const res = await fetch("/api/recommend", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sessionId: sessionIdRef.current,
+          likedIds: likedIdsRef.current,
+          dislikedIds: dislikedIdsRef.current,
+          seenIds: seenIdsRef.current,
+          limit: 30,
+        }),
+      });
+      if (!res.ok) return;
+      const { items } = (await res.json()) as {
+        items: Array<{
+          id: string;
+          imageUrl: string | null;
+          altText: string;
+          category: string | null;
+          jewelryType: string | null;
+          occasions: string[];
+          metals: string[];
+          styles: string[];
+          stones: string[];
+          motif: string[];
+          sourceName: string | null;
+          sourceUrl: string | null;
+          attribution: string | null;
+        }>;
+      };
+      if (!items || items.length === 0) return;
+
+      const seenSet = new Set(seenIdsRef.current);
+      const ranked: InspirationItem[] = items
+        .filter((it) => !seenSet.has(it.id))
+        .map((it) => ({
+          ...it,
+          glyph: "✦",
+          gradient:
+            "linear-gradient(150deg, #efe9de 0%, #e8d8cc 55%, #cc785c 140%)",
+          isFromDb: true,
+        }));
+
+      setDeck((current) => {
+        const keepPrefix = current.slice(0, index + 1);
+        const futureSeenIds = new Set([
+          ...seenIdsRef.current,
+          ...keepPrefix.map((c) => c.id),
+        ]);
+        const dedupedTail = ranked.filter((it) => !futureSeenIds.has(it.id));
+        // Preserve any not-yet-shown cards we haven't recommended over,
+        // appended after the ranked block so the user doesn't run dry.
+        const remainingOld = current
+          .slice(index + 1)
+          .filter((it) => !dedupedTail.some((r) => r.id === it.id));
+        return [...keepPrefix, ...dedupedTail, ...remainingOld];
+      });
+      lastRerankAtRef.current = totalSwipesRef.current;
+    } catch {
+      // Silent — re-rank is best-effort.
+    } finally {
+      isRerankingRef.current = false;
+    }
+  }, [index]);
+
   // ─── Commit a decision and advance ────────────────────────────────────────
 
   const commit = useCallback(
@@ -77,10 +183,35 @@ export function SwipeEngine({
       if (!item) return;
       if (liked) setFavorites((prev) => [...prev, item]);
       setHistory((prev) => [...prev, { item, liked }]);
+
+      // Track taste signal for /api/recommend (DB-backed cards only — fallback
+      // ids aren't uuids and have no embedding).
+      if (item.isFromDb) {
+        if (liked) likedIdsRef.current.push(item.id);
+        else dislikedIdsRef.current.push(item.id);
+        seenIdsRef.current.push(item.id);
+      }
+      totalSwipesRef.current += 1;
+
+      // Fire-and-forget event log. Never blocks the swipe.
+      if (item.isFromDb) {
+        void fetch("/api/swipe-event", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            sessionId: sessionIdRef.current,
+            imageId: item.id,
+            decision: liked ? "like" : "pass",
+            position: index,
+          }),
+        }).catch(() => {});
+      }
+
       setIndex((i) => i + 1);
       x.set(0);
+      void maybeRerank();
     },
-    [deck, index, x],
+    [deck, index, x, maybeRerank],
   );
 
   const flingAndCommit = useCallback(
@@ -103,6 +234,18 @@ export function SwipeEngine({
       if (last.liked) {
         setFavorites((favs) => favs.filter((f) => f.id !== last.item.id));
       }
+      // Roll back the taste-signal refs so a re-rank after an undo reflects the
+      // user's revised intent, not the discarded swipe.
+      if (last.item.isFromDb) {
+        const popIfMatches = (arr: string[]) => {
+          const i = arr.lastIndexOf(last.item.id);
+          if (i !== -1) arr.splice(i, 1);
+        };
+        popIfMatches(last.liked ? likedIdsRef.current : dislikedIdsRef.current);
+        popIfMatches(seenIdsRef.current);
+      }
+      totalSwipesRef.current = Math.max(0, totalSwipesRef.current - 1);
+
       setIndex((i) => Math.max(0, i - 1));
       x.set(0);
       return prev.slice(0, -1);
@@ -157,6 +300,12 @@ export function SwipeEngine({
           setFavorites([]);
           setHistory([]);
           setSubmitError(null);
+          setDeck(initialDeck);
+          likedIdsRef.current = [];
+          dislikedIdsRef.current = [];
+          seenIdsRef.current = [];
+          totalSwipesRef.current = 0;
+          lastRerankAtRef.current = 0;
           x.set(0);
           setPhase("swipe");
         }}
