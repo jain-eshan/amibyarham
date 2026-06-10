@@ -18,6 +18,13 @@ export type InspirationItem = {
   occasions: string[];
   metals: string[];
   styles: string[];
+  /** Extra taxonomy from CLIP zero-shot tagging (Phase 2). */
+  stones: string[];
+  motif: string[];
+  /** Provenance — shown as caption attribution for scraped inspiration. */
+  sourceName: string | null;
+  sourceUrl: string | null;
+  attribution: string | null;
   /** Visual treatment for fallback cards that have no photo. */
   glyph: string;
   gradient: string;
@@ -30,7 +37,18 @@ export type InspirationItem = {
  * treatment consistent with the rest of the site — a serif glyph over a warm
  * gradient — so the swipe engine is always demonstrable.
  */
-const FALLBACK_DECK: readonly Omit<InspirationItem, "isFromDb" | "imageUrl">[] = [
+type FallbackCard = Omit<
+  InspirationItem,
+  | "isFromDb"
+  | "imageUrl"
+  | "stones"
+  | "motif"
+  | "sourceName"
+  | "sourceUrl"
+  | "attribution"
+>;
+
+const FALLBACK_DECK: readonly FallbackCard[] = [
   {
     id: "fallback-solitaire-halo",
     altText: "Solitaire halo ring concept",
@@ -147,6 +165,11 @@ function fallbackDeck(): InspirationItem[] {
   return FALLBACK_DECK.map((c) => ({
     ...c,
     imageUrl: null,
+    stones: [],
+    motif: [],
+    sourceName: null,
+    sourceUrl: null,
+    attribution: null,
     isFromDb: false,
   }));
 }
@@ -168,6 +191,11 @@ function dbRowToItem(row: InspirationImage, index: number): InspirationItem {
     occasions: row.occasions ?? [],
     metals: row.metals ?? [],
     styles: row.styles ?? [],
+    stones: row.stones ?? [],
+    motif: row.motif ?? [],
+    sourceName: row.source_name ?? null,
+    sourceUrl: row.source_url ?? null,
+    attribution: row.attribution ?? null,
     glyph: GLYPHS[index % GLYPHS.length] ?? "✦",
     gradient: GRADIENTS[index % GRADIENTS.length] ?? GRADIENTS[0],
     isFromDb: true,
@@ -175,9 +203,50 @@ function dbRowToItem(row: InspirationImage, index: number): InspirationItem {
 }
 
 /**
- * Server-side fetch of the swipe deck. Reads `inspiration_images` (publicly
- * readable). Falls back to the curated deck when the table is empty or the
- * query errors, so the page always renders something swipeable.
+ * Cold-start ordering for the opening deck. Before we know a user's taste we
+ * want the first cards to be (a) our strongest pieces and (b) broad across
+ * jewelry types, so the swipe signal we collect is diverse rather than a run of
+ * near-duplicates. We surface featured / own-catalog pieces first, then
+ * round-robin the rest by category so no single type dominates the top of the
+ * deck. (Phase 2's recommender takes over re-ranking once enough swipes land.)
+ */
+function coldStartOrder(rows: InspirationImage[]): InspirationImage[] {
+  const priority = rows.filter((r) => r.featured || r.is_own_catalog);
+  const rest = rows.filter((r) => !(r.featured || r.is_own_catalog));
+
+  // Bucket the remainder by category, preserving the incoming (recency) order.
+  const buckets = new Map<string, InspirationImage[]>();
+  for (const row of rest) {
+    const key = row.jewelry_type ?? row.category ?? "_";
+    const bucket = buckets.get(key);
+    if (bucket) bucket.push(row);
+    else buckets.set(key, [row]);
+  }
+
+  // Round-robin across buckets so adjacent cards span different categories.
+  const interleaved: InspirationImage[] = [];
+  const queues = [...buckets.values()];
+  let drained = false;
+  while (!drained) {
+    drained = true;
+    for (const queue of queues) {
+      const next = queue.shift();
+      if (next) {
+        interleaved.push(next);
+        drained = false;
+      }
+    }
+  }
+
+  return [...priority, ...interleaved];
+}
+
+/**
+ * Server-side fetch of the swipe deck. Reads approved `inspiration_images`
+ * (publicly readable, gated to `status = 'approved'` by RLS + the explicit
+ * filter below). Orders for cold-start diversity. Falls back to the curated
+ * deck when the table is empty or the query errors, so the page always renders
+ * something swipeable.
  */
 export async function getInspirationDeck(): Promise<InspirationItem[]> {
   try {
@@ -185,15 +254,20 @@ export async function getInspirationDeck(): Promise<InspirationItem[]> {
     const { data, error } = await supabase
       .from("inspiration_images")
       .select(
-        "id, image_url, alt_text, category, jewelry_type, occasions, metals, styles, created_at",
+        "id, image_url, alt_text, category, jewelry_type, occasions, metals, styles, stones, motif, source_name, source_url, attribution, featured, is_own_catalog, created_at",
       )
+      .eq("status", "approved")
       .order("created_at", { ascending: false })
       .limit(120);
 
     if (error || !data || data.length === 0) {
       return fallbackDeck();
     }
-    return data.map((row, i) => dbRowToItem(row, i));
+    // The select is a subset of the full Row (embedding stays server-side and
+    // is intentionally omitted), so widen via `unknown` for the helper types.
+    return coldStartOrder(data as unknown as InspirationImage[]).map((row, i) =>
+      dbRowToItem(row, i),
+    );
   } catch {
     return fallbackDeck();
   }
