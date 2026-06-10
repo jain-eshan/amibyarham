@@ -9,3 +9,5 @@ brand-guide.md
 PRODUCT.md
 node_modules/
 .next/
+__pycache__/
+*.pyc
