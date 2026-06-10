@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import WordReveal from "@/components/ui/WordReveal";
+import BrandLogo from "@/components/ui/BrandLogo";
 
 const REVEAL_VARIANTS = {
   hidden: { opacity: 0, y: 22 },
@@ -54,16 +55,28 @@ export default function StorySection() {
         }}
       >
         <Reveal>
-          <span
+          <div
             style={{
-              font: "500 10.5px var(--font-ui)",
-              textTransform: "uppercase",
-              letterSpacing: ".32em",
-              color: "var(--color-oxblood)",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              textAlign: "center",
+              marginBottom: "clamp(2rem,4vw,2.75rem)",
             }}
           >
-            The house
-          </span>
+            <BrandLogo size={170} style={{ display: "block" }} />
+            <span
+              style={{
+                font: "500 10.5px var(--font-ui)",
+                textTransform: "uppercase",
+                letterSpacing: ".32em",
+                color: "var(--color-oxblood)",
+                marginTop: "1.25rem",
+              }}
+            >
+              The house
+            </span>
+          </div>
         </Reveal>
 
         <Reveal style={{ marginTop: 18 }}>

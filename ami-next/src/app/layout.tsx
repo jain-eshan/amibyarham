@@ -94,8 +94,8 @@ export const metadata: Metadata = {
     images: ["/og"],
   },
   icons: {
-    icon: "/assets/ami-logo.svg",
-    apple: "/assets/ami-logo.svg",
+    icon: "/assets/ami-brand-logo.svg",
+    apple: "/assets/ami-brand-logo.svg",
   },
   robots: {
     index: true,
