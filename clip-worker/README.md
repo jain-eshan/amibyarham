@@ -14,11 +14,16 @@ curl http://localhost:8000/healthz
 ## Endpoints
 
 ```
-POST /embed  { image_url } → { embedding: [512 floats] }
-POST /tag    { image_url } → { jewelry_type, metal, styles, stones, motif, occasions }
+POST /embed   { image_url } → { embedding: [512 floats] }
+POST /tag     { image_url } → { jewelry_type, metal, styles, stones, motif, occasions }
+POST /enrich  { image_url } → { embedding, phash, jewelry_type, metal, styles,
+                                stones, motif, occasions }
 ```
 
-Both also accept `{ image_base64 }` for in-memory ingestion pipelines.
+All three also accept `{ image_base64 }` for in-memory ingestion pipelines.
+`/enrich` does everything the Phase 3 ingester needs from a single image
+decode (embedding + perceptual hash + zero-shot tags) and is what
+`scripts/ingest` calls per image.
 
 ## Tuning
 

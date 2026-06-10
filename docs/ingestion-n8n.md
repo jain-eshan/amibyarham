@@ -1,9 +1,16 @@
-# Phase 3 — Automated ingestion via n8n
+# Phase 3 — Automated ingestion
 
-> Documented, not yet built. Lays out the scraping pipeline that will feed the
-> Phase 1 review queue (`inspiration_images.status = 'pending_review'`). Three
-> source lanes, legitimate-first, all converging on one human-reviewed queue —
+> Lays out the scraping pipeline that feeds the Phase 1 review queue
+> (`inspiration_images.status = 'pending_review'`). Three source lanes,
+> legitimate-first, all converging on one human-reviewed queue —
 > **nothing auto-publishes**.
+>
+> **Implementation status:** the shared pipeline + **Lane B (Danish brand
+> JSON-LD)** are built as a scriptable TS ingester in
+> [`scripts/ingest/`](../scripts/ingest/README.md). Lanes A (Pinterest) and C
+> (stock) are credential-gated and scaffold next as additional collectors. An
+> optional n8n orchestration layer can later call the same pipeline over HTTP;
+> the design below is lane-agnostic.
 
 ## Architecture
 

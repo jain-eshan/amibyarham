@@ -24,6 +24,7 @@ import base64
 import io
 from typing import Iterable
 
+import numpy as np
 import open_clip
 import torch
 from fastapi import FastAPI, HTTPException
@@ -93,6 +94,13 @@ class TagResponse(BaseModel):
     occasions: list[str]
 
 
+class EnrichResponse(TagResponse):
+    """Everything the ingestion pipeline needs from one image decode."""
+
+    embedding: list[float]
+    phash: str
+
+
 def _load_image(req: ImageRequest) -> Image.Image:
     if req.image_url:
         try:
@@ -156,6 +164,49 @@ def _above(scores: list[tuple[str, float]], threshold: float) -> list[str]:
     return [label for label, score in scores if score >= threshold]
 
 
+def _build_tags(feat: torch.Tensor) -> dict[str, object]:
+    """Shared between /tag and /enrich so the taxonomy stays in one place."""
+    return {
+        "jewelry_type": _argmax(_score(feat, "jewelry_type")),
+        "metal": _above(_score(feat, "metals"), THRESHOLDS["metals"]),
+        "styles": _above(_score(feat, "styles"), THRESHOLDS["styles"]),
+        "stones": _above(_score(feat, "stones"), THRESHOLDS["stones"]),
+        "motif": _above(_score(feat, "motif"), THRESHOLDS["motif"]),
+        "occasions": _above(_score(feat, "occasions"), THRESHOLDS["occasions"]),
+    }
+
+
+# ─── Perceptual hash (numpy-only DCT pHash) ──────────────────────────────────
+# Self-contained so the worker carries no scipy/imagehash dependency. The hash
+# is internally consistent — all we need for cross-source dedup — even if it
+# isn't bit-identical to the canonical imagehash output.
+
+_HASH_SIZE = 8
+_HIGHFREQ_FACTOR = 4
+
+
+def _dct_matrix(n: int) -> np.ndarray:
+    k = np.arange(n)
+    return np.cos(np.pi / n * (k + 0.5) * k.reshape((n, 1)))
+
+
+_DCT_M = _dct_matrix(_HASH_SIZE * _HIGHFREQ_FACTOR)
+
+
+def _phash(img: Image.Image) -> str:
+    size = _HASH_SIZE * _HIGHFREQ_FACTOR
+    grey = img.convert("L").resize((size, size), Image.Resampling.LANCZOS)
+    pixels = np.asarray(grey, dtype=np.float64)
+    dct = _DCT_M @ pixels @ _DCT_M.T
+    low = dct[:_HASH_SIZE, :_HASH_SIZE]
+    diff = low > np.median(low)
+    bits = diff.flatten()
+    value = 0
+    for bit in bits:
+        value = (value << 1) | int(bit)
+    return f"{value:016x}"
+
+
 # ─── Routes ──────────────────────────────────────────────────────────────────
 
 @app.get("/healthz")
@@ -174,11 +225,16 @@ def embed(req: ImageRequest) -> EmbedResponse:
 def tag(req: ImageRequest) -> TagResponse:
     img = _load_image(req)
     feat = _encode_image(img)
-    return TagResponse(
-        jewelry_type=_argmax(_score(feat, "jewelry_type")),
-        metal=_above(_score(feat, "metals"), THRESHOLDS["metals"]),
-        styles=_above(_score(feat, "styles"), THRESHOLDS["styles"]),
-        stones=_above(_score(feat, "stones"), THRESHOLDS["stones"]),
-        motif=_above(_score(feat, "motif"), THRESHOLDS["motif"]),
-        occasions=_above(_score(feat, "occasions"), THRESHOLDS["occasions"]),
+    return TagResponse(**_build_tags(feat))
+
+
+@app.post("/enrich", response_model=EnrichResponse)
+def enrich(req: ImageRequest) -> EnrichResponse:
+    """One decode → embedding + pHash + zero-shot tags. Used by the ingester."""
+    img = _load_image(req)
+    feat = _encode_image(img)
+    return EnrichResponse(
+        embedding=feat.squeeze(0).tolist(),
+        phash=_phash(img),
+        **_build_tags(feat),
     )
