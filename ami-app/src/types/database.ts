@@ -19,6 +19,10 @@ export type Database = {
           image_url: string;
           alt_text: string | null;
           category: string | null;
+          jewelry_type: string | null;
+          occasions: string[];
+          metals: string[];
+          styles: string[];
           created_at: string;
         };
         Insert: {
@@ -26,6 +30,10 @@ export type Database = {
           image_url: string;
           alt_text?: string | null;
           category?: string | null;
+          jewelry_type?: string | null;
+          occasions?: string[];
+          metals?: string[];
+          styles?: string[];
           created_at?: string;
         };
         Update: {
@@ -33,6 +41,10 @@ export type Database = {
           image_url?: string;
           alt_text?: string | null;
           category?: string | null;
+          jewelry_type?: string | null;
+          occasions?: string[];
+          metals?: string[];
+          styles?: string[];
           created_at?: string;
         };
         Relationships: [];
@@ -69,6 +81,7 @@ export type Database = {
           external_url: string | null;
           uploaded_media_url: string | null;
           design_notes: string | null;
+          applied_filters: Json | null;
           status: Database["public"]["Enums"]["custom_request_status"];
           created_at: string;
         };
@@ -79,6 +92,7 @@ export type Database = {
           external_url?: string | null;
           uploaded_media_url?: string | null;
           design_notes?: string | null;
+          applied_filters?: Json | null;
           status?: Database["public"]["Enums"]["custom_request_status"];
           created_at?: string;
         };
@@ -89,6 +103,7 @@ export type Database = {
           external_url?: string | null;
           uploaded_media_url?: string | null;
           design_notes?: string | null;
+          applied_filters?: Json | null;
           status?: Database["public"]["Enums"]["custom_request_status"];
           created_at?: string;
         };
