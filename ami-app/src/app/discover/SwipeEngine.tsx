@@ -43,7 +43,17 @@ const inputCls =
 
 type HistoryEntry = { item: InspirationItem; liked: boolean };
 
-export function SwipeEngine({ deck }: { deck: InspirationItem[] }) {
+export function SwipeEngine({
+  deck,
+  filterSummary,
+  onAdjustFilters,
+}: {
+  deck: InspirationItem[];
+  /** Human-readable filter recap, recorded with the submitted board. */
+  filterSummary?: string;
+  /** Returns to the filter screen, preserving the user's selections. */
+  onAdjustFilters?: () => void;
+}) {
   const [index, setIndex] = useState(0);
   const [favorites, setFavorites] = useState<InspirationItem[]>([]);
   const [history, setHistory] = useState<HistoryEntry[]>([]);
@@ -169,13 +179,17 @@ export function SwipeEngine({ deck }: { deck: InspirationItem[] }) {
               throw new Error(leadError?.message ?? "Failed to save your details");
             }
 
+            const filterPrefix = filterSummary
+              ? `Filters — ${filterSummary}. `
+              : "";
             const summary =
-              favorites.length > 0
+              filterPrefix +
+              (favorites.length > 0
                 ? `Swipe board — ${favorites.length} favourite${favorites.length === 1 ? "" : "s"}: ` +
                   favorites
                     .map((f) => `${f.altText}${f.category ? ` (${f.category})` : ""}`)
                     .join("; ")
-                : "Swipe board — no favourites selected";
+                : "Swipe board — no favourites selected");
 
             const { data: request, error: requestError } = await supabase
               .from("custom_requests")
@@ -225,8 +239,23 @@ export function SwipeEngine({ deck }: { deck: InspirationItem[] }) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <p className="caption-uppercase text-muted">Path B</p>
+          {onAdjustFilters ? (
+            <button
+              type="button"
+              onClick={onAdjustFilters}
+              className="caption-uppercase text-muted transition-colors hover:text-primary"
+            >
+              ‹ Filters
+            </button>
+          ) : (
+            <p className="caption-uppercase text-muted">Path B</p>
+          )}
           <h1 className="display-sm mt-1 text-ink">Find your piece</h1>
+          {filterSummary && filterSummary !== "No filters — full catalogue" && (
+            <p className="mt-1 max-w-[16rem] truncate text-xs text-muted">
+              {filterSummary}
+            </p>
+          )}
         </div>
         <div className="text-right">
           <p className="text-2xl text-primary" style={{ fontFamily: "var(--font-display)" }}>

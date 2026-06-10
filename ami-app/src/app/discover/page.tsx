@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 import { getInspirationDeck } from "@/lib/inspiration";
 
-import { SwipeEngine } from "./SwipeEngine";
+import { DiscoverFlow } from "./DiscoverFlow";
 
 export const metadata: Metadata = {
   title: "Discover Inspiration — AMI by Arham",
@@ -19,7 +19,7 @@ export default async function DiscoverPage() {
 
   return (
     <main className="bg-canvas">
-      <SwipeEngine deck={deck} />
+      <DiscoverFlow deck={deck} />
     </main>
   );
 }

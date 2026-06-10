@@ -13,6 +13,11 @@ export type InspirationItem = {
   imageUrl: string | null;
   altText: string;
   category: string | null;
+  /** Structured facets the Filter-First flow filters on. */
+  jewelryType: string | null;
+  occasions: string[];
+  metals: string[];
+  styles: string[];
   /** Visual treatment for fallback cards that have no photo. */
   glyph: string;
   gradient: string;
@@ -30,6 +35,10 @@ const FALLBACK_DECK: readonly Omit<InspirationItem, "isFromDb" | "imageUrl">[] =
     id: "fallback-solitaire-halo",
     altText: "Solitaire halo ring concept",
     category: "Rings",
+    jewelryType: "Ring",
+    occasions: ["Engagement", "Wedding"],
+    metals: ["18k Gold", "White Gold"],
+    styles: ["Modern", "Minimalist"],
     glyph: "◯",
     gradient: "linear-gradient(150deg, #efe9de 0%, #e8d8cc 55%, #cc785c 140%)",
   },
@@ -37,6 +46,10 @@ const FALLBACK_DECK: readonly Omit<InspirationItem, "isFromDb" | "imageUrl">[] =
     id: "fallback-emerald-cut",
     altText: "Emerald-cut pendant concept",
     category: "Pendants",
+    jewelryType: "Necklace",
+    occasions: ["Statement", "Everyday"],
+    metals: ["White Gold", "18k Gold"],
+    styles: ["Modern"],
     glyph: "▢",
     gradient: "linear-gradient(150deg, #f5f0e8 0%, #e6dfd8 60%, #5db8a6 150%)",
   },
@@ -44,6 +57,10 @@ const FALLBACK_DECK: readonly Omit<InspirationItem, "isFromDb" | "imageUrl">[] =
     id: "fallback-jadau-chandbali",
     altText: "Jadau chandbali earrings concept",
     category: "Earrings",
+    jewelryType: "Earrings",
+    occasions: ["Wedding", "Statement"],
+    metals: ["22k Gold", "Rose Gold"],
+    styles: ["Jadau", "Polki"],
     glyph: "☾",
     gradient: "linear-gradient(150deg, #efe9de 0%, #e8d8b8 55%, #e8a55a 145%)",
   },
@@ -51,6 +68,10 @@ const FALLBACK_DECK: readonly Omit<InspirationItem, "isFromDb" | "imageUrl">[] =
     id: "fallback-tennis-bracelet",
     altText: "Tennis bracelet concept",
     category: "Bracelets",
+    jewelryType: "Bracelet",
+    occasions: ["Everyday", "Statement"],
+    metals: ["18k Gold", "White Gold"],
+    styles: ["Modern", "Minimalist"],
     glyph: "⋯",
     gradient: "linear-gradient(150deg, #f5f0e8 0%, #e6dfd8 60%, #a9583e 150%)",
   },
@@ -58,6 +79,10 @@ const FALLBACK_DECK: readonly Omit<InspirationItem, "isFromDb" | "imageUrl">[] =
     id: "fallback-polki-choker",
     altText: "Polki choker concept",
     category: "Necklaces",
+    jewelryType: "Necklace",
+    occasions: ["Wedding", "Engagement"],
+    metals: ["22k Gold"],
+    styles: ["Polki", "Jadau"],
     glyph: "❖",
     gradient: "linear-gradient(150deg, #efe9de 0%, #e3d6c4 55%, #cc785c 150%)",
   },
@@ -65,6 +90,10 @@ const FALLBACK_DECK: readonly Omit<InspirationItem, "isFromDb" | "imageUrl">[] =
     id: "fallback-eternity-band",
     altText: "Eternity band concept",
     category: "Rings",
+    jewelryType: "Ring",
+    occasions: ["Wedding", "Everyday"],
+    metals: ["18k Gold", "Rose Gold", "White Gold"],
+    styles: ["Minimalist", "Modern"],
     glyph: "∞",
     gradient: "linear-gradient(150deg, #f5f0e8 0%, #e8e0d2 60%, #8e8b82 150%)",
   },
@@ -72,6 +101,10 @@ const FALLBACK_DECK: readonly Omit<InspirationItem, "isFromDb" | "imageUrl">[] =
     id: "fallback-pear-drop",
     altText: "Pear-drop pendant concept",
     category: "Pendants",
+    jewelryType: "Necklace",
+    occasions: ["Engagement", "Everyday"],
+    metals: ["Rose Gold", "18k Gold"],
+    styles: ["Modern", "Minimalist"],
     glyph: "◇",
     gradient: "linear-gradient(150deg, #efe9de 0%, #e6dfd8 55%, #5db8a6 145%)",
   },
@@ -79,8 +112,34 @@ const FALLBACK_DECK: readonly Omit<InspirationItem, "isFromDb" | "imageUrl">[] =
     id: "fallback-stud-classic",
     altText: "Classic stud earrings concept",
     category: "Earrings",
+    jewelryType: "Earrings",
+    occasions: ["Everyday"],
+    metals: ["18k Gold", "White Gold"],
+    styles: ["Minimalist"],
     glyph: "✦",
     gradient: "linear-gradient(150deg, #f5f0e8 0%, #e8d8cc 60%, #e8a55a 150%)",
+  },
+  {
+    id: "fallback-bridal-polki-set",
+    altText: "Bridal polki set concept",
+    category: "Sets",
+    jewelryType: "Set",
+    occasions: ["Wedding"],
+    metals: ["22k Gold"],
+    styles: ["Polki", "Jadau"],
+    glyph: "❂",
+    gradient: "linear-gradient(150deg, #efe9de 0%, #e8d8b8 55%, #e8a55a 150%)",
+  },
+  {
+    id: "fallback-maang-tikka",
+    altText: "Jadau maang tikka concept",
+    category: "Maang Tikka",
+    jewelryType: "Maang Tikka",
+    occasions: ["Wedding", "Engagement"],
+    metals: ["22k Gold", "Rose Gold"],
+    styles: ["Jadau", "Polki"],
+    glyph: "✸",
+    gradient: "linear-gradient(150deg, #efe9de 0%, #e3d6c4 55%, #cc785c 145%)",
   },
 ] as const;
 
@@ -105,6 +164,10 @@ function dbRowToItem(row: InspirationImage, index: number): InspirationItem {
     imageUrl: row.image_url,
     altText: row.alt_text ?? "Inspiration",
     category: row.category,
+    jewelryType: row.jewelry_type ?? null,
+    occasions: row.occasions ?? [],
+    metals: row.metals ?? [],
+    styles: row.styles ?? [],
     glyph: GLYPHS[index % GLYPHS.length] ?? "✦",
     gradient: GRADIENTS[index % GRADIENTS.length] ?? GRADIENTS[0],
     isFromDb: true,
@@ -121,9 +184,11 @@ export async function getInspirationDeck(): Promise<InspirationItem[]> {
     const supabase = createSupabaseServerClient();
     const { data, error } = await supabase
       .from("inspiration_images")
-      .select("id, image_url, alt_text, category, created_at")
+      .select(
+        "id, image_url, alt_text, category, jewelry_type, occasions, metals, styles, created_at",
+      )
       .order("created_at", { ascending: false })
-      .limit(40);
+      .limit(120);
 
     if (error || !data || data.length === 0) {
       return fallbackDeck();

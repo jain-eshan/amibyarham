@@ -67,7 +67,7 @@ export function PathsCallout() {
                 </p>
               </div>
               <Button href="/discover" size="lg" className="mt-10 self-start">
-                Open the swipe engine →
+                Discover inspiration →
               </Button>
               <div
                 aria-hidden
