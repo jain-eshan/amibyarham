@@ -8,6 +8,21 @@ GitHub: [github.com/jain-eshan/amibyarham](https://github.com/jain-eshan/amibyar
 
 ---
 
+## Repo structure
+
+This repo contains **two separate builds**. Only one is actively developed.
+
+| Directory | Vercel project | Status | Description |
+|-----------|---------------|--------|-------------|
+| `ami-app/` | `ami` → www.arhamdiamonds.in | ✅ **Active** | Current Next.js 16 + Tailwind v4 rewrite. All new work goes here. |
+| `ami-next/` | `amibyarham` → (legacy domain) | 🔒 **Frozen** | Previous Next.js build. Do not modify. |
+| `supabase/` | — | ✅ Active | Shared DB migrations for both deployments. |
+
+**When developing:** `cd ami-app && npm run dev`  
+**Do not touch `ami-next/`** — it is preserved only to keep the `amibyarham` Vercel project from breaking.
+
+---
+
 ## What this product is
 
 AMI is not a jewellery catalogue. There is no "Add to cart."

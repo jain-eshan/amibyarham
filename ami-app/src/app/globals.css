@@ -1,0 +1,177 @@
+@import "tailwindcss";
+
+/*
+ * AMI by Arham — design tokens
+ * Adapted from the Anthropic / Claude.com design system specified in DESIGN.md.
+ * Display serif uses Cormorant Garamond (Tiempos Headline substitute);
+ * sans uses Inter (StyreneB substitute). Both loaded via next/font.
+ */
+
+@theme inline {
+  /* ── Surfaces ─────────────────────────────────────────────────────────── */
+  --color-canvas: #faf9f5;
+  --color-surface-soft: #f5f0e8;
+  --color-surface-card: #efe9de;
+  --color-surface-cream-strong: #e8e0d2;
+  --color-surface-dark: #181715;
+  --color-surface-dark-elevated: #252320;
+  --color-surface-dark-soft: #1f1e1b;
+
+  /* ── Text ─────────────────────────────────────────────────────────────── */
+  --color-ink: #141413;
+  --color-body-strong: #252523;
+  --color-body: #3d3d3a;
+  --color-muted: #6c6a64;
+  --color-muted-soft: #8e8b82;
+
+  /* ── Brand & Accent ───────────────────────────────────────────────────── */
+  --color-primary: #cc785c;
+  --color-primary-active: #a9583e;
+  --color-primary-disabled: #e6dfd8;
+  --color-on-primary: #ffffff;
+  --color-on-dark: #faf9f5;
+  --color-on-dark-soft: #a09d96;
+  --color-accent-teal: #5db8a6;
+  --color-accent-amber: #e8a55a;
+
+  /* ── Semantic ─────────────────────────────────────────────────────────── */
+  --color-success: #5db872;
+  --color-warning: #d4a017;
+  --color-error: #c64545;
+
+  /* ── Hairlines ────────────────────────────────────────────────────────── */
+  --color-hairline: #e6dfd8;
+  --color-hairline-soft: #ebe6df;
+
+  /* ── Typography (next/font CSS vars fall through to web-safe stacks) ──── */
+  --font-display:
+    var(--font-display-serif), "Cormorant Garamond", "Tiempos Headline",
+    "EB Garamond", Garamond, "Times New Roman", serif;
+  --font-sans:
+    var(--font-sans-humanist), Inter, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, sans-serif;
+  --font-mono:
+    var(--font-mono-code), "JetBrains Mono", ui-monospace, "SFMono-Regular",
+    monospace;
+
+  /* ── Radii ────────────────────────────────────────────────────────────── */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-pill: 9999px;
+
+  /* ── Spacing extension ────────────────────────────────────────────────── */
+  --spacing-section: 96px;
+}
+
+/* ── Resets ───────────────────────────────────────────────────────────────
+   Tailwind's preflight (loaded by `@import "tailwindcss"`) already gives us
+   `box-sizing: border-box` on *, `margin: 0` on body and on common block
+   elements (h1-h6, p, dl, etc.). A universal `* { margin: 0; padding: 0 }`
+   reset here would be UNLAYERED, which under CSS cascade layers beats every
+   Tailwind utility regardless of specificity — silently breaking mx-auto,
+   px-6, py-section, mt-* and every other margin/padding utility. Don't
+   re-add it. */
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+html,
+body {
+  overflow-x: hidden;
+  background-color: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+::selection {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+/*
+ * ── Display utilities ─────────────────────────────────────────────────────
+ * Copernicus serif at weight 400 with negative tracking is the brand voice.
+ * Sizes use clamp() to collapse cleanly from desktop → mobile per DESIGN.md.
+ */
+@utility display-xl {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2rem, 4vw + 1rem, 4rem); /* 32 → 64 */
+  line-height: 1.05;
+  letter-spacing: -0.094rem;
+}
+
+@utility display-lg {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.75rem, 3vw + 0.75rem, 3rem); /* 28 → 48 */
+  line-height: 1.1;
+  letter-spacing: -0.063rem;
+}
+
+@utility display-md {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.5rem, 2vw + 0.75rem, 2.25rem); /* 24 → 36 */
+  line-height: 1.15;
+  letter-spacing: -0.031rem;
+}
+
+@utility display-sm {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.25rem, 1vw + 0.75rem, 1.75rem); /* 20 → 28 */
+  line-height: 1.2;
+  letter-spacing: -0.019rem;
+}
+
+@utility caption-uppercase {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0.094rem;
+  text-transform: uppercase;
+}
+
+/* ── Marquee ──────────────────────────────────────────────────────────────
+   Used by the landing footer band. Content is duplicated 2× and we translate
+   by -50% so the loop is seamless. */
+@keyframes ami-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.ami-marquee {
+  animation: ami-marquee 45s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ami-marquee {
+    animation: none;
+  }
+}
