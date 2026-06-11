@@ -1,0 +1,12 @@
+{
+  "name": "AMI by Arham",
+  "short_name": "AMI",
+  "description": "Bespoke lab-grown diamond and gold jewelry. A modern royal heirloom, made for you.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#faf9f5",
+  "theme_color": "#faf9f5",
+  "icons": [
+    { "src": "/brand/ami-mark-ink.svg", "type": "image/svg+xml", "sizes": "any", "purpose": "any" }
+  ]
+}
