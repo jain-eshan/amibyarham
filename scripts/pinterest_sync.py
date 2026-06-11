@@ -33,7 +33,6 @@ from dataclasses import dataclass, field
 from typing import Any
 
 import requests
-from dotenv import load_dotenv
 from supabase import create_client, Client
 
 # ---------------------------------------------------------------------------
@@ -56,6 +55,27 @@ STORAGE_BUCKET      = "inspiration-images"
 REQUEST_DELAY_S     = 0.6   # polite inter-request pause
 MAX_RETRIES         = 4     # for 429 / transient errors
 USER_AGENT          = "AMIByArhamBot/1.0 (+https://amibyarham.com)"
+USER_AGENT          = "AMIByArhamBot/1.0 (+https://amibyarham.com)"
+
+
+# ---------------------------------------------------------------------------
+# Env loading (local fallback for .env without python-dotenv dependency)
+# ---------------------------------------------------------------------------
+def load_dotenv(dotenv_path: str | os.PathLike[str] | None = None) -> bool:
+    path = os.fspath(dotenv_path) if dotenv_path else ".env"
+    if not os.path.exists(path):
+        return False
+
+    with open(path, "r", encoding="utf-8") as env_file:
+        for raw_line in env_file:
+            line = raw_line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, value = line.split("=", 1)
+            key = key.strip()
+            value = value.strip().strip('"').strip("'")
+            os.environ.setdefault(key, value)
+    return True
 
 
 # ---------------------------------------------------------------------------
@@ -642,15 +662,12 @@ def ingest_pins(
 
     return stats
 
-
 # ---------------------------------------------------------------------------
-# CLI entry point
+# CLI entrypoint
 # ---------------------------------------------------------------------------
-
 def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="Sync Pinterest boards → Supabase inspiration_images (pending_review)."
-    )
+    description = "Sync Pinterest boards → Supabase inspiration_images (pending_review)."
+    parser = argparse.ArgumentParser(description=description)
     parser.add_argument("--dry-run", action="store_true",
                         help="Parse and tag pins without writing to Supabase.")
     parser.add_argument("--limit", type=int, default=None,
@@ -660,7 +677,11 @@ def main() -> None:
     args = parser.parse_args()
 
     # ── Load env ─────────────────────────────────────────────────────────────
-    load_dotenv()
+    from pathlib import Path
+    root_env_path = Path(__file__).resolve().parent.parent / ".env"
+    load_dotenv(dotenv_path=root_env_path)
+    log.info("Loaded environment variables from: %s", root_env_path)
+
     app_id       = os.environ["PINTEREST_APP_ID"]
     app_secret   = os.environ["PINTEREST_APP_SECRET"]
     refresh_tok  = os.environ["PINTEREST_REFRESH_TOKEN"]
@@ -683,7 +704,7 @@ def main() -> None:
 
     all_pins: list[PinRecord] = []
     for board in boards:
-        board_id   = board["id"]
+        board_id = board["id"]
         pins = fetch_pins_for_board(board_id, access_token)
         all_pins.extend(pins)
         time.sleep(REQUEST_DELAY_S)
