@@ -85,9 +85,9 @@ export default function PrivacyPolicyPage() {
               If you have questions about this Privacy Policy or our privacy practices, please contact us at:
             </p>
             <div className="bg-gray-50 p-4 rounded-lg mt-4">
-              <p className="font-semibold">Privacy Team</p>
-              <p>Email: privacy@example.com</p>
-              <p>Address: Your Company Address</p>
+              <p className="font-semibold">AMI by Arham</p>
+              <p>Email: amibyarham@gmail.com</p>
+              <p>Address: Q5, Model Town, Delhi, India</p>
             </div>
           </section>
 
