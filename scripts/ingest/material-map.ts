@@ -15,10 +15,10 @@ const METAL_RULES: Array<[RegExp, string]> = [
   [/22\s*k|22kt|22 ?karat/i, "22k Gold"],
   [/18\s*k|18kt|18 ?karat/i, "18k Gold"],
   [/14\s*k|14kt|14 ?karat/i, "18k Gold"], // nearest supported facet
-  [/platinum/i, "White Gold"], // nearest supported facet
+  [/platinum/i, "Platinum"],
   [/(^|[^a-z])gold([^a-z]|$)/i, "18k Gold"], // generic gold → default karat
   [/gold\s*vermeil|vermeil/i, "18k Gold"],
-  [/sterling\s*silver|silver/i, "White Gold"], // nearest supported facet
+  [/sterling\s*silver|silver/i, "Sterling Silver"],
 ];
 
 const STONE_RULES: Array<[RegExp, string]> = [

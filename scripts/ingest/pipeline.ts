@@ -38,12 +38,12 @@ const JEWELRY_TYPES = [
 function mapJewelryType(nativeCategory: string | null): string | null {
   if (!nativeCategory) return null;
   const c = nativeCategory.toLowerCase();
-  if (/ring/.test(c)) return "Ring";
-  if (/necklace|pendant|choker|chain/.test(c)) return "Necklace";
   if (/earring|stud|hoop|chandbali|jhumk/.test(c)) return "Earrings";
+  if (/necklace|pendant|choker|chain/.test(c)) return "Necklace";
   if (/bracelet|bangle|cuff/.test(c)) return "Bracelet";
   if (/tikka|maang/.test(c)) return "Maang Tikka";
   if (/\bset\b|bridal\s*set/.test(c)) return "Set";
+  if (/\bring\b/.test(c)) return "Ring";
   return null;
 }
 

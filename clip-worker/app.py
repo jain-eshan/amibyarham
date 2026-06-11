@@ -52,8 +52,8 @@ print("[clip-worker] ready")
 # taxonomy added in 0004 (stones, motif).
 
 JEWELRY_TYPES = ["Ring", "Necklace", "Earrings", "Bracelet", "Maang Tikka", "Set"]
-METALS = ["18k Gold", "22k Gold", "Rose Gold", "White Gold", "Platinum"]
-STYLES = ["Polki", "Jadau", "Modern", "Minimalist", "Vintage", "Statement", "Art Deco"]
+METALS = ["18k Gold", "22k Gold", "Rose Gold", "White Gold", "Platinum", "Sterling Silver"]
+STYLES = ["Modern", "Minimalist", "Vintage", "Statement", "Art Deco", "Polki", "Jadau"]
 STONES = ["Diamond", "Emerald", "Ruby", "Sapphire", "Pearl", "Polki Diamond", "Uncut Diamond"]
 MOTIFS = ["Floral", "Geometric", "Celestial", "Animal", "Paisley", "Abstract"]
 OCCASIONS = ["Wedding", "Engagement", "Everyday", "Statement"]
@@ -64,11 +64,11 @@ PROMPT_PREFIX = "a photograph of jewelry — "
 # multi-choice facets only emit labels whose similarity clears the threshold,
 # so we don't over-tag.
 THRESHOLDS = {
-    "metals": 0.26,
-    "styles": 0.26,
-    "stones": 0.26,
-    "motif": 0.26,
-    "occasions": 0.25,
+    "metals": 0.29,
+    "styles": 0.29,
+    "stones": 0.29,
+    "motif": 0.28,
+    "occasions": 0.27,
 }
 
 # Never return more than this many labels per multi-choice facet.

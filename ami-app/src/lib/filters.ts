@@ -38,13 +38,13 @@ export const FACETS: readonly Facet[] = [
     key: "metal",
     label: "Metal",
     hint: "Pick your palette.",
-    options: ["18k Gold", "22k Gold", "Rose Gold", "White Gold"],
+    options: ["18k Gold", "22k Gold", "Rose Gold", "White Gold", "Platinum", "Sterling Silver"],
   },
   {
     key: "style",
     label: "Style",
     hint: "Your aesthetic.",
-    options: ["Polki", "Jadau", "Modern", "Minimalist"],
+    options: ["Modern", "Minimalist", "Vintage", "Statement", "Art Deco", "Polki", "Jadau"],
   },
 ] as const;
 
