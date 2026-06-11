@@ -14,7 +14,8 @@
     "ingest:test": "tsx ingest/test-pipeline.ts"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.107.0"
+    "@supabase/supabase-js": "^2.107.0",
+    "dotenv": "^17.4.2"
   },
   "devDependencies": {
     "@types/node": "^20",
