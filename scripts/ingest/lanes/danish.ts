@@ -180,7 +180,7 @@ function asText(value: unknown): string | null {
   return null;
 }
 
-function parseProduct(
+function parseProductFromJsonLd(
   html: string,
   pageUrl: string,
   brand: BrandConfig,
@@ -208,12 +208,58 @@ function parseProduct(
       sourceName: brandName,
       attribution: brandName,
       altText: asText(product["name"]),
-      licenseStatus: "editorial", // brand-owned imagery
+      licenseStatus: "editorial",
       nativeCategory: asText(product["category"]),
       nativeMaterial: asText(product["material"]),
     };
   }
   return null;
+}
+
+/**
+ * Fallback: fetch the Shopify product JSON endpoint ({url}.json) when a page
+ * lacks JSON-LD markup.
+ */
+async function parseProductFromShopifyJson(
+  pageUrl: string,
+  brand: BrandConfig,
+): Promise<SourceCandidate | null> {
+  const jsonUrl = pageUrl.replace(/\/?$/, ".json");
+  let res: Response;
+  try {
+    res = await politeFetch(jsonUrl);
+  } catch {
+    return null;
+  }
+
+  let data: { product?: Record<string, unknown> };
+  try {
+    data = (await res.json()) as { product?: Record<string, unknown> };
+  } catch {
+    return null;
+  }
+
+  const product = data.product;
+  if (!product) return null;
+
+  const imageUrl =
+    firstImage((product.images as unknown[] | undefined)?.[0]) ??
+    (typeof product.image === "object" && product.image
+      ? (product.image as Record<string, unknown>).src as string | undefined
+      : null) ??
+    null;
+  if (!imageUrl) return null;
+
+  return {
+    imageUrl,
+    sourceUrl: pageUrl,
+    sourceName: brand.name,
+    attribution: brand.name,
+    altText: typeof product.title === "string" ? product.title : null,
+    licenseStatus: "editorial",
+    nativeCategory: typeof product.product_type === "string" ? product.product_type : null,
+    nativeMaterial: null,
+  };
 }
 
 export type DanishOptions = {
@@ -248,9 +294,13 @@ export async function collectDanish(
     for (const pageUrl of urls) {
       try {
         const html = await (await politeFetch(pageUrl)).text();
-        const candidate = parseProduct(html, pageUrl, brand);
+        let candidate = parseProductFromJsonLd(html, pageUrl, brand);
+        if (!candidate) {
+          candidate = await parseProductFromShopifyJson(pageUrl, brand);
+          if (candidate) console.log(`[danish]   ✓ (shopify json) ${candidate.altText ?? pageUrl}`);
+        }
         if (candidate) candidates.push(candidate);
-        else console.warn(`[danish]   no Product JSON-LD: ${pageUrl}`);
+        else console.warn(`[danish]   no product data: ${pageUrl}`);
       } catch (err) {
         console.error(
           `[danish]   ${pageUrl} failed:`,
