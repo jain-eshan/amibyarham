@@ -419,31 +419,20 @@ def _clip_post(path: str, payload: dict, timeout: int = 30) -> dict:
 def tier3_clip_tags(image_bytes: bytes) -> tuple[list[float], str, TagSet]:
     """
     Returns (embedding, phash, TagSet) from the CLIP worker.
-    embedding: 512-dim float list
-    phash: perceptual hash string
-    TagSet: zero-shot visual tags
-
-    Worker endpoints used:
-      POST /embed  → { embedding: float[], phash: str }
-      POST /tag    → { jewelry_type, metal, styles, stones, motif, occasions }
-
-    The worker also exposes /enrich which returns both in one call — if your
-    worker deployment supports it, swap to a single call here for efficiency.
+    Uses /enrich endpoint for single-call efficiency (embedding + phash + tags).
     """
     b64_image = base64.b64encode(image_bytes).decode()
+    resp = _clip_post("/enrich", {"image_base64": b64_image})
 
-    embed_resp = _clip_post("/embed", {"image_b64": b64_image})
-    embedding: list[float] = embed_resp.get("embedding", [])
-    phash: str = embed_resp.get("phash", "")
-
-    tag_resp = _clip_post("/tag", {"image_b64": b64_image})
+    embedding: list[float] = resp.get("embedding", [])
+    phash: str = resp.get("phash", "")
     tags = TagSet(
-        jewelry_type=tag_resp.get("jewelry_type"),
-        metals=tag_resp.get("metal") or [],
-        styles=tag_resp.get("styles") or [],
-        stones=tag_resp.get("stones") or [],
-        motif=tag_resp.get("motif") or [],
-        occasions=tag_resp.get("occasions") or [],
+        jewelry_type=resp.get("jewelry_type"),
+        metals=resp.get("metal") or [],
+        styles=resp.get("styles") or [],
+        stones=resp.get("stones") or [],
+        motif=resp.get("motif") or [],
+        occasions=resp.get("occasions") or [],
     )
     return embedding, phash, tags
 
@@ -567,8 +556,6 @@ def insert_row(
     phash: str,
     content_type: str,
 ) -> None:
-    embedding_str = f"[{','.join(str(v) for v in embedding)}]" if embedding else None
-
     row: dict[str, Any] = {
         "image_url":      image_url,
         "alt_text":       pin.title or None,
@@ -588,8 +575,8 @@ def insert_row(
     }
     if phash:
         row["phash"] = phash
-    if embedding_str:
-        row["embedding"] = embedding_str
+    if embedding:
+        row["embedding"] = embedding
 
     supabase_client.table("inspiration_images").insert(row).execute()
 

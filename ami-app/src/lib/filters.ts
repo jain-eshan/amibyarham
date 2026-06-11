@@ -204,6 +204,45 @@ function chipMatches(selected: string[], itemValues: string[]): boolean {
   return selected.some((value) => itemValues.includes(value));
 }
 
+/**
+ * Metal color matching maps the UI vocabulary (Yellow/White/Rose Gold) onto the
+ * CLIP-emitted metals column which stores karatage-qualified names like
+ * "18k Gold", "22k Gold", "White Gold", "Rose Gold", "Platinum", etc.
+ * Falls back to metalColors (Smart Onboarding column) when populated.
+ */
+function metalColorMatches(selected: string[], item: InspirationItem): boolean {
+  if (selected.length === 0) return true;
+  // Prefer the dedicated metalColors column when it has data.
+  if (item.metalColors.length > 0) return chipMatches(selected, item.metalColors);
+  // Otherwise derive color from the CLIP metals column.
+  if (item.metals.length === 0) return true; // unknown → don't exclude
+  return selected.some((color) => {
+    if (color === "Yellow Gold")
+      return item.metals.some(
+        (m) => /\d+k\s*gold/i.test(m) && !/white|rose/i.test(m),
+      );
+    if (color === "White Gold")
+      return item.metals.some((m) => /white\s*gold/i.test(m));
+    if (color === "Rose Gold")
+      return item.metals.some((m) => /rose\s*gold/i.test(m));
+    return item.metals.includes(color);
+  });
+}
+
+/**
+ * Karatage matching maps 14K/18K/22K onto the CLIP metals column which stores
+ * strings like "18k Gold", "22k Gold". Falls back to the karatage column.
+ */
+function karatageMatches(selected: string[], item: InspirationItem): boolean {
+  if (selected.length === 0) return true;
+  if (item.karatage.length > 0) return chipMatches(selected, item.karatage);
+  if (item.metals.length === 0) return true;
+  return selected.some((k) => {
+    const num = k.replace("K", "");
+    return item.metals.some((m) => new RegExp(`${num}k`, "i").test(m));
+  });
+}
+
 function budgetMatches(
   tier: BudgetTier | null,
   priceInr: number | null,
@@ -258,13 +297,13 @@ export function itemMatchesFilters(
     chipMatches(filters.jewelryType, item.jewelryType ? [item.jewelryType] : []) &&
     budgetMatches(filters.budgetTier, item.priceInr) &&
     branchMatches(filters.branch, item.stones) &&
-    chipMatches(filters.metalColor, item.metalColors) &&
+    metalColorMatches(filters.metalColor, item) &&
     chipMatches(filters.occasion, item.occasions) &&
     chipMatches(filters.style, item.styles) &&
     chipMatches(filters.diamondShape, item.diamondShapes) &&
     caratMatches(filters.caratRange, item.caratWeight) &&
     chipMatches(filters.certification, item.certifications) &&
-    chipMatches(filters.karatage, item.karatage) &&
+    karatageMatches(filters.karatage, item) &&
     weightRangeMatches(filters.weightRange, item.itemWeightGrams)
     // diamondColor / diamondClarity / diamondCut are recorded as preferences
     // but not yet attached to inspiration items — they pass through.

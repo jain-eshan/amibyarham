@@ -64,11 +64,11 @@ PROMPT_PREFIX = "a photograph of jewelry — "
 # multi-choice facets only emit labels whose similarity clears the threshold,
 # so we don't over-tag.
 THRESHOLDS = {
-    "metals": 0.29,
-    "styles": 0.29,
-    "stones": 0.29,
-    "motif": 0.28,
-    "occasions": 0.27,
+    "metals": 0.22,
+    "styles": 0.22,
+    "stones": 0.22,
+    "motif": 0.21,
+    "occasions": 0.21,
 }
 
 # Never return more than this many labels per multi-choice facet.
