@@ -21,7 +21,7 @@ const FOOTER_GROUPS = [
     title: "Studio",
     links: [
       { label: "Admin Login", href: "/admin/login" },
-      { label: "Privacy", href: "/privacy" },
+      { label: "Privacy", href: "/privacy-policy" },
     ],
   },
 ] as const;
