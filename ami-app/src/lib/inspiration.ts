@@ -21,6 +21,14 @@ export type InspirationItem = {
   /** Extra taxonomy from CLIP zero-shot tagging (Phase 2). */
   stones: string[];
   motif: string[];
+  /** Smart-Onboarding facets (Step 3). All optional — null/empty = unconstrained. */
+  metalColors: string[];
+  diamondShapes: string[];
+  caratWeight: number | null;
+  karatage: string[];
+  itemWeightGrams: number | null;
+  priceInr: number | null;
+  certifications: string[];
   /** Provenance — shown as caption attribution for scraped inspiration. */
   sourceName: string | null;
   sourceUrl: string | null;
@@ -46,6 +54,25 @@ type FallbackCard = Omit<
   | "sourceName"
   | "sourceUrl"
   | "attribution"
+  | "metalColors"
+  | "diamondShapes"
+  | "caratWeight"
+  | "karatage"
+  | "itemWeightGrams"
+  | "priceInr"
+  | "certifications"
+> & Partial<
+  Pick<
+    InspirationItem,
+    | "metalColors"
+    | "diamondShapes"
+    | "caratWeight"
+    | "karatage"
+    | "itemWeightGrams"
+    | "priceInr"
+    | "certifications"
+    | "stones"
+  >
 >;
 
 const FALLBACK_DECK: readonly FallbackCard[] = [
@@ -56,7 +83,15 @@ const FALLBACK_DECK: readonly FallbackCard[] = [
     jewelryType: "Ring",
     occasions: ["Engagement", "Wedding"],
     metals: ["18k Gold", "White Gold"],
-    styles: ["Modern", "Minimalist"],
+    styles: ["Solitaire", "Halo"],
+    metalColors: ["White Gold"],
+    diamondShapes: ["Round"],
+    caratWeight: 1.2,
+    karatage: ["18K"],
+    itemWeightGrams: 4,
+    priceInr: 2_400_000,
+    certifications: ["GIA"],
+    stones: ["Diamond"],
     glyph: "◯",
     gradient: "linear-gradient(150deg, #efe9de 0%, #e8d8cc 55%, #cc785c 140%)",
   },
@@ -64,10 +99,18 @@ const FALLBACK_DECK: readonly FallbackCard[] = [
     id: "fallback-emerald-cut",
     altText: "Emerald-cut pendant concept",
     category: "Pendants",
-    jewelryType: "Necklace",
+    jewelryType: "Pendant",
     occasions: ["Statement", "Everyday"],
     metals: ["White Gold", "18k Gold"],
-    styles: ["Modern"],
+    styles: ["Bezel", "Vintage"],
+    metalColors: ["White Gold"],
+    diamondShapes: ["Emerald"],
+    caratWeight: 0.8,
+    karatage: ["18K"],
+    itemWeightGrams: 3,
+    priceInr: 950_000,
+    certifications: ["IGI"],
+    stones: ["Diamond"],
     glyph: "▢",
     gradient: "linear-gradient(150deg, #f5f0e8 0%, #e6dfd8 60%, #5db8a6 150%)",
   },
@@ -79,6 +122,10 @@ const FALLBACK_DECK: readonly FallbackCard[] = [
     occasions: ["Wedding", "Statement"],
     metals: ["22k Gold", "Rose Gold"],
     styles: ["Jadau", "Polki"],
+    metalColors: ["Yellow Gold", "Rose Gold"],
+    karatage: ["22K"],
+    itemWeightGrams: 12,
+    priceInr: 380_000,
     glyph: "☾",
     gradient: "linear-gradient(150deg, #efe9de 0%, #e8d8b8 55%, #e8a55a 145%)",
   },
@@ -89,7 +136,15 @@ const FALLBACK_DECK: readonly FallbackCard[] = [
     jewelryType: "Bracelet",
     occasions: ["Everyday", "Statement"],
     metals: ["18k Gold", "White Gold"],
-    styles: ["Modern", "Minimalist"],
+    styles: ["Pavé"],
+    metalColors: ["White Gold"],
+    diamondShapes: ["Round"],
+    caratWeight: 3.5,
+    karatage: ["18K"],
+    itemWeightGrams: 8,
+    priceInr: 1_800_000,
+    certifications: ["GIA"],
+    stones: ["Diamond"],
     glyph: "⋯",
     gradient: "linear-gradient(150deg, #f5f0e8 0%, #e6dfd8 60%, #a9583e 150%)",
   },
@@ -98,9 +153,13 @@ const FALLBACK_DECK: readonly FallbackCard[] = [
     altText: "Polki choker concept",
     category: "Necklaces",
     jewelryType: "Necklace",
-    occasions: ["Wedding", "Engagement"],
+    occasions: ["Wedding"],
     metals: ["22k Gold"],
     styles: ["Polki", "Jadau"],
+    metalColors: ["Yellow Gold"],
+    karatage: ["22K"],
+    itemWeightGrams: 35,
+    priceInr: 2_200_000,
     glyph: "❖",
     gradient: "linear-gradient(150deg, #efe9de 0%, #e3d6c4 55%, #cc785c 150%)",
   },
@@ -111,7 +170,15 @@ const FALLBACK_DECK: readonly FallbackCard[] = [
     jewelryType: "Ring",
     occasions: ["Wedding", "Everyday"],
     metals: ["18k Gold", "Rose Gold", "White Gold"],
-    styles: ["Minimalist", "Modern"],
+    styles: ["Pavé", "Minimalist"],
+    metalColors: ["Rose Gold", "White Gold", "Yellow Gold"],
+    diamondShapes: ["Round"],
+    caratWeight: 1.0,
+    karatage: ["18K"],
+    itemWeightGrams: 3,
+    priceInr: 720_000,
+    certifications: ["IGI"],
+    stones: ["Diamond"],
     glyph: "∞",
     gradient: "linear-gradient(150deg, #f5f0e8 0%, #e8e0d2 60%, #8e8b82 150%)",
   },
@@ -119,21 +186,33 @@ const FALLBACK_DECK: readonly FallbackCard[] = [
     id: "fallback-pear-drop",
     altText: "Pear-drop pendant concept",
     category: "Pendants",
-    jewelryType: "Necklace",
+    jewelryType: "Pendant",
     occasions: ["Engagement", "Everyday"],
     metals: ["Rose Gold", "18k Gold"],
-    styles: ["Modern", "Minimalist"],
+    styles: ["Bezel", "Minimalist"],
+    metalColors: ["Rose Gold"],
+    diamondShapes: ["Pear"],
+    caratWeight: 0.5,
+    karatage: ["18K"],
+    itemWeightGrams: 2,
+    priceInr: 280_000,
+    certifications: ["IGI"],
+    stones: ["Diamond"],
     glyph: "◇",
     gradient: "linear-gradient(150deg, #efe9de 0%, #e6dfd8 55%, #5db8a6 145%)",
   },
   {
     id: "fallback-stud-classic",
-    altText: "Classic stud earrings concept",
+    altText: "Classic gold stud earrings",
     category: "Earrings",
     jewelryType: "Earrings",
     occasions: ["Everyday"],
-    metals: ["18k Gold", "White Gold"],
+    metals: ["18k Gold", "22k Gold"],
     styles: ["Minimalist"],
+    metalColors: ["Yellow Gold"],
+    karatage: ["18K", "22K"],
+    itemWeightGrams: 1.8,
+    priceInr: 32_000,
     glyph: "✦",
     gradient: "linear-gradient(150deg, #f5f0e8 0%, #e8d8cc 60%, #e8a55a 150%)",
   },
@@ -144,7 +223,11 @@ const FALLBACK_DECK: readonly FallbackCard[] = [
     jewelryType: "Set",
     occasions: ["Wedding"],
     metals: ["22k Gold"],
-    styles: ["Polki", "Jadau"],
+    styles: ["Polki", "Jadau", "Statement"],
+    metalColors: ["Yellow Gold"],
+    karatage: ["22K"],
+    itemWeightGrams: 65,
+    priceInr: 4_500_000,
     glyph: "❂",
     gradient: "linear-gradient(150deg, #efe9de 0%, #e8d8b8 55%, #e8a55a 150%)",
   },
@@ -153,9 +236,13 @@ const FALLBACK_DECK: readonly FallbackCard[] = [
     altText: "Jadau maang tikka concept",
     category: "Maang Tikka",
     jewelryType: "Maang Tikka",
-    occasions: ["Wedding", "Engagement"],
+    occasions: ["Wedding"],
     metals: ["22k Gold", "Rose Gold"],
     styles: ["Jadau", "Polki"],
+    metalColors: ["Yellow Gold", "Rose Gold"],
+    karatage: ["22K"],
+    itemWeightGrams: 9,
+    priceInr: 420_000,
     glyph: "✸",
     gradient: "linear-gradient(150deg, #efe9de 0%, #e3d6c4 55%, #cc785c 145%)",
   },
@@ -165,11 +252,18 @@ function fallbackDeck(): InspirationItem[] {
   return FALLBACK_DECK.map((c) => ({
     ...c,
     imageUrl: null,
-    stones: [],
+    stones: c.stones ? [...c.stones] : [],
     motif: [],
     sourceName: null,
     sourceUrl: null,
     attribution: null,
+    metalColors: c.metalColors ? [...c.metalColors] : [],
+    diamondShapes: c.diamondShapes ? [...c.diamondShapes] : [],
+    caratWeight: c.caratWeight ?? null,
+    karatage: c.karatage ? [...c.karatage] : [],
+    itemWeightGrams: c.itemWeightGrams ?? null,
+    priceInr: c.priceInr ?? null,
+    certifications: c.certifications ? [...c.certifications] : [],
     isFromDb: false,
   }));
 }
@@ -196,6 +290,13 @@ function dbRowToItem(row: InspirationImage, index: number): InspirationItem {
     sourceName: row.source_name ?? null,
     sourceUrl: row.source_url ?? null,
     attribution: row.attribution ?? null,
+    metalColors: row.metal_colors ?? [],
+    diamondShapes: row.diamond_shapes ?? [],
+    caratWeight: row.carat_weight ?? null,
+    karatage: row.karatage ?? [],
+    itemWeightGrams: row.item_weight_grams ?? null,
+    priceInr: row.price_inr ?? null,
+    certifications: row.certifications ?? [],
     glyph: GLYPHS[index % GLYPHS.length] ?? "✦",
     gradient: GRADIENTS[index % GRADIENTS.length] ?? GRADIENTS[0],
     isFromDb: true,
@@ -254,7 +355,7 @@ export async function getInspirationDeck(): Promise<InspirationItem[]> {
     const { data, error } = await supabase
       .from("inspiration_images")
       .select(
-        "id, image_url, alt_text, category, jewelry_type, occasions, metals, styles, stones, motif, source_name, source_url, attribution, featured, is_own_catalog, created_at",
+        "id, image_url, alt_text, category, jewelry_type, occasions, metals, styles, stones, motif, source_name, source_url, attribution, metal_colors, diamond_shapes, carat_weight, karatage, item_weight_grams, price_inr, certifications, featured, is_own_catalog, created_at",
       )
       .eq("status", "approved")
       .order("created_at", { ascending: false })

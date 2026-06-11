@@ -124,21 +124,7 @@ export function SwipeEngine({
       });
       if (!res.ok) return;
       const { items } = (await res.json()) as {
-        items: Array<{
-          id: string;
-          imageUrl: string | null;
-          altText: string;
-          category: string | null;
-          jewelryType: string | null;
-          occasions: string[];
-          metals: string[];
-          styles: string[];
-          stones: string[];
-          motif: string[];
-          sourceName: string | null;
-          sourceUrl: string | null;
-          attribution: string | null;
-        }>;
+        items: Array<Omit<InspirationItem, "glyph" | "gradient" | "isFromDb">>;
       };
       if (!items || items.length === 0) return;
 
