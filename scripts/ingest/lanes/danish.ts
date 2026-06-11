@@ -250,6 +250,17 @@ async function parseProductFromShopifyJson(
     null;
   if (!imageUrl) return null;
 
+  // Shopify product_type is often empty; fall back to tags for category hints.
+  let nativeCategory =
+    typeof product.product_type === "string" && product.product_type
+      ? product.product_type
+      : null;
+  if (!nativeCategory && typeof product.tags === "string" && product.tags) {
+    nativeCategory = product.tags;
+  } else if (!nativeCategory && Array.isArray(product.tags) && product.tags.length > 0) {
+    nativeCategory = product.tags.join(", ");
+  }
+
   return {
     imageUrl,
     sourceUrl: pageUrl,
@@ -257,7 +268,7 @@ async function parseProductFromShopifyJson(
     attribution: brand.name,
     altText: typeof product.title === "string" ? product.title : null,
     licenseStatus: "editorial",
-    nativeCategory: typeof product.product_type === "string" ? product.product_type : null,
+    nativeCategory,
     nativeMaterial: null,
   };
 }

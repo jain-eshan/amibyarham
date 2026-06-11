@@ -64,12 +64,15 @@ PROMPT_PREFIX = "a photograph of jewelry — "
 # multi-choice facets only emit labels whose similarity clears the threshold,
 # so we don't over-tag.
 THRESHOLDS = {
-    "metals": 0.21,
-    "styles": 0.22,
-    "stones": 0.22,
-    "motif": 0.22,
-    "occasions": 0.21,
+    "metals": 0.26,
+    "styles": 0.26,
+    "stones": 0.26,
+    "motif": 0.26,
+    "occasions": 0.25,
 }
+
+# Never return more than this many labels per multi-choice facet.
+MAX_LABELS_PER_FACET = 3
 
 # ─── App ─────────────────────────────────────────────────────────────────────
 
@@ -161,7 +164,9 @@ def _argmax(scores: list[tuple[str, float]]) -> str | None:
 
 
 def _above(scores: list[tuple[str, float]], threshold: float) -> list[str]:
-    return [label for label, score in scores if score >= threshold]
+    passing = [(label, score) for label, score in scores if score >= threshold]
+    passing.sort(key=lambda kv: kv[1], reverse=True)
+    return [label for label, _ in passing[:MAX_LABELS_PER_FACET]]
 
 
 def _build_tags(feat: torch.Tensor) -> dict[str, object]:
