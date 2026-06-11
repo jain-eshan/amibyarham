@@ -53,6 +53,8 @@
   --font-mono:
     var(--font-mono-code), "JetBrains Mono", ui-monospace, "SFMono-Regular",
     monospace;
+  --font-brand:
+    var(--font-brand-face), "Bayer TypeArchiType", var(--font-display);
 
   /* ── Radii ────────────────────────────────────────────────────────────── */
   --radius-xs: 4px;

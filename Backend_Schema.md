@@ -15,6 +15,13 @@ Stores the curated images used in the Swipe Engine.
 | `occasions` | Text[] | Default: `'{}'` | Multi-value facet: `Wedding`, `Engagement`, `Everyday`, `Statement`. GIN-indexed. |
 | `metals` | Text[] | Default: `'{}'` | Multi-value facet: `18k Gold`, `22k Gold`, `Rose Gold`, `White Gold`. GIN-indexed. |
 | `styles` | Text[] | Default: `'{}'` | Multi-value facet: `Polki`, `Jadau`, `Modern`, `Minimalist`. GIN-indexed. |
+| `metal_colors` | Text[] | Default: `'{}'` | Smart-Onboarding facet: `Yellow Gold`, `White Gold`, `Rose Gold`. GIN-indexed. |
+| `diamond_shapes` | Text[] | Default: `'{}'` | Smart-Onboarding facet: `Round`, `Oval`, `Emerald`, `Cushion`, `Pear`, `Radiant`, `Princess`, `Asscher`, `Marquise`, `Heart`. GIN-indexed. |
+| `carat_weight` | Numeric(5,2) | Nullable | Center-stone carat weight, e.g. `1.25`. Indexed for the carat slider. |
+| `karatage` | Text[] | Default: `'{}'` | Smart-Onboarding facet: `14K`, `18K`, `22K`. GIN-indexed. |
+| `item_weight_grams` | Numeric(6,2) | Nullable | Gross weight in grams; bucketed into `0-2g` / `2-5g` / `5-10g` / `10-20g+`. |
+| `price_inr` | Integer | Nullable | Representative price (INR) for budget-tier filtering. |
+| `certifications` | Text[] | Default: `'{}'` | Smart-Onboarding facet: `GIA`, `IGI`, `HRD`. GIN-indexed. |
 | `created_at` | Timestamp | Default: `now()` | Record creation time. |
 
 > The four facet columns power the **Filter-First Swipe Flow**. The catalogue is loaded once and filtered client-side so the "N pieces match" count updates instantly; the GIN indexes prepare for moving array-overlap filtering server-side as the catalogue grows.
