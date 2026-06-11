@@ -27,14 +27,23 @@ export type BrandConfig = {
   productPattern: RegExp;
 };
 
+/** Common Shopify sitemap paths to try when the primary sitemapUrl 404s. */
+function sitemapFallbacks(origin: string): string[] {
+  return [
+    `${origin}/sitemap_products_1.xml`,
+    `${origin}/sitemap_products.xml`,
+    `${origin}/sitemap_index.xml`,
+  ];
+}
+
 // Best-effort defaults (many of these run on Shopify → /products/ + sitemap
 // index at /sitemap.xml). Verify robots.txt + adjust patterns per brand before
 // a production run.
 export const DANISH_BRANDS: BrandConfig[] = [
   {
-    name: "Maria Black",
-    origin: "https://www.maria-black.com",
-    sitemapUrl: "https://www.maria-black.com/sitemap.xml",
+    name: "Enamel Copenhagen",
+    origin: "https://www.enamelcopenhagen.com",
+    sitemapUrl: "https://www.enamelcopenhagen.com/sitemap.xml",
     productPattern: /\/products\//,
   },
   {
@@ -87,6 +96,7 @@ async function collectProductUrls(
   const products = new Set<string>();
   const queue = [brand.sitemapUrl];
   const visited = new Set<string>();
+  let triedFallbacks = false;
 
   while (queue.length > 0 && products.size < maxProducts) {
     const url = queue.shift()!;
@@ -101,6 +111,14 @@ async function collectProductUrls(
         `[danish] sitemap ${url} failed:`,
         err instanceof Error ? err.message : err,
       );
+      // If the primary sitemap failed and we haven't tried fallbacks yet,
+      // queue common Shopify sitemap paths.
+      if (!triedFallbacks && url === brand.sitemapUrl) {
+        triedFallbacks = true;
+        const fallbacks = sitemapFallbacks(brand.origin);
+        console.log(`[danish]   trying ${fallbacks.length} fallback sitemap path(s)…`);
+        queue.push(...fallbacks);
+      }
       continue;
     }
     await sleep(REQUEST_DELAY_MS);
