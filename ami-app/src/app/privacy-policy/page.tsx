@@ -87,7 +87,7 @@ export default function PrivacyPolicyPage() {
             <div className="bg-gray-50 p-4 rounded-lg mt-4">
               <p className="font-semibold">AMI by Arham</p>
               <p>Email: amibyarham@gmail.com</p>
-              <p>Address: Q5, Model Town, Delhi, India</p>
+              <p>Address: Q5 Model Town, Delhi</p>
             </div>
           </section>
 
