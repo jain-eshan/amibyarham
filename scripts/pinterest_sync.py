@@ -536,8 +536,6 @@ def insert_row(
     phash: str,
     content_type: str,
 ) -> None:
-    embedding_str = f"[{','.join(str(v) for v in embedding)}]" if embedding else None
-
     row: dict[str, Any] = {
         "image_url":      image_url,
         "alt_text":       pin.title or None,
@@ -557,8 +555,8 @@ def insert_row(
     }
     if phash:
         row["phash"] = phash
-    if embedding_str:
-        row["embedding"] = embedding_str
+    if embedding:
+        row["embedding"] = embedding
 
     supabase_client.table("inspiration_images").insert(row).execute()
 
