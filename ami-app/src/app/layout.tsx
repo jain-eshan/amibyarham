@@ -145,7 +145,11 @@ const jsonLd = {
         addressCountry: "IN",
         addressLocality: "Delhi",
       },
-      sameAs: [],
+      sameAs: [
+        "https://www.linkedin.com/company/arham-diamond",
+        "https://www.instagram.com/amibyarham/",
+        "https://www.facebook.com/profile.php?id=61590698912033",
+      ],
     },
     {
       "@type": "JewelryStore",
