@@ -16,6 +16,7 @@
  *                  so you can re-run until everything is embedded.
  */
 
+import "dotenv/config";
 import { createClient } from "@supabase/supabase-js";
 
 import type { Database } from "../ami-app/src/types/database";

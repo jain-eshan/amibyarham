@@ -17,6 +17,8 @@
  * Supabase Studio — nothing auto-publishes.
  */
 
+import "dotenv/config";
+
 import { collectDanish } from "./lanes/danish";
 import { ingest } from "./pipeline";
 import type { SourceCandidate } from "./types";
