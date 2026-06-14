@@ -7,10 +7,12 @@
 
 export const EMBEDDING_DIM = 512;
 
-export function parseEmbedding(value: string | null | undefined): number[] | null {
+export function parseEmbedding(value: string | number[] | null | undefined): number[] | null {
   if (!value) return null;
   try {
-    const arr = JSON.parse(value) as unknown;
+    const arr = Array.isArray(value)
+      ? (value as unknown)
+      : (JSON.parse(value as string) as unknown);
     if (!Array.isArray(arr) || arr.length !== EMBEDDING_DIM) return null;
     // JSON.parse already returns numbers; coerce defensively to drop bad shapes.
     const out = new Array<number>(EMBEDDING_DIM);
