@@ -114,15 +114,13 @@ export async function POST(req: Request) {
     sourceName: m.source_name,
     sourceUrl: m.source_url,
     attribution: m.attribution,
-    // Smart-Onboarding facets are not yet plumbed through the recommend RPC —
-    // re-ranked cards arrive with empty/null values and pass the new filters.
-    metalColors: [],
-    diamondShapes: [],
-    caratWeight: null,
-    karatage: [],
-    itemWeightGrams: null,
-    priceInr: null,
-    certifications: [],
+    metalColors: m.metal_colors ?? [],
+    diamondShapes: m.diamond_shapes ?? [],
+    caratWeight: m.carat_weight ?? null,
+    karatage: m.karatage ?? [],
+    itemWeightGrams: m.item_weight_grams ?? null,
+    priceInr: m.price_inr ?? null,
+    certifications: m.certifications ?? [],
     similarity: m.similarity,
   }));
 
