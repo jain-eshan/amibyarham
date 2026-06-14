@@ -8,7 +8,7 @@ Pipeline stages (per pin):
   3. Three-tier tag cascade: board name → text regex → CLIP worker
   4. Dedup by source_url (then phash after download)
   5. Upload image binary to Supabase Storage
-  6. Insert pending_review row with full provenance, embedding, merged tags
+  6. Insert approved row with full provenance, embedding, merged tags
 
 Usage:
     pip install requests python-dotenv supabase
@@ -547,6 +547,36 @@ def upload_to_storage(supabase_client: Client, image_bytes: bytes,
     return supabase_client.storage.from_(STORAGE_BUCKET).get_public_url(path)
 
 
+_KARATAGE_RE = re.compile(r"(\d{1,2})\s*k", re.IGNORECASE)
+
+
+def derive_metal_colors(metals: list[str]) -> list[str]:
+    """Map CLIP-emitted metal strings ("18k Gold", "White Gold", …) onto the
+    Smart-Onboarding metal-color vocabulary (Yellow / White / Rose Gold).
+    A bare karatage-qualified gold ("18k Gold") implies yellow."""
+    colors: list[str] = []
+    for m in metals:
+        lo = m.lower()
+        if "white gold" in lo:
+            colors.append("White Gold")
+        elif "rose gold" in lo:
+            colors.append("Rose Gold")
+        elif "gold" in lo:
+            colors.append("Yellow Gold")
+    # preserve insertion order, dedupe
+    return list(dict.fromkeys(colors))
+
+
+def derive_karatage(metals: list[str]) -> list[str]:
+    """Pull "14K" / "18K" / "22K" out of CLIP metals strings."""
+    karats: list[str] = []
+    for m in metals:
+        match = _KARATAGE_RE.search(m)
+        if match:
+            karats.append(f"{match.group(1)}K")
+    return list(dict.fromkeys(karats))
+
+
 def insert_row(
     supabase_client: Client,
     pin: PinRecord,
@@ -563,7 +593,9 @@ def insert_row(
         "source_url":     pin.source_url,
         "attribution":    pin.board_name,
         "license_status": "unknown",
-        "status":         "pending_review",
+        # Trusted boards → publish immediately. Moderation surface can come
+        # later if the source mix expands.
+        "status":         "approved",
         "is_own_catalog": False,
         # Taxonomy
         "jewelry_type":   tags.jewelry_type,
@@ -572,11 +604,13 @@ def insert_row(
         "styles":         tags.styles,
         "motif":          tags.motif,
         "occasions":      tags.occasions,
+        # Smart-Onboarding facets derivable from the CLIP metals vocabulary.
+        "metal_colors":   derive_metal_colors(tags.metals),
+        "karatage":       derive_karatage(tags.metals),
+        "embedding":      embedding,
     }
     if phash:
         row["phash"] = phash
-    if embedding:
-        row["embedding"] = embedding
 
     supabase_client.table("inspiration_images").insert(row).execute()
 
@@ -612,6 +646,15 @@ def ingest_pins(
 
             # ── Three-tier tags + CLIP embedding ───────────────────────────
             embedding, phash, tags = build_tags(pin, image_bytes)
+
+            # Without an embedding the pin can never be re-ranked by the
+            # recommender (the match_inspiration RPC excludes null vectors).
+            # Skip rather than write a dead row; a re-run after the CLIP
+            # worker is healthy will pick it back up via source_url dedup.
+            if not embedding:
+                log.warning("Skipping (no CLIP embedding): %s", pin.source_url)
+                stats.failed += 1
+                continue
 
             # ── Dedup: pHash ───────────────────────────────────────────────
             if phash and phash_exists(supabase_client, phash):

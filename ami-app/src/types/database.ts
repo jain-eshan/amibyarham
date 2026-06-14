@@ -257,6 +257,13 @@ export type Database = {
           styles: string[];
           stones: string[];
           motif: string[];
+          metal_colors: string[];
+          diamond_shapes: string[];
+          carat_weight: number | null;
+          karatage: string[];
+          item_weight_grams: number | null;
+          price_inr: number | null;
+          certifications: string[];
           source_name: string | null;
           source_url: string | null;
           attribution: string | null;
