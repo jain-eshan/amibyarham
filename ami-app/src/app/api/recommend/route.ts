@@ -75,6 +75,15 @@ export async function POST(req: Request) {
   if (fetchError) {
     return NextResponse.json({ error: "fetch_failed" }, { status: 500 });
   }
+
+  console.log("DEBUG embed fetch:", {
+  rows: rows?.length,
+  sample: rows?.[0]?.id,
+  type: typeof rows?.[0]?.embedding,
+  isArray: Array.isArray(rows?.[0]?.embedding),
+  sample_embed: rows?.[0]?.embedding,
+});
+  
   console.log(
   "rows:", rows?.length,
   "sample type:", typeof rows?.[0]?.embedding,
