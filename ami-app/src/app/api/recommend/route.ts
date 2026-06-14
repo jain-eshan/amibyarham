@@ -69,6 +69,12 @@ export async function POST(req: Request) {
   if (fetchError) {
     return NextResponse.json({ error: "fetch_failed" }, { status: 500 });
   }
+  console.log(
+  "rows:", rows?.length,
+  "sample type:", typeof rows?.[0]?.embedding,
+  "is array:", Array.isArray(rows?.[0]?.embedding),
+  "sample len:", Array.isArray(rows?.[0]?.embedding) ? rows[0].embedding.length : "n/a"
+);
 
   const byId = new Map<string, number[]>();
   for (const row of rows ?? []) {
