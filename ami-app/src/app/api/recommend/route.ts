@@ -47,6 +47,12 @@ export async function POST(req: Request) {
   } catch {
     return NextResponse.json({ error: "bad_request" }, { status: 400 });
   }
+  console.log("DEBUG request parsed:", {
+  likedIds: parsed.likedIds,
+  likedCount: parsed.likedIds.length,
+  dislikedIds: parsed.dislikedIds,
+  seenIds: parsed.seenIds,
+});
 
   if (parsed.likedIds.length === 0) {
     return NextResponse.json({ items: [] satisfies RecommendItem[] });
