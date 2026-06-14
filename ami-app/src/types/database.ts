@@ -41,7 +41,7 @@ export type Database = {
           featured: boolean;
           status: Database["public"]["Enums"]["inspiration_status"];
           // pgvector serializes to a string over PostgREST; server-side only.
-          embedding: string | null;
+          embedding: string | number[] | null;
           created_at: string;
         };
         Insert: {
@@ -70,7 +70,7 @@ export type Database = {
           is_own_catalog?: boolean;
           featured?: boolean;
           status?: Database["public"]["Enums"]["inspiration_status"];
-          embedding?: string | null;
+          embedding?: string | number[] | null;
           created_at?: string;
         };
         Update: {
@@ -99,7 +99,7 @@ export type Database = {
           is_own_catalog?: boolean;
           featured?: boolean;
           status?: Database["public"]["Enums"]["inspiration_status"];
-          embedding?: string | null;
+          embedding?: string | number[] | null;
           created_at?: string;
         };
         Relationships: [];
