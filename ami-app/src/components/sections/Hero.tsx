@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 
 import { Button } from "@/components/Button";
-import { JewelrySketch } from "@/components/sections/JewelrySketch";
+import { VideoSketch } from "@/components/sections/VideoSketch";
 
 const easeOut = [0.16, 1, 0.3, 1] as const;
 
@@ -76,7 +76,7 @@ export function Hero() {
           transition={{ duration: 1.1, delay: 0.08, ease: easeOut }}
           className="col-span-12 md:col-span-6"
         >
-          <JewelrySketch />
+          <VideoSketch />
         </motion.div>
       </div>
     </section>
