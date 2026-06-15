@@ -4,44 +4,46 @@ import { motion } from "framer-motion";
 import { useCallback, useRef, useState } from "react";
 
 // ─── Annotation definitions ───────────────────────────────────────────────────
-// Coordinates are percentages (0-100) of the overlay container, which is larger
-// than the video (overflow-visible) so labels can sit outside the ring drawing.
-// The ring drawing occupies roughly the center 60% of the container.
+// Arrow SVGs originate from the ring border, pointing outward to corner labels.
+// img* props position the <image> in the 0-100 SVG viewBox.
+// mirror: true flips the image horizontally so tail stays at ring edge.
+// Arrow files: 1.svg (tail→UL, head→LR), 2.svg (tail→LR, head→UL), 3.svg (tail→LL, head→UR)
 
 const ANNOTATIONS = [
   {
     id: "your-design",
     triggerAt: 2.5,
-    lx: 97, ly: 8, anchor: "end" as const,
-    pathD: "M 92,13 C 82,18 72,25 62,32",
+    arrow: "/3.svg",
+    imgX: 54, imgY: 1, imgW: 38, imgH: 38,
+    mirror: false,
+    lx: 97, ly: 7, anchor: "end" as const,
     lines: ["Your Design", "Not ours. Never from a catalogue."],
   },
   {
     id: "cost",
     triggerAt: 4.0,
-    lx: 97, ly: 42, anchor: "end" as const,
-    pathD: "M 93,44 C 85,46 77,47 69,48",
+    arrow: "/1.svg",
+    imgX: 59, imgY: 61, imgW: 38, imgH: 38,
+    mirror: false,
+    lx: 97, ly: 88, anchor: "end" as const,
     lines: ["60–80% Less", "Same stone. Smarter origin."],
   },
   {
-    id: "certified",
-    triggerAt: 5.5,
-    lx: 97, ly: 85, anchor: "end" as const,
-    pathD: "M 92,82 C 83,78 74,73 66,68",
-    lines: ["IGI Certified", "Lab-grown. Identical brilliance."],
-  },
-  {
     id: "craft",
-    triggerAt: 7.0,
-    lx: 3, ly: 85, anchor: "start" as const,
-    pathD: "M 8,82 C 17,78 26,73 34,68",
+    triggerAt: 6.0,
+    arrow: "/1.svg",
+    imgX: 2, imgY: 61, imgW: 38, imgH: 38,
+    mirror: true,
+    lx: 3, ly: 88, anchor: "start" as const,
     lines: ["Heritage Craft", "Hand-finished in our Delhi atelier."],
   },
   {
     id: "timeline",
-    triggerAt: 8.5,
-    lx: 3, ly: 8, anchor: "start" as const,
-    pathD: "M 8,13 C 18,18 28,25 38,32",
+    triggerAt: 8.0,
+    arrow: "/2.svg",
+    imgX: 5, imgY: 1, imgW: 38, imgH: 38,
+    mirror: false,
+    lx: 3, ly: 7, anchor: "start" as const,
     lines: ["6 Weeks", "From sketch to heirloom."],
   },
 ] as const;
@@ -86,26 +88,32 @@ export function VideoSketch() {
         viewBox="0 0 100 100"
         xmlns="http://www.w3.org/2000/svg"
         className="pointer-events-none absolute inset-0 h-full w-full overflow-visible"
-        style={{ color: "var(--color-ink)" }}
       >
-        <defs>
-          <marker
-            id="arr"
-            markerWidth="4"
-            markerHeight="4"
-            refX="3.5"
-            refY="2"
-            orient="auto"
-            markerUnits="userSpaceOnUse"
-          >
-            <path d="M 0 0 L 4 2 L 0 4 Z" fill="var(--color-primary)" fillOpacity="0.75" />
-          </marker>
-        </defs>
-
         {ANNOTATIONS.map((ann) => {
           const show = shown.has(ann.id);
+          // Mirror: flip the image horizontally so it stays in the same bounding box
+          const arrowTransform = ann.mirror
+            ? `translate(${ann.imgX * 2 + ann.imgW} 0) scale(-1 1)`
+            : undefined;
+
           return (
             <g key={ann.id}>
+              {/* Hand-drawn arrow image */}
+              <motion.g
+                animate={{ opacity: show ? 1 : 0 }}
+                initial={{ opacity: 0 }}
+                transition={{ duration: 0.5, delay: 0.15 }}
+              >
+                <image
+                  href={ann.arrow}
+                  x={ann.imgX}
+                  y={ann.imgY}
+                  width={ann.imgW}
+                  height={ann.imgH}
+                  transform={arrowTransform}
+                />
+              </motion.g>
+
               {/* Primary label */}
               <motion.text
                 x={ann.lx}
@@ -115,13 +123,9 @@ export function VideoSketch() {
                 fill="var(--color-ink)"
                 letterSpacing="0.08em"
                 fontWeight="500"
-                style={
-                  {
-                    fontFamily: "var(--font-display)",
-                  } as React.CSSProperties
-                }
-                animate={{ opacity: show ? 1 : 0, y: show ? 0 : 3 }}
-                initial={{ opacity: 0, y: 3 }}
+                style={{ fontFamily: "var(--font-display)" } as React.CSSProperties}
+                animate={{ opacity: show ? 1 : 0, y: show ? ann.ly : ann.ly + 3 }}
+                initial={{ opacity: 0, y: ann.ly + 3 }}
                 transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
               >
                 {ann.lines[0]}
@@ -136,26 +140,12 @@ export function VideoSketch() {
                 fill="var(--color-body)"
                 letterSpacing="0.02em"
                 style={{ fontFamily: "var(--font-sans)" }}
-                animate={{ opacity: show ? 0.7 : 0, y: show ? 0 : 3 }}
-                initial={{ opacity: 0, y: 3 }}
+                animate={{ opacity: show ? 0.7 : 0, y: show ? ann.ly + 4.8 : ann.ly + 7.8 }}
+                initial={{ opacity: 0, y: ann.ly + 7.8 }}
                 transition={{ duration: 0.55, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
               >
                 {ann.lines[1]}
               </motion.text>
-
-              {/* Dashed curved arrow in brand primary color */}
-              <motion.path
-                d={ann.pathD}
-                stroke="var(--color-primary)"
-                strokeWidth="0.45"
-                strokeDasharray="2 2.2"
-                strokeOpacity="0.6"
-                fill="none"
-                markerEnd="url(#arr)"
-                animate={{ opacity: show ? 1 : 0 }}
-                initial={{ opacity: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-              />
             </g>
           );
         })}
