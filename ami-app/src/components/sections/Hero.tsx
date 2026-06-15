@@ -10,7 +10,7 @@ import { Button } from "@/components/Button";
 // "photo"  → sculptural hand image (Image 1A)
 // "video"  → looping goldsmith clip (Clip A)
 // "letter" → original "A" placeholder
-const HERO_VARIANT: "photo" | "video" | "letter" = "video";
+const HERO_VARIANT: "photo" | "video" | "letter" = "photo";
 
 const easeOut = [0.16, 1, 0.3, 1] as const;
 
