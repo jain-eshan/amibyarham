@@ -1,8 +1,16 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import Image from "next/image";
+import { useRef } from "react";
 
 import { Button } from "@/components/Button";
+
+// Switch artifact variant here as new assets arrive:
+// "photo"  → sculptural hand image (Image 1A)
+// "video"  → looping goldsmith clip (Clip A)
+// "letter" → original "A" placeholder
+const HERO_VARIANT: "photo" | "video" | "letter" = "video";
 
 const easeOut = [0.16, 1, 0.3, 1] as const;
 
@@ -73,51 +81,142 @@ export function Hero() {
           transition={{ duration: 1.2, delay: 0.1, ease: easeOut }}
           className="col-span-12 md:col-span-5"
         >
-          <HeroArtifact />
+          <HeroArtifact variant={HERO_VARIANT} />
         </motion.div>
       </div>
     </section>
   );
 }
 
-function HeroArtifact() {
+// ─── Artifact variants ────────────────────────────────────────────────────────
+
+function HeroArtifact({ variant }: { variant: "photo" | "video" | "letter" }) {
   return (
     <div className="relative aspect-[3/4] w-full overflow-hidden rounded-xl bg-surface-cream-strong">
-      <div className="pointer-events-none absolute inset-6 border border-hairline" />
+      {variant === "photo" && <PhotoArtifact />}
+      {variant === "video" && <VideoArtifact />}
+      {variant === "letter" && <LetterArtifact />}
 
-      <div className="absolute inset-0 flex items-center justify-center">
-        <span
-          aria-hidden
-          className="block leading-none text-ink"
-          style={{
-            fontFamily: "var(--font-display)",
-            fontSize: "clamp(7rem, 16vw, 16rem)",
-            letterSpacing: "-0.04em",
-          }}
-        >
-          A
-        </span>
-      </div>
+      {/* Corner markers — shown on photo and letter, hidden on video for cinematic feel */}
+      {variant !== "video" && (
+        <>
+          <span
+            aria-hidden
+            className="absolute top-6 left-6 text-xs tracking-[0.25em] text-muted"
+          >
+            N°01
+          </span>
+          <span
+            aria-hidden
+            className="absolute top-6 right-6 text-xs tracking-[0.25em] text-muted"
+          >
+            ✦
+          </span>
+          <div className="pointer-events-none absolute inset-6 border border-hairline" />
+          <span className="caption-uppercase absolute bottom-6 left-1/2 -translate-x-1/2 text-muted">
+            A Modern Royal Heirloom
+          </span>
+        </>
+      )}
+    </div>
+  );
+}
 
-      <span className="caption-uppercase absolute bottom-6 left-1/2 -translate-x-1/2 text-muted">
+// ─── Photo: sculptural hand with mouse-parallax ───────────────────────────────
+
+function PhotoArtifact() {
+  const ref = useRef<HTMLDivElement>(null);
+
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  const springX = useSpring(mouseX, { stiffness: 60, damping: 20 });
+  const springY = useSpring(mouseY, { stiffness: 60, damping: 20 });
+
+  const imgX = useTransform(springX, [-1, 1], [-10, 10]);
+  const imgY = useTransform(springY, [-1, 1], [-10, 10]);
+
+  function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
+    const rect = ref.current?.getBoundingClientRect();
+    if (!rect) return;
+    mouseX.set(((e.clientX - rect.left) / rect.width) * 2 - 1);
+    mouseY.set(((e.clientY - rect.top) / rect.height) * 2 - 1);
+  }
+
+  function handleMouseLeave() {
+    mouseX.set(0);
+    mouseY.set(0);
+  }
+
+  return (
+    <div
+      ref={ref}
+      className="absolute inset-0"
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+    >
+      <motion.div
+        className="absolute inset-[-12px]"
+        style={{ x: imgX, y: imgY }}
+      >
+        {/* Replace src with your Image 1A path once added to /public/hero/ */}
+        <Image
+          src="/hero/hand-rings.jpg"
+          alt="White sculptural hand wearing two delicate gold rings"
+          fill
+          className="object-cover object-center"
+          priority
+          sizes="(max-width: 768px) 100vw, 42vw"
+        />
+      </motion.div>
+    </div>
+  );
+}
+
+// ─── Video: looping cinematic clip ───────────────────────────────────────────
+
+function VideoArtifact() {
+  return (
+    <div className="absolute inset-0">
+      <video
+        className="h-full w-full object-cover object-center"
+        src="/hero/clip-goldsmith.mp4"
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="auto"
+      />
+      {/* Subtle gradient at bottom for legibility if caption is ever re-enabled */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/20 to-transparent" />
+      <span className="caption-uppercase absolute bottom-6 left-1/2 -translate-x-1/2 text-white/60">
         A Modern Royal Heirloom
-      </span>
-
-      <span
-        aria-hidden
-        className="absolute top-6 left-6 text-xs tracking-[0.25em] text-muted"
-      >
-        N°01
-      </span>
-      <span
-        aria-hidden
-        className="absolute top-6 right-6 text-xs tracking-[0.25em] text-muted"
-      >
-        ✦
       </span>
     </div>
   );
 }
+
+// ─── Letter: original "A" placeholder ────────────────────────────────────────
+
+function LetterArtifact() {
+  return (
+    <div className="absolute inset-0 flex items-center justify-center">
+      <span
+        aria-hidden
+        className="block leading-none text-ink"
+        style={{
+          fontFamily: "var(--font-display)",
+          fontSize: "clamp(7rem, 16vw, 16rem)",
+          letterSpacing: "-0.04em",
+        }}
+      >
+        A
+      </span>
+    </div>
+  );
+}
+
+// ─── Shared ───────────────────────────────────────────────────────────────────
 
 function Arrow() {
   return (
