@@ -4,51 +4,45 @@ import { motion } from "framer-motion";
 import { useCallback, useRef, useState } from "react";
 
 // ─── Annotation definitions ───────────────────────────────────────────────────
-// Coordinates are percentages (0-100) of the square container.
-// The 16:9 video is object-cover'd into a 1:1 square showing the center 720×720px.
-// Ring in side-profile: stone at ~(50,30), shoulders at ~(35,50)&(65,50), band at ~(50,65).
+// Coordinates are percentages (0-100) of the overlay container, which is larger
+// than the video (overflow-visible) so labels can sit outside the ring drawing.
+// The ring drawing occupies roughly the center 60% of the container.
 
 const ANNOTATIONS = [
   {
-    id: "diamond",
+    id: "your-design",
     triggerAt: 2.5,
-    // Text label – upper right
-    lx: 93, ly: 9, anchor: "end" as const,
-    // Dashed arrow from label area → stone crown
-    pathD: "M 90,14 C 78,18 64,24 53,30",
-    lines: ["Lab-Grown Diamond", "IGI Certified · D–F Colour"],
+    lx: 97, ly: 8, anchor: "end" as const,
+    pathD: "M 92,13 C 82,18 72,25 62,32",
+    lines: ["Your Design", "Not ours. Never from a catalogue."],
   },
   {
-    id: "setting",
+    id: "cost",
     triggerAt: 4.0,
-    // Text label – right
-    lx: 97, ly: 41, anchor: "end" as const,
-    pathD: "M 93,43 C 84,44 76,45 68,47",
-    lines: ["Solitaire Setting", "4-Prong · Bespoke"],
+    lx: 97, ly: 42, anchor: "end" as const,
+    pathD: "M 93,44 C 85,46 77,47 69,48",
+    lines: ["60–80% Less", "Same stone. Smarter origin."],
   },
   {
-    id: "gold",
+    id: "certified",
     triggerAt: 5.5,
-    // Text label – lower right
-    lx: 93, ly: 84, anchor: "end" as const,
-    pathD: "M 90,81 C 81,77 73,72 65,67",
-    lines: ["18k Heritage Gold", "Hand-finished in Delhi"],
+    lx: 97, ly: 85, anchor: "end" as const,
+    pathD: "M 92,82 C 83,78 74,73 66,68",
+    lines: ["IGI Certified", "Lab-grown. Identical brilliance."],
   },
   {
-    id: "commission",
+    id: "craft",
     triggerAt: 7.0,
-    // Text label – lower left
-    lx: 7, ly: 84, anchor: "start" as const,
-    pathD: "M 10,81 C 19,77 27,72 35,67",
-    lines: ["Commissioned", "Never catalogued"],
+    lx: 3, ly: 85, anchor: "start" as const,
+    pathD: "M 8,82 C 17,78 26,73 34,68",
+    lines: ["Heritage Craft", "Hand-finished in our Delhi atelier."],
   },
   {
-    id: "vision",
+    id: "timeline",
     triggerAt: 8.5,
-    // Text label – upper left
-    lx: 7, ly: 9, anchor: "start" as const,
-    pathD: "M 10,14 C 22,18 36,24 47,30",
-    lines: ["Your Vision", "Crafted in 6–8 weeks"],
+    lx: 3, ly: 8, anchor: "start" as const,
+    pathD: "M 8,13 C 18,18 28,25 38,32",
+    lines: ["6 Weeks", "From sketch to heirloom."],
   },
 ] as const;
 
@@ -73,8 +67,8 @@ export function VideoSketch() {
   }, []);
 
   return (
-    // 1:1 square container — object-cover crops the 16:9 video to its center
-    <div className="relative w-full overflow-hidden rounded-md" style={{ aspectRatio: "1 / 1" }}>
+    <div className="relative w-full" style={{ aspectRatio: "1 / 1" }}>
+      {/* Video with multiply blend to make white background transparent */}
       <video
         ref={videoRef}
         src="/Generate_a_smooth_second_ani.mp4"
@@ -84,29 +78,27 @@ export function VideoSketch() {
         loop
         onTimeUpdate={onTimeUpdate}
         className="absolute inset-0 h-full w-full object-cover"
-        style={{ display: "block" }}
+        style={{ display: "block", mixBlendMode: "multiply" }}
       />
 
       {/* ── SVG annotation overlay ─────────────────────────────────────── */}
       <svg
         viewBox="0 0 100 100"
         xmlns="http://www.w3.org/2000/svg"
-        className="pointer-events-none absolute inset-0 h-full w-full"
-        // SVG is square, container is square → no distortion
+        className="pointer-events-none absolute inset-0 h-full w-full overflow-visible"
         style={{ color: "var(--color-ink)" }}
       >
         <defs>
-          {/* Filled triangle arrowhead pointing at the ring */}
           <marker
             id="arr"
-            markerWidth="4.5"
-            markerHeight="4.5"
-            refX="4"
-            refY="2.25"
+            markerWidth="4"
+            markerHeight="4"
+            refX="3.5"
+            refY="2"
             orient="auto"
             markerUnits="userSpaceOnUse"
           >
-            <path d="M 0 0 L 4.5 2.25 L 0 4.5 Z" fill="currentColor" fillOpacity="0.7" />
+            <path d="M 0 0 L 4 2 L 0 4 Z" fill="var(--color-primary)" fillOpacity="0.75" />
           </marker>
         </defs>
 
@@ -119,18 +111,18 @@ export function VideoSketch() {
                 x={ann.lx}
                 y={ann.ly}
                 textAnchor={ann.anchor}
-                fontSize="3.4"
-                fill="currentColor"
-                letterSpacing="0.09em"
+                fontSize="3.6"
+                fill="var(--color-ink)"
+                letterSpacing="0.08em"
+                fontWeight="500"
                 style={
                   {
                     fontFamily: "var(--font-display)",
-                    textTransform: "uppercase",
                   } as React.CSSProperties
                 }
-                animate={{ opacity: show ? 1 : 0 }}
-                initial={{ opacity: 0 }}
-                transition={{ duration: 0.45 }}
+                animate={{ opacity: show ? 1 : 0, y: show ? 0 : 3 }}
+                initial={{ opacity: 0, y: 3 }}
+                transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
               >
                 {ann.lines[0]}
               </motion.text>
@@ -138,32 +130,31 @@ export function VideoSketch() {
               {/* Secondary label */}
               <motion.text
                 x={ann.lx}
-                y={ann.ly + 4.6}
+                y={ann.ly + 4.8}
                 textAnchor={ann.anchor}
-                fontSize="2.8"
-                fill="currentColor"
-                fillOpacity="0.52"
-                letterSpacing="0.04em"
-                style={{ fontFamily: "var(--font-display)" }}
-                animate={{ opacity: show ? 0.52 : 0 }}
-                initial={{ opacity: 0 }}
-                transition={{ duration: 0.45, delay: 0.08 }}
+                fontSize="2.6"
+                fill="var(--color-body)"
+                letterSpacing="0.02em"
+                style={{ fontFamily: "var(--font-sans)" }}
+                animate={{ opacity: show ? 0.7 : 0, y: show ? 0 : 3 }}
+                initial={{ opacity: 0, y: 3 }}
+                transition={{ duration: 0.55, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
               >
                 {ann.lines[1]}
               </motion.text>
 
-              {/* Dashed curved arrow */}
+              {/* Dashed curved arrow in brand primary color */}
               <motion.path
                 d={ann.pathD}
-                stroke="currentColor"
-                strokeWidth="0.5"
-                strokeDasharray="2.4 2"
-                strokeOpacity="0.55"
+                stroke="var(--color-primary)"
+                strokeWidth="0.45"
+                strokeDasharray="2 2.2"
+                strokeOpacity="0.6"
                 fill="none"
                 markerEnd="url(#arr)"
                 animate={{ opacity: show ? 1 : 0 }}
                 initial={{ opacity: 0 }}
-                transition={{ duration: 0.5, delay: 0.18 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
               />
             </g>
           );
