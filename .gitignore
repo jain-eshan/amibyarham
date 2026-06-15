@@ -9,6 +9,8 @@ brand-guide.md
 PRODUCT.md
 node_modules/
 .next/
+.env
+.env.local
 __pycache__/
 *.pyc
 .env

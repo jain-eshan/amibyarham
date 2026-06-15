@@ -6,6 +6,7 @@
  *   • A polite fetch with a real User-Agent and a configurable per-host delay.
  */
 
+import "dotenv/config";
 import { createClient } from "@supabase/supabase-js";
 
 import type { Database } from "../../ami-app/src/types/database";

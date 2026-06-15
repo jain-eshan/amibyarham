@@ -10,7 +10,8 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "backfill": "tsx backfill-embeddings.ts",
-    "ingest": "tsx ingest/run.ts"
+    "ingest": "tsx ingest/run.ts",
+    "ingest:test": "tsx ingest/test-pipeline.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.107.0",
