@@ -159,9 +159,8 @@ function PhotoArtifact() {
         className="absolute inset-[-12px]"
         style={{ x: imgX, y: imgY }}
       >
-        {/* Replace src with your Image 1A path once added to /public/hero/ */}
         <Image
-          src="/hero/hand-rings.jpg"
+          src="/hero/hand-rings.png"
           alt="White sculptural hand wearing two delicate gold rings"
           fill
           className="object-cover object-center"
