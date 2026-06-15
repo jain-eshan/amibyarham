@@ -237,6 +237,30 @@ export type Database = {
           },
         ];
       };
+      contact_submissions: {
+        Row: {
+          id: string;
+          name: string;
+          email: string;
+          message: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          email: string;
+          message: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          email?: string;
+          message?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -314,3 +338,8 @@ export type CustomRequestStatus =
   Database["public"]["Enums"]["custom_request_status"];
 export type InspirationStatus =
   Database["public"]["Enums"]["inspiration_status"];
+
+export type ContactSubmission =
+  Database["public"]["Tables"]["contact_submissions"]["Row"];
+export type ContactSubmissionInsert =
+  Database["public"]["Tables"]["contact_submissions"]["Insert"];

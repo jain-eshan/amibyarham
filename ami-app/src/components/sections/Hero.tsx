@@ -1,20 +1,18 @@
 "use client";
 
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import Image from "next/image";
-import { useRef } from "react";
+import { motion } from "framer-motion";
 
 import { Button } from "@/components/Button";
+import { JewelrySketch } from "@/components/sections/JewelrySketch";
 
 const easeOut = [0.16, 1, 0.3, 1] as const;
 
 export function Hero() {
   return (
-    // overflow-visible so the hand bleeds down into the dark diamond section
-    <section className="relative z-10 overflow-x-clip bg-canvas pt-20 pb-0 md:pt-32">
-      <div className="mx-auto grid max-w-[1200px] grid-cols-12 items-end gap-8 px-6">
+    <section className="relative z-10 bg-canvas pt-20 pb-16 md:pt-32 md:pb-24">
+      <div className="mx-auto grid max-w-[1200px] grid-cols-12 items-center gap-8 px-6 md:gap-12">
         {/* ── Left: copy ────────────────────────────────────────────────── */}
-        <div className="col-span-12 pb-20 md:col-span-7 md:pb-section">
+        <div className="col-span-12 md:col-span-6">
           <motion.span
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -71,96 +69,17 @@ export function Hero() {
           </motion.div>
         </div>
 
-        {/* ── Right: floating hand, overflowing into dark section ────────── */}
+        {/* ── Right: annotated jewelry sketch ───────────────────────────── */}
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.2, delay: 0.1, ease: easeOut }}
-          // Negative bottom margin pulls the hand down into the dark section
-          className="col-span-12 -mb-32 md:col-span-5 md:-mb-48"
+          transition={{ duration: 1.1, delay: 0.08, ease: easeOut }}
+          className="col-span-12 md:col-span-6"
         >
-          <FloatingHand />
+          <JewelrySketch />
         </motion.div>
       </div>
     </section>
-  );
-}
-
-// ─── Floating hand with prominent mouse-parallax ─────────────────────────────
-
-function FloatingHand() {
-  const ref = useRef<HTMLDivElement>(null);
-
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-
-  // Softer spring = more lag = more visible parallax motion
-  const springX = useSpring(mouseX, { stiffness: 40, damping: 15 });
-  const springY = useSpring(mouseY, { stiffness: 40, damping: 15 });
-
-  // ±30px shift — significantly more prominent than before
-  const imgX = useTransform(springX, [-1, 1], [-30, 30]);
-  const imgY = useTransform(springY, [-1, 1], [-30, 30]);
-
-  // Subtle counter-rotate on mouse move for extra depth
-  const rotateZ = useTransform(springX, [-1, 1], [-2, 2]);
-
-  function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
-    const rect = ref.current?.getBoundingClientRect();
-    if (!rect) return;
-    mouseX.set(((e.clientX - rect.left) / rect.width) * 2 - 1);
-    mouseY.set(((e.clientY - rect.top) / rect.height) * 2 - 1);
-  }
-
-  function handleMouseLeave() {
-    mouseX.set(0);
-    mouseY.set(0);
-  }
-
-  return (
-    <div
-      ref={ref}
-      className="relative w-full"
-      style={{ aspectRatio: "3/4" }}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-    >
-      <motion.div
-        className="absolute inset-0"
-        style={{ x: imgX, y: imgY, rotateZ }}
-      >
-        <Image
-          src="/hero/hand-rings-nobg.png"
-          alt="White sculptural hand wearing two delicate gold rings"
-          fill
-          className="object-contain object-bottom"
-          priority
-          sizes="(max-width: 768px) 100vw, 42vw"
-        />
-      </motion.div>
-    </div>
-  );
-}
-
-// ─── Video variant (kept for future use) ─────────────────────────────────────
-
-export function HeroVideoArtifact() {
-  return (
-    <div className="relative aspect-[3/4] w-full overflow-hidden rounded-xl bg-surface-cream-strong">
-      <video
-        className="h-full w-full object-cover object-center"
-        src="/hero/clip-goldsmith.mp4"
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="auto"
-      />
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/20 to-transparent" />
-      <span className="caption-uppercase absolute bottom-6 left-1/2 -translate-x-1/2 text-white/60">
-        A Modern Royal Heirloom
-      </span>
-    </div>
   );
 }
 

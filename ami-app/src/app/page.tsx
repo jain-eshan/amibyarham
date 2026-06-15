@@ -1,4 +1,3 @@
-import { DiamondShowcase } from "@/components/sections/DiamondShowcase";
 import { Hero } from "@/components/sections/Hero";
 import { HeritageBand } from "@/components/sections/HeritageBand";
 import { LabGrownBand } from "@/components/sections/LabGrownBand";
@@ -10,7 +9,6 @@ export default function HomePage() {
   return (
     <>
       <Hero />
-      <DiamondShowcase />
       <LabGrownBand />
       <HeritageBand />
       <ProcessBand />

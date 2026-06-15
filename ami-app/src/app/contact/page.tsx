@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 
-import { Button } from "@/components/Button";
 import { Reveal } from "@/components/Reveal";
+
+import { ContactForm } from "./ContactForm";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -18,7 +19,7 @@ const CHANNELS = [
   {
     label: "Instagram",
     value: "@amibyarham",
-    href: "https://www.instagram.com/amibyarham/",
+    href: "https://www.instagram.com/amibyahram/",
   },
   {
     label: "Location",
@@ -27,8 +28,8 @@ const CHANNELS = [
   },
   {
     label: "WhatsApp",
-    value: "Drop us a message",
-    href: undefined,
+    value: "Chat with us",
+    href: "https://wa.me/919958863129",
   },
 ] as const;
 
@@ -89,66 +90,7 @@ export default function ContactPage() {
               <p className="caption-uppercase text-muted">Send a message</p>
             </Reveal>
             <Reveal delay={0.16}>
-              <form
-                className="mt-8 space-y-6"
-                onSubmit={undefined}
-                action="#"
-              >
-                <div>
-                  <label
-                    htmlFor="contact-name"
-                    className="mb-1.5 block text-sm font-medium text-ink"
-                  >
-                    Name
-                  </label>
-                  <input
-                    id="contact-name"
-                    name="name"
-                    type="text"
-                    required
-                    placeholder="Your name"
-                    className="h-11 w-full rounded-md border border-hairline bg-canvas px-4 text-ink placeholder:text-muted focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-                  />
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="contact-email"
-                    className="mb-1.5 block text-sm font-medium text-ink"
-                  >
-                    Email
-                  </label>
-                  <input
-                    id="contact-email"
-                    name="email"
-                    type="email"
-                    required
-                    placeholder="you@example.com"
-                    className="h-11 w-full rounded-md border border-hairline bg-canvas px-4 text-ink placeholder:text-muted focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-                  />
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="contact-message"
-                    className="mb-1.5 block text-sm font-medium text-ink"
-                  >
-                    Message
-                  </label>
-                  <textarea
-                    id="contact-message"
-                    name="message"
-                    required
-                    rows={5}
-                    placeholder="Tell us what you have in mind..."
-                    className="w-full rounded-md border border-hairline bg-canvas px-4 py-3 text-ink placeholder:text-muted focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-                  />
-                </div>
-
-                <Button type="submit" size="lg" fullWidth>
-                  Send Message
-                </Button>
-              </form>
+              <ContactForm />
             </Reveal>
           </div>
         </div>
