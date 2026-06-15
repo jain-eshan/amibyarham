@@ -6,19 +6,15 @@ import { useRef } from "react";
 
 import { Button } from "@/components/Button";
 
-// Switch artifact variant here as new assets arrive:
-// "photo"  → sculptural hand image (Image 1A)
-// "video"  → looping goldsmith clip (Clip A)
-// "letter" → original "A" placeholder
-const HERO_VARIANT: "photo" | "video" | "letter" = "photo";
-
 const easeOut = [0.16, 1, 0.3, 1] as const;
 
 export function Hero() {
   return (
-    <section className="relative overflow-x-clip bg-canvas pt-20 pb-16 md:pt-32 md:pb-section">
-      <div className="mx-auto grid max-w-[1200px] grid-cols-12 gap-8 px-6">
-        <div className="col-span-12 md:col-span-7">
+    // overflow-visible so the hand bleeds down into the dark diamond section
+    <section className="relative z-10 overflow-x-clip bg-canvas pt-20 pb-0 md:pt-32">
+      <div className="mx-auto grid max-w-[1200px] grid-cols-12 items-end gap-8 px-6">
+        {/* ── Left: copy ────────────────────────────────────────────────── */}
+        <div className="col-span-12 pb-20 md:col-span-7 md:pb-section">
           <motion.span
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -75,66 +71,39 @@ export function Hero() {
           </motion.div>
         </div>
 
+        {/* ── Right: floating hand, overflowing into dark section ────────── */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.96 }}
-          animate={{ opacity: 1, scale: 1 }}
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.2, delay: 0.1, ease: easeOut }}
-          className="col-span-12 md:col-span-5"
+          // Negative bottom margin pulls the hand down into the dark section
+          className="col-span-12 -mb-32 md:col-span-5 md:-mb-48"
         >
-          <HeroArtifact variant={HERO_VARIANT} />
+          <FloatingHand />
         </motion.div>
       </div>
     </section>
   );
 }
 
-// ─── Artifact variants ────────────────────────────────────────────────────────
+// ─── Floating hand with prominent mouse-parallax ─────────────────────────────
 
-function HeroArtifact({ variant }: { variant: "photo" | "video" | "letter" }) {
-  return (
-    <div className="relative aspect-[3/4] w-full overflow-hidden rounded-xl bg-surface-cream-strong">
-      {variant === "photo" && <PhotoArtifact />}
-      {variant === "video" && <VideoArtifact />}
-      {variant === "letter" && <LetterArtifact />}
-
-      {/* Corner markers — shown on photo and letter, hidden on video for cinematic feel */}
-      {variant !== "video" && (
-        <>
-          <span
-            aria-hidden
-            className="absolute top-6 left-6 text-xs tracking-[0.25em] text-muted"
-          >
-            N°01
-          </span>
-          <span
-            aria-hidden
-            className="absolute top-6 right-6 text-xs tracking-[0.25em] text-muted"
-          >
-            ✦
-          </span>
-          <div className="pointer-events-none absolute inset-6 border border-hairline" />
-          <span className="caption-uppercase absolute bottom-6 left-1/2 -translate-x-1/2 text-muted">
-            A Modern Royal Heirloom
-          </span>
-        </>
-      )}
-    </div>
-  );
-}
-
-// ─── Photo: sculptural hand with mouse-parallax ───────────────────────────────
-
-function PhotoArtifact() {
+function FloatingHand() {
   const ref = useRef<HTMLDivElement>(null);
 
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
-  const springX = useSpring(mouseX, { stiffness: 60, damping: 20 });
-  const springY = useSpring(mouseY, { stiffness: 60, damping: 20 });
+  // Softer spring = more lag = more visible parallax motion
+  const springX = useSpring(mouseX, { stiffness: 40, damping: 15 });
+  const springY = useSpring(mouseY, { stiffness: 40, damping: 15 });
 
-  const imgX = useTransform(springX, [-1, 1], [-10, 10]);
-  const imgY = useTransform(springY, [-1, 1], [-10, 10]);
+  // ±30px shift — significantly more prominent than before
+  const imgX = useTransform(springX, [-1, 1], [-30, 30]);
+  const imgY = useTransform(springY, [-1, 1], [-30, 30]);
+
+  // Subtle counter-rotate on mouse move for extra depth
+  const rotateZ = useTransform(springX, [-1, 1], [-2, 2]);
 
   function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
     const rect = ref.current?.getBoundingClientRect();
@@ -151,19 +120,20 @@ function PhotoArtifact() {
   return (
     <div
       ref={ref}
-      className="absolute inset-0"
+      className="relative w-full"
+      style={{ aspectRatio: "3/4" }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
       <motion.div
-        className="absolute inset-[-12px]"
-        style={{ x: imgX, y: imgY }}
+        className="absolute inset-0"
+        style={{ x: imgX, y: imgY, rotateZ }}
       >
         <Image
-          src="/hero/hand-rings.png"
+          src="/hero/hand-rings-nobg.png"
           alt="White sculptural hand wearing two delicate gold rings"
           fill
-          className="object-cover object-center"
+          className="object-contain object-bottom"
           priority
           sizes="(max-width: 768px) 100vw, 42vw"
         />
@@ -172,11 +142,11 @@ function PhotoArtifact() {
   );
 }
 
-// ─── Video: looping cinematic clip ───────────────────────────────────────────
+// ─── Video variant (kept for future use) ─────────────────────────────────────
 
-function VideoArtifact() {
+export function HeroVideoArtifact() {
   return (
-    <div className="absolute inset-0">
+    <div className="relative aspect-[3/4] w-full overflow-hidden rounded-xl bg-surface-cream-strong">
       <video
         className="h-full w-full object-cover object-center"
         src="/hero/clip-goldsmith.mp4"
@@ -186,30 +156,9 @@ function VideoArtifact() {
         playsInline
         preload="auto"
       />
-      {/* Subtle gradient at bottom for legibility if caption is ever re-enabled */}
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/20 to-transparent" />
       <span className="caption-uppercase absolute bottom-6 left-1/2 -translate-x-1/2 text-white/60">
         A Modern Royal Heirloom
-      </span>
-    </div>
-  );
-}
-
-// ─── Letter: original "A" placeholder ────────────────────────────────────────
-
-function LetterArtifact() {
-  return (
-    <div className="absolute inset-0 flex items-center justify-center">
-      <span
-        aria-hidden
-        className="block leading-none text-ink"
-        style={{
-          fontFamily: "var(--font-display)",
-          fontSize: "clamp(7rem, 16vw, 16rem)",
-          letterSpacing: "-0.04em",
-        }}
-      >
-        A
       </span>
     </div>
   );

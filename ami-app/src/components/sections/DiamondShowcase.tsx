@@ -205,7 +205,7 @@ export function DiamondShowcase() {
   const [isLoaded, setIsLoaded] = useState(false);
 
   return (
-    <section className="relative overflow-hidden bg-surface-dark py-20 md:py-section">
+    <section className="relative z-0 overflow-hidden bg-surface-dark pb-20 pt-40 md:pb-section md:pt-64">
       <div className="mx-auto grid max-w-[1200px] grid-cols-12 gap-8 px-6">
         {/* 3D Canvas */}
         <motion.div
