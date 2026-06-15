@@ -13,101 +13,66 @@ import { motion } from "framer-motion";
 
 const easeOut = [0.16, 1, 0.3, 1] as const;
 
-// ─── Round brilliant cut diamond geometry ────────────────────────────────────
-// 57-facet standard: 33 crown facets + 24 pavilion facets
+// ─── Improved round brilliant cut diamond ────────────────────────────────────
+// Higher facet count + separate crown angles for realism
 
-function createDiamondGeometry(
-  crownHeight = 0.35,
-  pavilionDepth = 0.85,
-  tableRatio = 0.55,
-  girdleRadius = 1.0,
-  crownFacets = 16,
-  pavilionFacets = 16
-) {
-  const vertices: number[] = [];
-  const normals: number[] = [];
-
-  function pushTri(
-    a: THREE.Vector3,
-    b: THREE.Vector3,
-    c: THREE.Vector3
-  ) {
-    const edge1 = new THREE.Vector3().subVectors(b, a);
-    const edge2 = new THREE.Vector3().subVectors(c, a);
-    const n = new THREE.Vector3().crossVectors(edge1, edge2).normalize();
-
-    vertices.push(a.x, a.y, a.z, b.x, b.y, b.z, c.x, c.y, c.z);
-    normals.push(n.x, n.y, n.z, n.x, n.y, n.z, n.x, n.y, n.z);
-  }
-
+function createDiamondGeometry() {
+  const segments = 32;
+  const crownHeight = 0.4;
+  const pavilionDepth = 0.9;
+  const girdleRadius = 1.0;
+  const tableRadius = 0.5;
   const tableY = crownHeight;
   const girdleY = 0;
   const cutletY = -pavilionDepth;
+  const starMidY = crownHeight * 0.5;
+  const starMidRadius = (girdleRadius + tableRadius) * 0.5;
 
-  const tableRadius = girdleRadius * tableRatio;
+  const positions: number[] = [];
 
-  // Girdle points
-  const girdlePoints: THREE.Vector3[] = [];
-  const tablePoints: THREE.Vector3[] = [];
-  for (let i = 0; i < crownFacets; i++) {
-    const angle = (i / crownFacets) * Math.PI * 2;
-    girdlePoints.push(
-      new THREE.Vector3(
-        Math.cos(angle) * girdleRadius,
-        girdleY,
-        Math.sin(angle) * girdleRadius
-      )
-    );
-    tablePoints.push(
-      new THREE.Vector3(
-        Math.cos(angle) * tableRadius,
-        tableY,
-        Math.sin(angle) * tableRadius
-      )
+  function tri(a: THREE.Vector3, b: THREE.Vector3, c: THREE.Vector3) {
+    positions.push(a.x, a.y, a.z, b.x, b.y, b.z, c.x, c.y, c.z);
+  }
+
+  function pointAt(radius: number, y: number, angle: number) {
+    return new THREE.Vector3(
+      Math.cos(angle) * radius,
+      y,
+      Math.sin(angle) * radius
     );
   }
 
+  const tableCenter = new THREE.Vector3(0, tableY, 0);
   const cutlet = new THREE.Vector3(0, cutletY, 0);
 
-  // Crown: table facets (top polygon triangulated from center)
-  const tableCenter = new THREE.Vector3(0, tableY, 0);
-  for (let i = 0; i < crownFacets; i++) {
-    const next = (i + 1) % crownFacets;
-    pushTri(tableCenter, tablePoints[i]!, tablePoints[next]!);
-  }
+  for (let i = 0; i < segments; i++) {
+    const a0 = (i / segments) * Math.PI * 2;
+    const a1 = ((i + 1) / segments) * Math.PI * 2;
+    const aMid = ((i + 0.5) / segments) * Math.PI * 2;
 
-  // Crown: star and bezel facets (table edge to girdle)
-  for (let i = 0; i < crownFacets; i++) {
-    const next = (i + 1) % crownFacets;
-    pushTri(tablePoints[i]!, girdlePoints[i]!, tablePoints[next]!);
-    pushTri(tablePoints[next]!, girdlePoints[i]!, girdlePoints[next]!);
-  }
+    const g0 = pointAt(girdleRadius, girdleY, a0);
+    const g1 = pointAt(girdleRadius, girdleY, a1);
+    const t0 = pointAt(tableRadius, tableY, a0);
+    const t1 = pointAt(tableRadius, tableY, a1);
+    const sm = pointAt(starMidRadius, starMidY, aMid);
 
-  // Pavilion: facets from girdle to cutlet
-  for (let i = 0; i < pavilionFacets; i++) {
-    const angle1 = (i / pavilionFacets) * Math.PI * 2;
-    const angle2 = ((i + 1) / pavilionFacets) * Math.PI * 2;
-    const g1 = new THREE.Vector3(
-      Math.cos(angle1) * girdleRadius,
-      girdleY,
-      Math.sin(angle1) * girdleRadius
-    );
-    const g2 = new THREE.Vector3(
-      Math.cos(angle2) * girdleRadius,
-      girdleY,
-      Math.sin(angle2) * girdleRadius
-    );
-    pushTri(g1, cutlet, g2);
+    // Table
+    tri(tableCenter, t0, t1);
+    // Upper star facets
+    tri(t0, sm, t1);
+    // Upper kite facets
+    tri(t0, g0, sm);
+    tri(sm, g1, t1);
+    // Lower kite (to girdle)
+    tri(g0, g1, sm);
+    // Pavilion
+    tri(g0, cutlet, g1);
   }
 
   const geometry = new THREE.BufferGeometry();
   geometry.setAttribute(
     "position",
-    new THREE.Float32BufferAttribute(vertices, 3)
-  );
-  geometry.setAttribute(
-    "normal",
-    new THREE.Float32BufferAttribute(normals, 3)
+    new THREE.Float32BufferAttribute(positions, 3)
   );
   geometry.computeVertexNormals();
   return geometry;
@@ -121,29 +86,31 @@ function Diamond() {
 
   useFrame((_, delta) => {
     if (meshRef.current) {
-      meshRef.current.rotation.y += delta * 0.15;
+      meshRef.current.rotation.y += delta * 0.12;
     }
   });
 
   return (
-    <Float speed={1.5} rotationIntensity={0.3} floatIntensity={0.5}>
-      <mesh ref={meshRef} geometry={geometry} scale={1.4}>
+    <Float speed={1.2} rotationIntensity={0.15} floatIntensity={0.3}>
+      <mesh ref={meshRef} geometry={geometry} scale={1.5}>
         <meshPhysicalMaterial
-          color="#ffffff"
-          metalness={0.0}
-          roughness={0.0}
-          transmission={0.95}
-          thickness={1.5}
+          color="#f8f6f0"
+          metalness={0}
+          roughness={0}
+          transmission={0.98}
+          thickness={2.0}
           ior={2.42}
-          envMapIntensity={3}
+          envMapIntensity={2.5}
           clearcoat={1}
           clearcoatRoughness={0}
           transparent
-          opacity={0.9}
-          attenuationColor={new THREE.Color("#f0e6d4")}
-          attenuationDistance={2}
-          specularIntensity={1}
+          opacity={0.95}
+          attenuationColor={new THREE.Color("#e8e0d2")}
+          attenuationDistance={3}
+          specularIntensity={1.2}
           specularColor={new THREE.Color("#ffffff")}
+          sheen={0.2}
+          sheenColor={new THREE.Color("#ffeedd")}
           side={THREE.DoubleSide}
         />
       </mesh>
@@ -156,33 +123,34 @@ function Diamond() {
 function DiamondScene() {
   return (
     <>
-      <ambientLight intensity={0.3} />
+      <ambientLight intensity={0.4} />
       <spotLight
         position={[5, 8, 5]}
-        intensity={1.5}
-        angle={0.4}
-        penumbra={0.5}
+        intensity={2}
+        angle={0.35}
+        penumbra={0.6}
         castShadow
         color="#fff5e6"
       />
       <spotLight
-        position={[-3, 6, -4]}
-        intensity={0.8}
+        position={[-4, 6, -3]}
+        intensity={1.0}
         angle={0.3}
         penumbra={0.8}
-        color="#e6f0ff"
+        color="#e8eeff"
       />
-      <pointLight position={[0, -2, 3]} intensity={0.4} color="#ffeedd" />
+      <pointLight position={[0, -3, 4]} intensity={0.5} color="#ffeedd" />
+      <pointLight position={[3, 2, -2]} intensity={0.3} color="#ffe0c0" />
 
       <Diamond />
 
       <ContactShadows
-        position={[0, -1.2, 0]}
-        opacity={0.25}
+        position={[0, -1.3, 0]}
+        opacity={0.2}
         scale={8}
-        blur={2.5}
+        blur={3}
         far={4}
-        color="#c4b5a0"
+        color="#a09080"
       />
 
       <Environment preset="studio" />
@@ -193,11 +161,31 @@ function DiamondScene() {
         minPolarAngle={Math.PI / 4}
         maxPolarAngle={Math.PI / 1.8}
         autoRotate
-        autoRotateSpeed={0.5}
+        autoRotateSpeed={0.4}
       />
     </>
   );
 }
+
+// ─── Value props ─────────────────────────────────────────────────────────────
+
+const VALUE_PROPS = [
+  {
+    stat: "60–80%",
+    label: "Lower cost",
+    detail: "versus mined equivalents at the same carat and clarity",
+  },
+  {
+    stat: "2.42",
+    label: "Refractive index",
+    detail: "identical optical properties — same fire, same brilliance",
+  },
+  {
+    stat: "Zero",
+    label: "Earth displaced",
+    detail: "grown above ground in controlled labs, not open-pit mines",
+  },
+] as const;
 
 // ─── Exported section ────────────────────────────────────────────────────────
 
@@ -206,101 +194,122 @@ export function DiamondShowcase() {
 
   return (
     <section className="relative z-0 overflow-hidden bg-surface-dark pb-20 pt-40 md:pb-section md:pt-64">
-      <div className="mx-auto grid max-w-[1200px] grid-cols-12 gap-8 px-6">
-        {/* 3D Canvas */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 1, ease: easeOut }}
-          className="col-span-12 md:col-span-7"
-        >
-          <div className="relative aspect-square w-full md:aspect-[4/3]">
-            <Canvas
-              camera={{ position: [0, 1.5, 4], fov: 35 }}
-              gl={{ antialias: true, alpha: true }}
-              onCreated={() => setIsLoaded(true)}
-              style={{ background: "transparent" }}
+      <div className="mx-auto max-w-[1200px] px-6">
+        {/* Copy first on mobile, side-by-side on desktop */}
+        <div className="grid grid-cols-12 gap-8">
+          {/* Copy column */}
+          <div className="col-span-12 flex flex-col justify-center md:col-span-5">
+            <motion.span
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, ease: easeOut }}
+              className="caption-uppercase text-on-dark-soft"
             >
-              <DiamondScene />
-            </Canvas>
+              The Science of Beauty
+            </motion.span>
 
-            {!isLoaded && (
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="caption-uppercase text-on-dark-soft animate-pulse">
-                  Loading...
-                </span>
-              </div>
-            )}
+            <motion.h2
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.9, delay: 0.05, ease: easeOut }}
+              className="display-lg mt-5 max-w-md text-on-dark"
+            >
+              Same diamond.{" "}
+              <em className="not-italic text-accent-amber">Smarter</em> origin.
+            </motion.h2>
+
+            <motion.p
+              initial={{ opacity: 0, y: 14 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.9, delay: 0.18, ease: easeOut }}
+              className="mt-6 max-w-md text-base leading-relaxed text-on-dark-soft md:text-lg"
+            >
+              Lab-grown diamonds share the exact crystal structure, hardness,
+              and optical fire of mined stones — certified by the same
+              gemological institutes. The only difference? They&rsquo;re grown
+              in weeks instead of millennia, at a fraction of the cost and
+              environmental impact.
+            </motion.p>
+
+            <motion.p
+              initial={{ opacity: 0, y: 14 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.9, delay: 0.28, ease: easeOut }}
+              className="mt-4 max-w-md text-base leading-relaxed text-on-dark-soft md:text-lg"
+            >
+              That means you get a larger, higher-clarity stone in your dream
+              setting — without the ethical weight or the inflated price.
+            </motion.p>
           </div>
 
-          <p className="mt-4 text-center text-xs uppercase tracking-[0.18em] text-on-dark-soft">
-            Drag to rotate
-          </p>
-        </motion.div>
-
-        {/* Copy */}
-        <div className="col-span-12 flex flex-col justify-center md:col-span-5">
-          <motion.span
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, ease: easeOut }}
-            className="caption-uppercase text-on-dark-soft"
-          >
-            Precision in Every Facet
-          </motion.span>
-
-          <motion.h2
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.9, delay: 0.05, ease: easeOut }}
-            className="display-lg mt-5 max-w-md text-on-dark"
-          >
-            57 facets of{" "}
-            <em className="not-italic text-accent-amber">light</em>,
-            engineered to perfection.
-          </motion.h2>
-
-          <motion.p
-            initial={{ opacity: 0, y: 14 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.9, delay: 0.18, ease: easeOut }}
-            className="mt-6 max-w-md text-base text-on-dark-soft md:text-lg"
-          >
-            Each lab-grown diamond is cut to ideal proportions — maximising
-            brilliance, fire, and scintillation. The same science. None of the
-            compromise.
-          </motion.p>
-
+          {/* 3D Canvas */}
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.9, delay: 0.32, ease: easeOut }}
-            className="mt-8 flex flex-wrap gap-8"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 1, ease: easeOut }}
+            className="col-span-12 md:col-span-7"
           >
-            <Stat label="Refractive Index" value="2.42" />
-            <Stat label="Brilliance" value="Ideal" />
-            <Stat label="Origin" value="Lab-grown" />
+            <div className="relative aspect-square w-full md:aspect-[4/3]">
+              <Canvas
+                camera={{ position: [0, 1.2, 4.5], fov: 30 }}
+                gl={{ antialias: true, alpha: true }}
+                onCreated={() => setIsLoaded(true)}
+                style={{ background: "transparent" }}
+              >
+                <DiamondScene />
+              </Canvas>
+
+              {!isLoaded && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="caption-uppercase animate-pulse text-on-dark-soft">
+                    Loading...
+                  </span>
+                </div>
+              )}
+            </div>
+
+            <p className="mt-4 text-center text-xs uppercase tracking-[0.18em] text-on-dark-soft">
+              Drag to rotate
+            </p>
           </motion.div>
         </div>
+
+        {/* Value propositions */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.9, delay: 0.1, ease: easeOut }}
+          className="mt-16 grid gap-8 border-t border-white/10 pt-12 md:mt-20 md:grid-cols-3"
+        >
+          {VALUE_PROPS.map((prop) => (
+            <div key={prop.label}>
+              <span
+                className="block text-on-dark"
+                style={{
+                  fontFamily: "var(--font-display)",
+                  fontSize: "clamp(1.75rem, 2vw + 1rem, 2.5rem)",
+                  lineHeight: 1.1,
+                  letterSpacing: "-0.03em",
+                }}
+              >
+                {prop.stat}
+              </span>
+              <span className="mt-2 block text-sm font-medium uppercase tracking-[0.12em] text-accent-amber">
+                {prop.label}
+              </span>
+              <p className="mt-2 text-sm leading-relaxed text-on-dark-soft">
+                {prop.detail}
+              </p>
+            </div>
+          ))}
+        </motion.div>
       </div>
     </section>
-  );
-}
-
-function Stat({ label, value }: { label: string; value: string }) {
-  return (
-    <div>
-      <span className="block font-display text-2xl tracking-tight text-on-dark">
-        {value}
-      </span>
-      <span className="mt-1 block text-xs uppercase tracking-[0.15em] text-on-dark-soft">
-        {label}
-      </span>
-    </div>
   );
 }
