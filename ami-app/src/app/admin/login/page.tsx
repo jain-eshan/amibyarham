@@ -25,7 +25,7 @@ export default function AdminLoginPage() {
           </h1>
 
           {/* Form — authentication not yet implemented */}
-          <form className="mt-8 space-y-5" onSubmit={(e) => e.preventDefault()}>
+          <form className="mt-8 space-y-5">
             <div>
               <label
                 htmlFor="admin-email"
@@ -62,7 +62,7 @@ export default function AdminLoginPage() {
               />
             </div>
 
-            <Button type="submit" size="lg" fullWidth>
+            <Button type="button" size="lg" fullWidth>
               Sign In
             </Button>
           </form>
