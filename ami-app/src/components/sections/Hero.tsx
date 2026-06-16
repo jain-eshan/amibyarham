@@ -12,7 +12,7 @@ export function Hero() {
     <section className="relative z-10 bg-canvas pt-20 pb-16 md:pt-32 md:pb-24">
       <div className="mx-auto grid max-w-[1200px] grid-cols-12 items-center gap-8 px-6 md:gap-12">
         {/* ── Left: copy ────────────────────────────────────────────────── */}
-        <div className="col-span-12 md:col-span-6">
+        <div className="order-2 col-span-12 md:order-1 md:col-span-6">
           <motion.span
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -74,7 +74,7 @@ export function Hero() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.1, delay: 0.08, ease: easeOut }}
-          className="col-span-12 md:col-span-6 md:ml-auto md:w-[88%]"
+          className="order-1 col-span-12 md:order-2 md:col-span-6 md:ml-auto md:w-[88%]"
         >
           <VideoSketch
             videoSrc="/Hero-Ring-Final.mp4"
