@@ -8,7 +8,7 @@
 
 import { createClient } from "@supabase/supabase-js";
 
-import type { Database } from "../../ami-app/src/types/database";
+import type { Database } from "../../../apps/web/src/types/database";
 import type { EnrichResult } from "./types";
 
 function reqEnv(name: string): string {

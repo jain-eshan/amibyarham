@@ -1,7 +1,7 @@
 # Phase 3 ingestion pipeline
 
 Scriptable implementation of the ingestion design in
-[`docs/ingestion-n8n.md`](../../docs/ingestion-n8n.md). Collects jewelry
+[`docs/ingestion-n8n.md`](../../../docs/ingestion-n8n.md). Collects jewelry
 inspiration from source lanes, enriches it via the CLIP worker, and inserts
 **`pending_review`** rows for human approval in Supabase Studio. Nothing
 auto-publishes.
@@ -25,22 +25,20 @@ into `run.ts`. The pipeline handles everything downstream.
 ## Prerequisites
 
 1. Migrations `0004` + `0005` applied (enriched schema + RPC).
-2. CLIP worker running (`cd clip-worker && docker compose up`).
-3. `npm install` in this `scripts/` directory.
+2. CLIP worker running (`cd services/clip-worker && docker compose up`).
+3. `npm install` from the repo root (workspaces handle it).
 
 ## Run
 
 ```bash
-cd scripts
-npm install
-
+# From the repo root:
 SUPABASE_URL=https://YOUR-PROJECT.supabase.co \
 SUPABASE_SERVICE_ROLE_KEY=... \
 CLIP_WORKER_URL=http://localhost:8000 \
-npm run ingest -- danish --brand "Maria Black" --max-products 20
+npm run ingest --workspace=packages/scripts -- danish --brand "Maria Black" --max-products 20
 
 # Preview without writing anything:
-npm run ingest -- danish --dry-run --max-products 5
+npm run ingest --workspace=packages/scripts -- danish --dry-run --max-products 5
 ```
 
 ### Flags

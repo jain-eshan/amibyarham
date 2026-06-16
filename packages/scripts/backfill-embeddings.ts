@@ -19,7 +19,7 @@
 import "dotenv/config";
 import { createClient } from "@supabase/supabase-js";
 
-import type { Database } from "../ami-app/src/types/database";
+import type { Database } from "../../apps/web/src/types/database";
 
 type Row = Database["public"]["Tables"]["inspiration_images"]["Row"];
 

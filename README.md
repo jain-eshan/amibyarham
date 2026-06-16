@@ -1,225 +1,77 @@
 # AMI by Arham
 
-**Made-to-order, handcrafted lab-grown diamond jewellery.**  
+**Made-to-order, handcrafted lab-grown diamond jewellery.**
 A family business — Arham Diamonds, 40 years in Old Delhi — brought online for the first time.
 
-Live site: [www.arhamdiamonds.in](https://www.arhamdiamonds.in)  
-GitHub: [github.com/jain-eshan/amibyarham](https://github.com/jain-eshan/amibyarham)
+Live site: [www.arhamdiamonds.in](https://www.arhamdiamonds.in)
 
 ---
 
 ## Repo structure
 
-This repo contains **two separate builds**. Only one is actively developed.
+```
+amibyarham/
+├── apps/
+│   └── web/              Next.js 16 + Tailwind v4 — the main website
+├── packages/
+│   └── scripts/          Operational scripts (embedding backfill, ingestion pipeline)
+├── services/
+│   └── clip-worker/      Python CLIP embedding microservice (Docker)
+├── supabase/
+│   ├── config.toml       Supabase CLI project config
+│   └── migrations/       Database migrations
+├── docs/                 Product docs, design system, architecture
+├── vercel.json           Vercel monorepo build config
+└── package.json          npm workspaces root
+```
 
-| Directory | Vercel project | Status | Description |
-|-----------|---------------|--------|-------------|
-| `ami-app/` | `ami` → www.arhamdiamonds.in | ✅ **Active** | Current Next.js 16 + Tailwind v4 rewrite. All new work goes here. |
-| `ami-next/` | `amibyarham` → (legacy domain) | 🔒 **Frozen** | Previous Next.js build. Do not modify. |
-| `supabase/` | — | ✅ Active | Shared DB migrations for both deployments. |
+## Quick start
 
-**When developing:** `cd ami-app && npm run dev`  
-**Do not touch `ami-next/`** — it is preserved only to keep the `amibyarham` Vercel project from breaking.
+```bash
+# Install all workspaces from the repo root
+npm install
 
----
+# Start the website
+npm run dev
 
-## What this product is
+# Run scripts
+npm run backfill --workspace=packages/scripts
+npm run ingest --workspace=packages/scripts -- danish --dry-run
 
-AMI is not a jewellery catalogue. There is no "Add to cart."
+# Start CLIP worker
+cd services/clip-worker && docker compose up
+```
 
-The product is a custom commission flow: a customer uploads an inspiration image (Pinterest save, sketch, photo), answers 4 questions about occasion + budget, sees what their budget can make, and submits their contact details. The karigar in Old Delhi then reviews their reference and comes back within 24 hours with a confirmed design, spec, and price.
+## Environment variables
 
-**The site's one job:** make someone trust us enough to submit their reference.
+Copy `.env.example` to `.env.local` at the repo root and fill in your values:
 
-### Who it's for
-Young Indian professionals (22–35), metro + tier-1 cities. Discover jewellery on Pinterest/Instagram. Want something personal, not off-the-shelf. Intimidated by traditional showrooms. Value authenticity and craft.
-
-### Brand voice
-Warm, honest, unhurried. Like your family jeweller's son who went to design school. No pressure. Transparent pricing. Personal attention.
-
----
-
-## What's built (current state)
-
-The site is a **Next.js app** that lives in [`ami-next/`](ami-next/). See [`ami-next/README.md`](ami-next/README.md) for local dev and build instructions. It is deployed on Vercel from the `ami-next/` root directory.
-
-> The original single-file static prototype (`index.html`) has been retired in favour of the Next.js app.
-
-### Marketing site (scrollable)
-- **Hero section** — scroll-scrubbed video (desktop) / autoplay loop (mobile). 4 beat moments as you scroll, each revealing brand copy.
-- **Process section** — explains the 3-step custom order process (share inspiration → get mockup → karigar makes it).
-- **Trust section** — 40-year heritage, IGI certification, karigar transparency.
-- **CTA section** — final conversion push before the footer.
-- **Footer** — brand info, links.
-
-### Commission overlay (the product core)
-Triggered by every "Start your piece" button on the page. Full-screen dark overlay, cinematic feel. 5 steps + confirmation:
-
-| Step | What happens |
-|------|-------------|
-| 1 — Upload | Drag-and-drop or tap-to-upload. JPG/PNG/WEBP, max 10MB. Image previewed in-place. |
-| 2 — Occasion | Single-select chips: For myself · Gift · Anniversary · Engagement · Wedding · Just because. Optional free-text. |
-| 3 — Budget | 5 budget tiers from Under Rs 5,000 to Rs 40,000+. |
-| 4 — Estimate | Smart cards showing what the selected budget can make — metal type, stone carat range, clarity grade, price range. Powered by a configurable `PRICING_TIERS` object. |
-| 5 — Details | Name (required), phone (required, 10-digit Indian), email (optional), city (optional). |
-| Confirmation | "Your reference is pinned to the bench." WhatsApp CTA pre-filled with customer's name + budget. |
-
-### On submit (Step 5 → Confirmation)
-Three things fire in sequence:
-1. **Image upload** → Supabase Storage bucket `commission-images` (public read)
-2. **Lead row** → Supabase table `commission_leads`
-3. **Email notification** → EmailJS fires to `amibyarham@gmail.com` (Amit) with all lead details. BCC to `eshanjain2004@gmail.com`.
-
-If any step fails, the confirmation screen still shows — the customer always gets a positive response. Errors log to the browser console.
-
-### Floating CTA (FAB)
-Fixed gold pill bottom-right. Appears 800ms after page load, pulses a gold glow every 8 seconds to draw attention without being annoying.
-
----
+| Variable | Required by | Purpose |
+|----------|-------------|---------|
+| `NEXT_PUBLIC_SUPABASE_URL` | web | Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | web | Supabase anonymous key |
+| `SUPABASE_SERVICE_ROLE_KEY` | web, scripts | Bypasses RLS for server-side ops |
+| `GMAIL_USER` | web | Gmail address for contact notifications |
+| `GMAIL_APP_PASSWORD` | web | Gmail app password for SMTP |
+| `CLIP_WORKER_URL` | scripts | CLIP microservice URL |
+| `PINTEREST_APP_ID` | scripts | Pinterest API credentials |
+| `PINTEREST_APP_SECRET` | scripts | Pinterest API credentials |
+| `PINTEREST_REFRESH_TOKEN` | scripts | Pinterest API credentials |
 
 ## Tech stack
 
-| Layer | Tool | Why |
-|-------|------|-----|
-| Frontend | Next.js (React, TypeScript) | App lives in `ami-next/`. Component-based, server rendering, OG image generation. |
-| Database | Supabase (Postgres) | Stores commission leads. Free tier sufficient for MVP. |
-| File storage | Supabase Storage | Stores inspiration images uploaded by customers. |
-| Email | EmailJS | Client-side email — no backend server needed. 200 emails/month free. |
-| Hosting | Vercel | Git-push deploys. Connected to `main` branch of GitHub repo. |
-| Domain | arhamdiamonds.in | DNS managed separately (not Vercel). |
-| Fonts | Google Fonts CDN | Bodoni Moda (display), EB Garamond (body), DM Sans (UI), Caveat (script), Noto Serif Devanagari (Hindi). |
+| Layer | Tool |
+|-------|------|
+| Frontend | Next.js 16, React 19, Tailwind v4, Framer Motion |
+| Database | Supabase (Postgres) |
+| File storage | Supabase Storage |
+| Email | Nodemailer (Gmail SMTP) |
+| Hosting | Vercel |
+| Embeddings | CLIP (Python microservice) |
 
----
+## Deploying
 
-## Credentials & services
+The site deploys from the `main` branch via Vercel. The monorepo is configured
+via `vercel.json` — Vercel builds `apps/web` automatically.
 
-Credentials live in the `ami-next/` app (see `ami-next/src/lib/` and environment configuration). They are safe to be public because:
-- The Supabase anon key only has permission to INSERT into `commission_leads` and upload to `commission-images` — it cannot read other tables or delete anything.
-- EmailJS public keys are designed to be client-side.
-
-| Variable | Service | Purpose |
-|----------|---------|---------|
-| `SUPABASE_URL` | Supabase | Project URL |
-| `SUPABASE_ANON_KEY` | Supabase | Anonymous client key |
-| `EMAILJS_SERVICE_ID` | EmailJS | `service_k9er721` |
-| `EMAILJS_TEMPLATE_ID` | EmailJS | `template_sv5a7me` |
-| `EMAILJS_PUBLIC_KEY` | EmailJS | Public key |
-| `WHATSAPP_NUMBER` | WhatsApp | `919958863129` (Amit's number) |
-
----
-
-## Supabase setup
-
-### Table: `commission_leads`
-```sql
-create table commission_leads (
-  id             uuid primary key default gen_random_uuid(),
-  created_at     timestamptz default now(),
-  name           text not null,
-  phone          text not null,
-  email          text,
-  city           text,
-  occasion       text,
-  occasion_note  text,
-  budget_range   text,
-  image_url      text,
-  status         text default 'new'
-);
-alter table commission_leads enable row level security;
-create policy "anon can insert leads" on commission_leads
-  for insert to anon with check (true);
-```
-
-### Storage bucket: `commission-images`
-- Public bucket (allows `getPublicUrl` to return a working link)
-- RLS policies:
-  - `anon` can INSERT (upload)
-  - `anon` and `authenticated` can SELECT (view)
-
----
-
-## EmailJS template (`template_sv5a7me`)
-
-The template must use these exact variable names:
-
-```
-Subject: New AMI commission — {{name}}, {{budget}}
-
-To: amibyarham@gmail.com
-Reply-To: {{email}}
-BCC: eshanjain2004@gmail.com
-
-Body variables: {{name}} {{phone}} {{email}} {{city}} {{occasion}} {{occasion_note}} {{budget}} {{image_url}}
-```
-
----
-
-## Pricing tiers (update before go-live)
-
-The estimate cards in Step 4 are powered by a `PRICING_TIERS` configuration in the `ami-next/` app (see `ami-next/src/components/sections/PricingSection.tsx`). **These are placeholder numbers.** Before going live, Eshan needs to confirm the real numbers with Amit and the karigar and update this object. Nothing else needs to change — the UI reads from it dynamically.
-
-Questions to confirm with Amit/karigar before updating:
-- Silver: weight in grams at each tier, current 925 silver rate, diamond carat + clarity available
-- Gold: minimum budget for 14k vs 18k, weight in grams, current gold rate (14k + 18k separately), diamond size/clarity per tier
-
----
-
-## How to make changes
-
-**Editing text, prices, copy:** Edit the relevant component in `ami-next/src/components/`, then commit and push. Vercel deploys automatically within ~60 seconds.
-
-**Editing the commission flow steps:** The overlay lives in `ami-next/src/components/commission/CommissionModal.tsx`. Page sections live in `ami-next/src/components/sections/`.
-
-**Local development:**
-```
-cd ami-next
-npm install
-npm run dev
-```
-
-**Deploying:**
-```
-git add -A
-git commit -m "what you changed"
-git push origin main
-```
-Vercel picks it up automatically. No manual deploy button needed.
-
----
-
-## What's NOT built yet (Phase 2)
-
-These were explicitly out of scope for the MVP:
-
-- **AI mockup generation** — customer uploads inspiration, AI generates a jewellery mockup in their style
-- **Karigar portal / admin dashboard** — Amit can see all leads, update status, attach mockups
-- **Payment / deposit collection** — online payment to book the karigar's time
-- **Saved wishlist / user accounts** — return customers, saved designs
-- **WhatsApp bot follow-up** — automated follow-up sequence after lead submission
-
----
-
-## People
-
-| Person | Role | Contact |
-|--------|------|---------|
-| Eshan Jain | Product, strategy, design direction | eshanjain2004@gmail.com |
-| AK Jain (dad) | Business, karigar relationships, operations | — |
-| Amit Jain | Day-to-day operations, customer liaison | amibyarham@gmail.com · +919958863129 |
-| Arham Diamonds | Parent company (40yr legacy, Old Delhi + IDI Surat) | — |
-
----
-
-## Design system
-
-Brand tokens are CSS custom properties in `ami-next/src/app/globals.css`:
-
-```css
---oxblood: #6E1B2E    /* primary brand colour */
---gold: #B5944A       /* accent */
---silk: #F0E6D2       /* light background */
---kohl: #1A1411       /* near-black text */
---lac: #4A0F1E        /* deep dark (overlay background) */
-```
-
-Full design reference: `_designsystem/` folder and `brand-guide.html`.
+Make sure all `NEXT_PUBLIC_*` env vars are set in your Vercel project settings.

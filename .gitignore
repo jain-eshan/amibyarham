@@ -1,5 +1,38 @@
+# Dependencies
+node_modules/
+
+# Build output
+.next/
+out/
+build/
+dist/
+*.tsbuildinfo
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE / OS
 .DS_Store
+.vscode/
+.idea/
+
+# Vercel
+.vercel
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Claude Code
 .claude/
+
+# Generated reports (graphify)
+graphify-out/
+
+# Legacy design assets
 _designsystem/
 ami-by-arham-design-system/
 logo-iteration/
@@ -7,11 +40,3 @@ AMI by Arham — Design System-handoff.zip
 brand-guide.html
 brand-guide.md
 PRODUCT.md
-node_modules/
-.next/
-__pycache__/
-*.pyc
-.env
-.env.*
-!.env.example
-
