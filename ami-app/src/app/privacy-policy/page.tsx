@@ -1,99 +1,136 @@
+import type { Metadata } from "next";
+
+import { Reveal } from "@/components/Reveal";
+
+export const metadata: Metadata = {
+  title: "Privacy Policy",
+  description:
+    "How AMI by Arham collects, uses, and protects your personal information.",
+};
+
+const SECTIONS = [
+  {
+    title: "Information We Collect",
+    content: [
+      "When you submit a vision, contact us, or browse our site, we may collect:",
+    ],
+    list: [
+      "Name, email address, and contact details you provide through our forms",
+      "Design references, images, and messages you share with us",
+      "Device information, browser type, and pages visited (collected automatically)",
+      "Cookies and similar technologies to enhance your browsing experience",
+    ],
+  },
+  {
+    title: "How We Use Your Information",
+    content: [
+      "Your information helps us craft your experience and serve you better:",
+    ],
+    list: [
+      "To process and fulfil your bespoke commissions",
+      "To respond to enquiries and provide studio support",
+      "To share curated inspiration and studio updates (only with your consent)",
+      "To improve our website and understand how visitors interact with it",
+      "To comply with legal and regulatory obligations",
+    ],
+  },
+  {
+    title: "How We Protect Your Information",
+    content: [
+      "We implement appropriate technical and organisational measures to safeguard your personal information against unauthorised access, alteration, or disclosure. While no transmission over the internet is entirely secure, we take every reasonable step to protect the data you entrust to us.",
+    ],
+  },
+  {
+    title: "Sharing Your Information",
+    content: [
+      "We do not sell, trade, or rent your personal information to third parties. We may share data with trusted service providers who assist in operating our website and fulfilling commissions — always subject to strict confidentiality agreements.",
+    ],
+  },
+  {
+    title: "Your Rights",
+    content: [
+      "Depending on your location, you may have the right to access, correct, delete, or port your personal data. To exercise any of these rights, please reach out to us at the address below — we are happy to help.",
+    ],
+  },
+  {
+    title: "Third-Party Links",
+    content: [
+      "Our site may link to external platforms (Instagram, Pinterest, etc.). We are not responsible for their privacy practices and encourage you to review their policies independently.",
+    ],
+  },
+  {
+    title: "Changes to This Policy",
+    content: [
+      'We may update this policy from time to time. Significant changes will be posted here with an updated "Last Revised" date.',
+    ],
+  },
+  {
+    title: "Contact Us",
+    content: [
+      "Questions about this policy or how we handle your data? We would love to hear from you.",
+    ],
+  },
+] as const;
+
 export default function PrivacyPolicyPage() {
   return (
-    <div className="min-h-screen bg-white py-16 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl mx-auto">
-        <h1 className="text-4xl font-bold text-gray-900 mb-8">Privacy Policy</h1>
+    <section className="bg-canvas py-20 md:py-section">
+      <div className="mx-auto max-w-[720px] px-6">
+        <Reveal>
+          <p className="caption-uppercase text-muted">Legal</p>
+        </Reveal>
+        <Reveal delay={0.05}>
+          <h1 className="display-lg mt-6 text-ink">Privacy Policy</h1>
+        </Reveal>
+        <Reveal delay={0.1}>
+          <p className="mt-4 text-body">
+            Your privacy matters to us. This policy explains how AMI by Arham
+            collects, uses, and protects your personal information when you
+            visit our website and use our services.
+          </p>
+        </Reveal>
 
-        <div className="prose prose-lg text-gray-700 space-y-6">
-          <section>
-            <h2 className="text-2xl font-semibold text-gray-900 mb-4">1. Introduction</h2>
-            <p>
-              We are committed to protecting your privacy. This Privacy Policy explains how we collect, use,
-              disclose, and otherwise handle your personal information when you use our website and services.
-            </p>
-          </section>
+        <div className="mt-14 space-y-12">
+          {SECTIONS.map((section, i) => (
+            <Reveal key={section.title} delay={0.05}>
+              <div>
+                <h2 className="display-sm text-ink">
+                  {i + 1}. {section.title}
+                </h2>
+                {section.content.map((para) => (
+                  <p key={para} className="mt-4 text-body leading-relaxed">
+                    {para}
+                  </p>
+                ))}
+                {"list" in section && section.list && (
+                  <ul className="mt-4 space-y-2 pl-5">
+                    {section.list.map((item) => (
+                      <li
+                        key={item}
+                        className="relative text-body leading-relaxed before:absolute before:-left-4 before:top-[0.6em] before:h-1 before:w-1 before:rounded-full before:bg-primary"
+                      >
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </Reveal>
+          ))}
 
-          <section>
-            <h2 className="text-2xl font-semibold text-gray-900 mb-4">2. Information We Collect</h2>
-            <p>We may collect information about you in the following ways:</p>
-            <ul className="list-disc pl-6 space-y-2">
-              <li><strong>Information you provide directly:</strong> When you submit forms, create an account, or contact us, we collect information such as your name, email address, and any other information you choose to provide.</li>
-              <li><strong>Automatically collected information:</strong> We automatically collect certain information about your device and how you interact with our website, including IP address, browser type, pages visited, and time spent on pages.</li>
-              <li><strong>Cookies and tracking technologies:</strong> We use cookies and similar technologies to enhance your experience and analyze usage patterns.</li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-semibold text-gray-900 mb-4">3. How We Use Your Information</h2>
-            <p>We use the information we collect for the following purposes:</p>
-            <ul className="list-disc pl-6 space-y-2">
-              <li>To provide, maintain, and improve our services</li>
-              <li>To process transactions and send related information</li>
-              <li>To respond to your inquiries and provide customer support</li>
-              <li>To send marketing communications (with your consent)</li>
-              <li>To analyze usage trends and gather demographic information</li>
-              <li>To comply with legal obligations</li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-semibold text-gray-900 mb-4">4. How We Protect Your Information</h2>
-            <p>
-              We implement appropriate technical and organizational measures to protect your personal information
-              against unauthorized access, alteration, disclosure, or destruction. However, no method of transmission
-              over the Internet or electronic storage is completely secure.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-semibold text-gray-900 mb-4">5. Sharing Your Information</h2>
-            <p>
-              We do not sell, trade, or rent your personal information to third parties. We may share your information
-              with service providers who assist us in operating our website and conducting our business, subject to
-              confidentiality agreements.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-semibold text-gray-900 mb-4">6. Your Rights and Choices</h2>
-            <p>
-              Depending on your location, you may have certain rights regarding your personal information, including
-              the right to access, correct, delete, or port your data. To exercise these rights, please contact us
-              using the information provided below.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-semibold text-gray-900 mb-4">7. Third-Party Links</h2>
-            <p>
-              Our website may contain links to third-party websites. We are not responsible for the privacy practices
-              of these external sites and encourage you to review their privacy policies before providing any personal information.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-semibold text-gray-900 mb-4">8. Changes to This Privacy Policy</h2>
-            <p>
-              We may update this Privacy Policy from time to time. We will notify you of any significant changes by
-              posting the new Privacy Policy on our website and updating the "Last Updated" date below.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-semibold text-gray-900 mb-4">9. Contact Us</h2>
-            <p>
-              If you have questions about this Privacy Policy or our privacy practices, please contact us at:
-            </p>
-            <div className="bg-gray-50 p-4 rounded-lg mt-4">
-              <p className="font-semibold">AMI by Arham</p>
-              <p>Email: amibyarham@gmail.com</p>
-              <p>Address: Q5 Model Town, Delhi</p>
+          <Reveal delay={0.05}>
+            <div className="rounded-lg border border-hairline bg-surface-card p-8">
+              <p className="font-medium text-ink">AMI by Arham</p>
+              <p className="mt-2 text-body">amibyarham@gmail.com</p>
+              <p className="text-body">Q5 Model Town, Delhi, India</p>
             </div>
-          </section>
+          </Reveal>
 
-          <p className="text-sm text-gray-500 mt-8">Last Updated: June 11, 2026</p>
+          <Reveal delay={0.05}>
+            <p className="text-sm text-muted">Last revised: June 11, 2026</p>
+          </Reveal>
         </div>
       </div>
-    </div>
+    </section>
   );
 }

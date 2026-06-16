@@ -36,7 +36,7 @@ const variantStyles: Record<Variant, string> = {
     "bg-surface-dark-elevated text-on-dark border border-surface-dark-elevated " +
     "hover:bg-surface-dark-soft",
   "primary-on-coral":
-    "bg-canvas text-ink hover:bg-surface-soft active:bg-surface-card",
+    "bg-white text-ink font-semibold hover:bg-surface-soft active:bg-surface-card",
   "text-link":
     "h-auto p-0 bg-transparent text-ink hover:text-primary underline-offset-4 " +
     "hover:underline rounded-none",

@@ -3,14 +3,16 @@
 import { motion } from "framer-motion";
 
 import { Button } from "@/components/Button";
+import { VideoSketch } from "@/components/sections/VideoSketch";
 
 const easeOut = [0.16, 1, 0.3, 1] as const;
 
 export function Hero() {
   return (
-    <section className="relative overflow-x-clip bg-canvas pt-20 pb-16 md:pt-32 md:pb-section">
-      <div className="mx-auto grid max-w-[1200px] grid-cols-12 gap-8 px-6">
-        <div className="col-span-12 md:col-span-7">
+    <section className="relative z-10 bg-canvas pt-20 pb-16 md:pt-32 md:pb-24">
+      <div className="mx-auto grid max-w-[1200px] grid-cols-12 items-center gap-8 px-6 md:gap-12">
+        {/* ── Left: copy ────────────────────────────────────────────────── */}
+        <div className="col-span-12 md:col-span-6">
           <motion.span
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -67,57 +69,26 @@ export function Hero() {
           </motion.div>
         </div>
 
+        {/* ── Right: ring sketch video (arrows & labels baked in) ──────────── */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.96 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.2, delay: 0.1, ease: easeOut }}
-          className="col-span-12 md:col-span-5"
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1.1, delay: 0.08, ease: easeOut }}
+          className="col-span-12 md:col-span-6 md:max-w-[88%] md:justify-self-end"
         >
-          <HeroArtifact />
+          <VideoSketch
+            videoSrc="/Hero-Ring-Final.mp4"
+            showOverlay={false}
+            aspectRatio="4 / 3"
+            objectFit="contain"
+          />
         </motion.div>
       </div>
     </section>
   );
 }
 
-function HeroArtifact() {
-  return (
-    <div className="relative aspect-[3/4] w-full overflow-hidden rounded-xl bg-surface-cream-strong">
-      <div className="pointer-events-none absolute inset-6 border border-hairline" />
-
-      <div className="absolute inset-0 flex items-center justify-center">
-        <span
-          aria-hidden
-          className="block leading-none text-ink"
-          style={{
-            fontFamily: "var(--font-display)",
-            fontSize: "clamp(7rem, 16vw, 16rem)",
-            letterSpacing: "-0.04em",
-          }}
-        >
-          A
-        </span>
-      </div>
-
-      <span className="caption-uppercase absolute bottom-6 left-1/2 -translate-x-1/2 text-muted">
-        A Modern Royal Heirloom
-      </span>
-
-      <span
-        aria-hidden
-        className="absolute top-6 left-6 text-xs tracking-[0.25em] text-muted"
-      >
-        N°01
-      </span>
-      <span
-        aria-hidden
-        className="absolute top-6 right-6 text-xs tracking-[0.25em] text-muted"
-      >
-        ✦
-      </span>
-    </div>
-  );
-}
+// ─── Shared ───────────────────────────────────────────────────────────────────
 
 function Arrow() {
   return (

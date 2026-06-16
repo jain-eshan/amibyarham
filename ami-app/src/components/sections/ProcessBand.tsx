@@ -1,5 +1,59 @@
 import { Reveal } from "@/components/Reveal";
 
+function LotusPattern() {
+  const petals = [0, 45, 90, 135, 180, 225, 270, 315];
+  const dots = petals;
+  return (
+    <svg
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-0 h-full w-full"
+      style={{ color: "var(--color-primary)", opacity: 0.1 }}
+    >
+      <defs>
+        <pattern id="lotus-process" x="0" y="0" width="88" height="88" patternUnits="userSpaceOnUse">
+          {/* Central dot */}
+          <circle cx="44" cy="44" r="2.8" fill="currentColor" />
+          {/* 8 petals */}
+          {petals.map((deg) => {
+            const rad = (deg * Math.PI) / 180;
+            const cx = 44 + Math.cos(rad) * 15;
+            const cy = 44 + Math.sin(rad) * 15;
+            return (
+              <ellipse
+                key={deg}
+                cx={cx}
+                cy={cy}
+                rx="4"
+                ry="9"
+                transform={`rotate(${deg + 90}, ${cx}, ${cy})`}
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="0.9"
+              />
+            );
+          })}
+          {/* Outer ring */}
+          <circle cx="44" cy="44" r="28" fill="none" stroke="currentColor" strokeWidth="0.5" />
+          {/* Tip dots */}
+          {dots.map((deg) => {
+            const rad = (deg * Math.PI) / 180;
+            return (
+              <circle
+                key={deg}
+                cx={44 + Math.cos(rad) * 28}
+                cy={44 + Math.sin(rad) * 28}
+                r="1.4"
+                fill="currentColor"
+              />
+            );
+          })}
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#lotus-process)" />
+    </svg>
+  );
+}
+
 const STEPS = [
   {
     n: "01",
@@ -25,8 +79,9 @@ const STEPS = [
 
 export function ProcessBand() {
   return (
-    <section className="border-t border-hairline-soft bg-canvas py-section">
-      <div className="mx-auto max-w-[1200px] px-6">
+    <section className="relative overflow-hidden border-t border-hairline-soft bg-canvas py-section">
+      <LotusPattern />
+      <div className="relative mx-auto max-w-[1200px] px-6">
         <div className="flex flex-col items-start justify-between gap-8 md:flex-row md:items-end">
           <div>
             <Reveal>

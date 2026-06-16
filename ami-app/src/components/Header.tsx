@@ -5,19 +5,13 @@ import { useEffect, useState } from "react";
 
 import { BrandMark } from "@/components/BrandMark";
 
-const MENU_LINKS = [
+const NAV_LINKS = [
   { label: "Our Story", href: "/story" },
+  { label: "Discover Inspiration", href: "/discover" },
   { label: "Contact", href: "/contact" },
-  { label: "Admin Login", href: "/admin/login" },
+  { label: "Submit Vision", href: "/submit" },
 ] as const;
 
-/**
- * Header: brand wordmark centered, hamburger toggle on the right that opens a
- * full-screen cream sheet with the three top-level links. Per APP_FLOW the
- * primary navigation is always hidden behind the toggle — there is no
- * persistent horizontal menu. The bar tightens (stronger blur + visible
- * hairline) once the user has scrolled past the hero.
- */
 export function Header() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -53,30 +47,39 @@ export function Header() {
             : "border-b border-transparent bg-canvas/40 backdrop-blur-sm",
         ].join(" ")}
       >
-        <div className="relative mx-auto flex h-full max-w-[1200px] items-center justify-between px-6">
-          <span className="w-10" aria-hidden />
-
-          <Link
-            href="/"
-            className="absolute left-1/2 -translate-x-1/2 transform"
-            aria-label="AMI by Arham home"
-          >
-            <BrandMark size={40} />
+        <div className="mx-auto flex h-full max-w-[1200px] items-center justify-between px-6">
+          <Link href="/" aria-label="AMI by Arham home">
+            <BrandMark size={36} />
           </Link>
 
+          {/* Desktop nav */}
+          <nav className="hidden items-center gap-8 md:flex">
+            {NAV_LINKS.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="text-sm font-medium text-body transition-colors hover:text-ink"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+
+          {/* Mobile hamburger */}
           <button
             type="button"
             onClick={() => setOpen(true)}
             aria-label="Open menu"
             aria-expanded={open}
             aria-controls="primary-menu"
-            className="flex h-10 w-10 items-center justify-center rounded-full text-ink transition-colors hover:bg-surface-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            className="flex h-10 w-10 items-center justify-center rounded-full text-ink transition-colors hover:bg-surface-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary md:hidden"
           >
             <HamburgerIcon />
           </button>
         </div>
       </header>
 
+      {/* Mobile full-screen menu */}
       {open && (
         <div
           id="primary-menu"
@@ -85,9 +88,14 @@ export function Header() {
           aria-label="Primary navigation"
           className="fixed inset-0 z-50 flex flex-col bg-canvas"
         >
-          <div className="flex h-16 items-center justify-between border-b border-hairline-soft px-6">
-            <span className="w-10" aria-hidden />
-            <BrandMark size={40} />
+          <div className="flex h-16 items-center justify-between px-6">
+            <Link
+              href="/"
+              onClick={() => setOpen(false)}
+              aria-label="AMI by Arham home"
+            >
+              <BrandMark size={36} />
+            </Link>
             <button
               type="button"
               onClick={() => setOpen(false)}
@@ -99,7 +107,7 @@ export function Header() {
           </div>
 
           <nav className="mx-auto flex w-full max-w-[1200px] flex-1 flex-col justify-center gap-2 px-6 pb-24">
-            {MENU_LINKS.map((link) => (
+            {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
