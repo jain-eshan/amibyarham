@@ -92,7 +92,7 @@ export function SwipeEngine({
   const x = useMotionValue(0);
   const rotate = useTransform(x, [-220, 220], [-14, 14]);
   const likeOpacity = useTransform(x, [40, 130], [0, 1]);
-  const nopeOpacity = useTransform(x, [-130, -40], [1, 0]);
+  const nopeOpacity = useTransform(x, [-40, -130], [0, 1]);
 
   const atEnd = index >= deck.length;
   const topCard = deck[index];
