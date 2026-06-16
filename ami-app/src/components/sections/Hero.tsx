@@ -74,7 +74,7 @@ export function Hero() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.1, delay: 0.08, ease: easeOut }}
-          className="col-span-12 md:col-span-6 md:max-w-[88%] md:justify-self-end"
+          className="col-span-12 md:col-span-6 md:ml-auto md:w-[88%]"
         >
           <VideoSketch
             videoSrc="/Hero-Ring-Final.mp4"
