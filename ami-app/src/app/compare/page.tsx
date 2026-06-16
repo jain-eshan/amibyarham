@@ -12,12 +12,14 @@ export default function ComparePage() {
         </p>
 
         <div className="mt-16 space-y-24">
-          {/* Iteration 1: Edited video with arrows baked in — no code overlay */}
+          {/* Iteration 1: Edited video v2 (1440x1080, no BG, arrows baked in) — no code overlay */}
           <CompareHero
             label="Iteration 1"
-            description="Edited video (no BG, arrows & text baked in) — no code overlay"
-            videoSrc="/Edited-Ring-withoutBG.mp4"
+            description="Edited video v2, 1440×1080 (no BG, arrows & text baked in) — no code overlay, full frame visible"
+            videoSrc="/Edited-Ring-withoutBG-v2.mp4"
             showOverlay={false}
+            aspectRatio="4 / 3"
+            objectFit="contain"
           />
 
           {/* Iteration 2: Video without BG — code arrows & text overlaid */}

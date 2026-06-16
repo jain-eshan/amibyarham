@@ -49,6 +49,8 @@ const ANNOTATIONS = [
 interface VideoSketchProps {
   videoSrc?: string;
   showOverlay?: boolean;
+  aspectRatio?: string;
+  objectFit?: "cover" | "contain";
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -56,6 +58,8 @@ interface VideoSketchProps {
 export function VideoSketch({
   videoSrc = "/Generate_a_smooth_second_ani.mp4",
   showOverlay = true,
+  aspectRatio = "1 / 1",
+  objectFit = "cover",
 }: VideoSketchProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [shown, setShown] = useState<ReadonlySet<string>>(new Set());
@@ -75,7 +79,7 @@ export function VideoSketch({
   }, []);
 
   return (
-    <div className="relative w-full" style={{ aspectRatio: "1 / 1" }}>
+    <div className="relative w-full" style={{ aspectRatio }}>
       <video
         ref={videoRef}
         src={videoSrc}
@@ -84,14 +88,15 @@ export function VideoSketch({
         playsInline
         loop
         onTimeUpdate={onTimeUpdate}
-        className="absolute inset-0 h-full w-full object-cover"
-        style={{ display: "block", mixBlendMode: "multiply" }}
+        className="absolute inset-0 h-full w-full"
+        style={{ display: "block", mixBlendMode: "multiply", objectFit }}
       />
 
       {showOverlay && (
         <svg
           viewBox="0 0 100 100"
           xmlns="http://www.w3.org/2000/svg"
+          preserveAspectRatio="none"
           className="pointer-events-none absolute inset-0 h-full w-full overflow-visible"
         >
           {ANNOTATIONS.map((ann) => {

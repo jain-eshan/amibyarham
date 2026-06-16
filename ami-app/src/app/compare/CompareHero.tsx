@@ -12,9 +12,18 @@ interface CompareHeroProps {
   description: string;
   videoSrc: string;
   showOverlay: boolean;
+  aspectRatio?: string;
+  objectFit?: "cover" | "contain";
 }
 
-export function CompareHero({ label, description, videoSrc, showOverlay }: CompareHeroProps) {
+export function CompareHero({
+  label,
+  description,
+  videoSrc,
+  showOverlay,
+  aspectRatio,
+  objectFit,
+}: CompareHeroProps) {
   return (
     <div>
       <div className="mb-6 border-b border-hairline pb-4">
@@ -79,7 +88,12 @@ export function CompareHero({ label, description, videoSrc, showOverlay }: Compa
             transition={{ duration: 1.1, delay: 0.08, ease: easeOut }}
             className="col-span-12 md:col-span-6"
           >
-            <VideoSketch videoSrc={videoSrc} showOverlay={showOverlay} />
+            <VideoSketch
+              videoSrc={videoSrc}
+              showOverlay={showOverlay}
+              aspectRatio={aspectRatio}
+              objectFit={objectFit}
+            />
           </motion.div>
         </div>
       </section>
