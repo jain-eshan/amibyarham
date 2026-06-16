@@ -12,27 +12,27 @@ export default function ComparePage() {
         </p>
 
         <div className="mt-16 space-y-24">
-          {/* Iteration 1: Edited video (arrows baked in) — no overlay */}
+          {/* Iteration 1: Edited video with arrows baked in — no code overlay */}
           <CompareHero
             label="Iteration 1"
-            description="Video without background — arrows & text baked into the video itself"
-            videoSrc="/Ring-withoutBG.mp4"
+            description="Edited video (no BG, arrows & text baked in) — no code overlay"
+            videoSrc="/Edited-Ring-withoutBG.mp4"
             showOverlay={false}
           />
 
-          {/* Iteration 2: Ring with BG — overlay arrows & text */}
+          {/* Iteration 2: Video without BG — code arrows & text overlaid */}
           <CompareHero
             label="Iteration 2"
-            description="Video with background + multiply blend — arrows & text overlaid via code"
-            videoSrc="/Ring-withBG.mp4"
+            description="Video without background + multiply blend — arrows & text overlaid via code"
+            videoSrc="/Ring-withoutBG.mp4"
             showOverlay={true}
           />
 
-          {/* Iteration 3: Original video — overlay arrows & text */}
+          {/* Iteration 3: Video with BG — code arrows & text overlaid */}
           <CompareHero
             label="Iteration 3"
-            description="Original video + multiply blend — arrows & text overlaid via code"
-            videoSrc="/Generate_a_smooth_second_ani.mp4"
+            description="Video with background + multiply blend — arrows & text overlaid via code"
+            videoSrc="/Ring-withBG.mp4"
             showOverlay={true}
           />
         </div>
