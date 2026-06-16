@@ -7,7 +7,7 @@ function LotusPattern() {
     <svg
       aria-hidden="true"
       className="pointer-events-none absolute inset-0 h-full w-full"
-      style={{ color: "var(--color-primary)", opacity: 0.045 }}
+      style={{ color: "var(--color-primary)", opacity: 0.1 }}
     >
       <defs>
         <pattern id="lotus-process" x="0" y="0" width="88" height="88" patternUnits="userSpaceOnUse">

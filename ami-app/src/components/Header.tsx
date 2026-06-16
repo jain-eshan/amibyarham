@@ -7,6 +7,7 @@ import { BrandMark } from "@/components/BrandMark";
 
 const NAV_LINKS = [
   { label: "Our Story", href: "/story" },
+  { label: "Discover Inspiration", href: "/discover" },
   { label: "Contact", href: "/contact" },
   { label: "Submit Vision", href: "/submit" },
 ] as const;
@@ -116,13 +117,6 @@ export function Header() {
                 {link.label}
               </Link>
             ))}
-            <Link
-              href="/discover"
-              onClick={() => setOpen(false)}
-              className="display-lg text-ink transition-colors hover:text-primary"
-            >
-              Discover Inspiration
-            </Link>
           </nav>
         </div>
       )}

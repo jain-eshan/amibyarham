@@ -69,14 +69,19 @@ export function Hero() {
           </motion.div>
         </div>
 
-        {/* ── Right: annotated jewelry sketch ───────────────────────────── */}
+        {/* ── Right: ring sketch video (arrows & labels baked in) ──────────── */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.1, delay: 0.08, ease: easeOut }}
-          className="col-span-12 md:col-span-6"
+          className="col-span-12 md:col-span-6 md:max-w-[88%] md:justify-self-end"
         >
-          <VideoSketch />
+          <VideoSketch
+            videoSrc="/Hero-Ring-Final.mp4"
+            showOverlay={false}
+            aspectRatio="4 / 3"
+            objectFit="contain"
+          />
         </motion.div>
       </div>
     </section>
