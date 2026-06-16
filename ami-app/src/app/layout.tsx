@@ -89,7 +89,7 @@ export const metadata: Metadata = {
     locale: "en_IN",
     images: [
       {
-        url: "/brand/ami-mark-ink.svg",
+        url: "/brand/og-image.png",
         width: 1200,
         height: 630,
         alt: "AMI by Arham — bespoke lab-grown diamond jewelry",
@@ -100,7 +100,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "AMI by Arham — Bespoke Lab-Grown Diamond Atelier",
     description,
-    images: ["/brand/ami-mark-ink.svg"],
+    images: ["/brand/og-image.png"],
   },
   robots: {
     index: true,

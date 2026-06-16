@@ -10,6 +10,15 @@ const contactSchema = z.object({
   message: z.string().min(10, "Message must be at least 10 characters"),
 });
 
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 export async function POST(request: Request) {
   let body: unknown;
   try {
@@ -59,6 +68,10 @@ export async function POST(request: Request) {
         },
       });
 
+      const safeName = escapeHtml(name);
+      const safeEmail = escapeHtml(email);
+      const safeMessage = escapeHtml(message);
+
       const htmlBody = `
 <!DOCTYPE html>
 <html lang="en">
@@ -68,15 +81,15 @@ export async function POST(request: Request) {
   <table style="width: 100%; border-collapse: collapse;">
     <tr>
       <td style="padding: 8px 0; font-weight: 600; width: 100px;">Name</td>
-      <td style="padding: 8px 0;">${name}</td>
+      <td style="padding: 8px 0;">${safeName}</td>
     </tr>
     <tr>
       <td style="padding: 8px 0; font-weight: 600;">Email</td>
-      <td style="padding: 8px 0;"><a href="mailto:${email}" style="color: #9b6b4b;">${email}</a></td>
+      <td style="padding: 8px 0;"><a href="mailto:${safeEmail}" style="color: #9b6b4b;">${safeEmail}</a></td>
     </tr>
     <tr>
       <td style="padding: 8px 0; font-weight: 600; vertical-align: top;">Message</td>
-      <td style="padding: 8px 0; white-space: pre-wrap;">${message}</td>
+      <td style="padding: 8px 0; white-space: pre-wrap;">${safeMessage}</td>
     </tr>
     <tr>
       <td style="padding: 8px 0; font-weight: 600;">Received</td>

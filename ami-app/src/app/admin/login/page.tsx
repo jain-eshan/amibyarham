@@ -24,8 +24,8 @@ export default function AdminLoginPage() {
             Studio Access
           </h1>
 
-          {/* Form */}
-          <form className="mt-8 space-y-5" action="#" onSubmit={undefined}>
+          {/* Form — authentication not yet implemented */}
+          <form className="mt-8 space-y-5" onSubmit={(e) => e.preventDefault()}>
             <div>
               <label
                 htmlFor="admin-email"
@@ -69,7 +69,7 @@ export default function AdminLoginPage() {
 
           {/* Footer note */}
           <p className="mt-6 text-center text-xs text-muted">
-            Admin access only. Contact studio for credentials.
+            Studio admin — coming soon. Contact studio for access.
           </p>
         </div>
       </div>

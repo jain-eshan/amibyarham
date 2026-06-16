@@ -3,14 +3,14 @@ import type { Metadata } from "next";
 import { SubmitForm } from "./SubmitForm";
 
 export const metadata: Metadata = {
-  title: "Submit Your Vision — AMI by Arham",
+  title: "Submit Your Vision",
   description:
     "Share your inspiration reference and get a custom jewellery quote within 24 hours.",
 };
 
 export default function SubmitPage() {
   return (
-    <main>
+    <>
       <div className="bg-surface-dark py-16 text-on-dark md:py-20">
         <div className="mx-auto max-w-2xl px-6">
           <p className="caption-uppercase text-on-dark-soft">Path A</p>
@@ -30,6 +30,6 @@ export default function SubmitPage() {
       </div>
 
       <SubmitForm />
-    </main>
+    </>
   );
 }
