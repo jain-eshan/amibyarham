@@ -202,6 +202,23 @@ export function SubmitForm() {
 
       if (requestError) throw new Error(requestError.message);
 
+      fetch("/api/notify-submission", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fullName: data.fullName,
+          whatsapp: data.whatsapp,
+          email: data.email || undefined,
+          requestType:
+            data.referenceMode === "url" ? "external_link" : "direct_upload",
+          designNotes: noteParts.length > 0 ? noteParts.join("\n") : undefined,
+          referenceUrl:
+            data.referenceMode === "url"
+              ? (data.referenceUrl ?? undefined)
+              : undefined,
+        }),
+      }).catch(() => {});
+
       setDirection(1);
       setStep("done");
     } catch (err) {
