@@ -1,9 +1,0 @@
-{
-  "projectId": "bkigritfxabsvpgzgajs",
-  "db": {
-    "shadowDatabaseUrl": "postgresql://postgres@127.0.0.1:54322/postgres"
-  },
-  "auth": {
-    "enableSignup": true
-  }
-}

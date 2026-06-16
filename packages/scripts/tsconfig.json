@@ -13,5 +13,5 @@
     "noEmit": true,
     "types": ["node"]
   },
-  "include": ["**/*.ts", "../ami-app/src/types/database.ts"]
+  "include": ["**/*.ts", "../../apps/web/src/types/database.ts"]
 }
