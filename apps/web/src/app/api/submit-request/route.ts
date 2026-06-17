@@ -13,8 +13,13 @@ const metadataSchema = z.object({
   referenceMode: z.enum(["url", "upload"]),
   referenceUrl: z.string().optional(),
   metal: z.string().optional(),
+  budget: z.string().optional(),
+  designIntent: z.string().optional(),
+  wearContext: z.string().optional(),
+  timeline: z.string().optional(),
   occasion: z.string().optional(),
-  designNotes: z.string().max(600).optional(),
+  designNotes: z.string().max(800).optional(),
+  contactPreference: z.string().optional(),
   fullName: z.string().min(2),
   whatsapp: z.string().regex(/^[6-9]\d{9}$/),
   email: z
@@ -22,6 +27,34 @@ const metadataSchema = z.object({
     .optional()
     .transform((v) => v || null),
 });
+
+const labels: Record<string, string> = {
+  "close-match": "Close to the reference",
+  inspired: "Inspired, not exact",
+  daily: "Daily wear",
+  occasion: "Occasion wear",
+  bridal: "Bridal / wedding",
+  "no-rush": "No rush",
+  "this-month": "This month",
+  "two-three-months": "2-3 months",
+  "date-fixed": "Fixed date",
+  "18k": "18k Gold",
+  "22k": "22k Gold",
+  "under-50k": "Under ₹50k",
+  "50k-1l": "₹50k-₹1L",
+  "1l-3l": "₹1L-₹3L",
+  "3l-plus": "₹3L+",
+  myself: "For myself",
+  gift: "Gift",
+  anniversary: "Anniversary",
+  engagement: "Engagement",
+  wedding: "Wedding",
+  other: "Other",
+  "whatsapp-message": "WhatsApp message",
+  "whatsapp-call": "WhatsApp call",
+};
+
+const label = (value: string) => labels[value] ?? value;
 
 export async function POST(req: Request) {
   const ip = getClientIp(req);
@@ -97,8 +130,13 @@ export async function POST(req: Request) {
     referenceMode,
     referenceUrl,
     metal,
+    budget,
+    designIntent,
+    wearContext,
+    timeline,
     occasion,
     designNotes,
+    contactPreference,
     fullName,
     whatsapp,
     email,
@@ -136,8 +174,19 @@ export async function POST(req: Request) {
     }
 
     const noteParts: string[] = [];
-    if (metal && metal !== "unsure") noteParts.push(`Metal: ${metal}`);
-    if (occasion) noteParts.push(`Occasion: ${occasion}`);
+    if (designIntent && designIntent !== "unsure") {
+      noteParts.push(`Direction: ${label(designIntent)}`);
+    }
+    if (wearContext && wearContext !== "unsure") {
+      noteParts.push(`Wear context: ${label(wearContext)}`);
+    }
+    if (metal && metal !== "unsure") noteParts.push(`Metal: ${label(metal)}`);
+    if (budget && budget !== "unsure") noteParts.push(`Budget: ${label(budget)}`);
+    if (occasion) noteParts.push(`Occasion: ${label(occasion)}`);
+    if (timeline) noteParts.push(`Timeline: ${label(timeline)}`);
+    if (contactPreference) {
+      noteParts.push(`Preferred response: ${label(contactPreference)}`);
+    }
     if (designNotes?.trim()) noteParts.push(designNotes.trim());
 
     const { error: requestError } = await supabase

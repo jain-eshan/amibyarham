@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AnimatePresence, motion } from "framer-motion";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -17,10 +17,16 @@ const schema = z.object({
   budget: z
     .enum(["under-50k", "50k-1l", "1l-3l", "3l-plus", "unsure"])
     .optional(),
+  designIntent: z.enum(["close-match", "inspired", "unsure"]).optional(),
+  wearContext: z.enum(["daily", "occasion", "bridal", "unsure"]).optional(),
+  timeline: z
+    .enum(["no-rush", "this-month", "two-three-months", "date-fixed"])
+    .optional(),
   occasion: z
     .enum(["myself", "gift", "anniversary", "engagement", "wedding", "other"])
     .optional(),
-  designNotes: z.string().max(600, "Keep it under 600 characters").optional(),
+  designNotes: z.string().max(800, "Keep it under 800 characters").optional(),
+  contactPreference: z.enum(["whatsapp-message", "whatsapp-call"]).optional(),
   fullName: z.string().min(2, "Name is required"),
   whatsapp: z
     .string()
@@ -49,6 +55,26 @@ const OCCASION_OPTIONS = [
   { value: "other" as const, label: "Other" },
 ];
 
+const DESIGN_INTENT_OPTIONS = [
+  { value: "close-match" as const, label: "Close to the reference" },
+  { value: "inspired" as const, label: "Inspired, not exact" },
+  { value: "unsure" as const, label: "Need guidance" },
+];
+
+const WEAR_CONTEXT_OPTIONS = [
+  { value: "daily" as const, label: "Daily wear" },
+  { value: "occasion" as const, label: "Occasion wear" },
+  { value: "bridal" as const, label: "Bridal / wedding" },
+  { value: "unsure" as const, label: "Not sure yet" },
+];
+
+const TIMELINE_OPTIONS = [
+  { value: "no-rush" as const, label: "No rush" },
+  { value: "this-month" as const, label: "This month" },
+  { value: "two-three-months" as const, label: "2-3 months" },
+  { value: "date-fixed" as const, label: "Fixed date" },
+];
+
 const BUDGET_OPTIONS = [
   { value: "under-50k" as const, label: "Under ₹50k" },
   { value: "50k-1l" as const, label: "₹50k–₹1L" },
@@ -56,6 +82,50 @@ const BUDGET_OPTIONS = [
   { value: "3l-plus" as const, label: "₹3L+" },
   { value: "unsure" as const, label: "Not sure yet" },
 ];
+
+const CONTACT_OPTIONS = [
+  { value: "whatsapp-message" as const, label: "WhatsApp message" },
+  { value: "whatsapp-call" as const, label: "WhatsApp call" },
+];
+
+const GUIDE_STEPS = [
+  {
+    eyebrow: "Step 1",
+    title: "Share whatever holds the idea.",
+    body: "A screenshot, reel, Pinterest board, old family photo, or rough sketch is enough. You do not need a polished brief before AMI can help.",
+    bullets: [
+      "Upload an image or paste a link",
+      "Add what you want to keep or change",
+      "Share a planning range if you have one",
+    ],
+    visualLabel: "Reference",
+    visualTitle: "Saved image, reel, board, or family photo",
+  },
+  {
+    eyebrow: "Step 2",
+    title: "AMI checks what can actually be made.",
+    body: "Your reference is reviewed for craft, wearability, metal, stone options, timeline, and budget fit before it goes into a making conversation.",
+    bullets: [
+      "What can be made closely",
+      "What may need to change",
+      "Which making route fits best",
+    ],
+    visualLabel: "Feasibility",
+    visualTitle: "Craft, budget, wearability, and timeline check",
+  },
+  {
+    eyebrow: "Step 3",
+    title: "You get a clear WhatsApp response.",
+    body: "Within 24 hours, AMI replies with feasibility, likely changes, and the next step. No obligation, no spam, no pressure to proceed.",
+    bullets: [
+      "Private response on WhatsApp",
+      "Expected changes explained clearly",
+      "Next step only if you want to continue",
+    ],
+    visualLabel: "Response",
+    visualTitle: "Feasibility note and next step",
+  },
+] as const;
 
 // ─── Animation ───────────────────────────────────────────────────────────────
 
@@ -77,7 +147,9 @@ const inputCls =
 // ─── Component ───────────────────────────────────────────────────────────────
 
 export function SubmitForm() {
-  const [step, setStep] = useState<1 | 2 | 3 | "done">(1);
+  const [showGuide, setShowGuide] = useState(true);
+  const [guideStep, setGuideStep] = useState<0 | 1 | 2>(0);
+  const [step, setStep] = useState<1 | 2 | 3 | 4 | "done">(1);
   const [direction, setDirection] = useState<1 | -1>(1);
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [uploadPreview, setUploadPreview] = useState<string | null>(null);
@@ -87,6 +159,7 @@ export function SubmitForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const formShellRef = useRef<HTMLDivElement>(null);
 
   const {
     register,
@@ -97,13 +170,35 @@ export function SubmitForm() {
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: { referenceMode: "url", metal: "unsure", budget: "unsure" },
+    defaultValues: {
+      referenceMode: "url",
+      metal: "unsure",
+      budget: "unsure",
+      designIntent: "unsure",
+      wearContext: "unsure",
+      contactPreference: "whatsapp-message",
+    },
   });
 
   const referenceMode = watch("referenceMode");
   const metal = watch("metal");
   const budget = watch("budget");
+  const designIntent = watch("designIntent");
+  const wearContext = watch("wearContext");
+  const timeline = watch("timeline");
   const occasion = watch("occasion");
+  const contactPreference = watch("contactPreference");
+  const referenceUrl = watch("referenceUrl");
+  const designNotes = watch("designNotes");
+  const fullName = watch("fullName");
+  const whatsapp = watch("whatsapp");
+  const email = watch("email");
+
+  useEffect(() => {
+    if (step !== 1 && step !== "done") {
+      formShellRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [step]);
 
   // ─── File handling ──────────────────────────────────────────────────────────
 
@@ -112,8 +207,8 @@ export function SubmitForm() {
       setFileError("Please upload an image file (JPG, PNG, WEBP)");
       return;
     }
-    if (file.size > 10 * 1024 * 1024) {
-      setFileError("File must be under 10 MB");
+    if (file.size > 4 * 1024 * 1024) {
+      setFileError("File must be under 4 MB");
       return;
     }
     setFileError(null);
@@ -149,12 +244,19 @@ export function SubmitForm() {
     } else if (step === 2) {
       setDirection(1);
       setStep(3);
+    } else if (step === 3) {
+      const isValid = await trigger(["fullName", "whatsapp", "email"]);
+      if (!isValid) return;
+      setDirection(1);
+      setStep(4);
     }
-  }, [step, referenceMode, watch, uploadFile]);
+  }, [step, referenceMode, watch, uploadFile, trigger]);
 
   const back = useCallback(() => {
     setDirection(-1);
-    setStep((s) => (s === 2 ? 1 : s === 3 ? 2 : s) as 1 | 2 | 3);
+    setStep((s) =>
+      s === 2 ? 1 : s === 3 ? 2 : s === 4 ? 3 : s,
+    );
   }, []);
 
   // ─── Submit ─────────────────────────────────────────────────────────────────
@@ -169,8 +271,12 @@ export function SubmitForm() {
         referenceUrl: data.referenceUrl,
         metal: data.metal,
         budget: data.budget,
+        designIntent: data.designIntent,
+        wearContext: data.wearContext,
+        timeline: data.timeline,
         occasion: data.occasion,
         designNotes: data.designNotes,
+        contactPreference: data.contactPreference,
         fullName: data.fullName,
         whatsapp: data.whatsapp,
         email: data.email || "",
@@ -214,6 +320,142 @@ export function SubmitForm() {
         : "border-hairline text-ink hover:border-primary/50",
     ].join(" ");
 
+  const labelFor = <T extends string>(
+    options: Array<{ value: T; label: string }>,
+    value?: T,
+  ) => options.find((opt) => opt.value === value)?.label ?? "Not shared";
+
+  const startForm = () => {
+    setShowGuide(false);
+    setStep(1);
+    setDirection(1);
+  };
+
+  // ─── Guided explainer ──────────────────────────────────────────────────────
+
+  if (showGuide) {
+    const current = GUIDE_STEPS[guideStep];
+    const progress = ((guideStep + 1) / GUIDE_STEPS.length) * 100;
+    const isLastGuideStep = guideStep === GUIDE_STEPS.length - 1;
+
+    return (
+      <section className="min-h-[calc(100vh-4rem)] bg-canvas px-6 py-8 md:py-12">
+        <div className="mx-auto flex max-w-[1200px] items-center justify-between">
+          <button
+            type="button"
+            onClick={() =>
+              guideStep === 0
+                ? history.back()
+                : setGuideStep((s) => (s - 1) as 0 | 1 | 2)
+            }
+            className="text-sm font-medium text-ink transition-colors hover:text-primary"
+          >
+            ← {guideStep === 0 ? "Back" : "Previous"}
+          </button>
+          <button
+            type="button"
+            onClick={startForm}
+            className="rounded-full border border-hairline px-5 py-2 text-sm font-medium text-ink transition-colors hover:border-primary/50 hover:text-primary"
+          >
+            Skip
+          </button>
+        </div>
+
+        <div className="mx-auto grid max-w-[980px] grid-cols-12 items-center gap-10 pt-14 md:min-h-[70vh] md:pt-8">
+          <div className="col-span-12 md:col-span-6">
+            <div className="mb-8 h-1.5 w-full max-w-xs overflow-hidden rounded-full bg-surface-card">
+              <div
+                className="h-full rounded-full bg-primary transition-all duration-300"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+            <p className="caption-uppercase text-muted">{current.eyebrow}</p>
+            <h1
+              className="display-lg mt-4 max-w-[12ch] text-ink"
+              style={{ fontFamily: "var(--font-display)" }}
+            >
+              {current.title}
+            </h1>
+            <p className="mt-5 max-w-lg text-body md:text-lg">{current.body}</p>
+            <ul className="mt-7 space-y-3">
+              {current.bullets.map((bullet) => (
+                <li key={bullet} className="flex items-start gap-3 text-sm text-body">
+                  <span className="mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/15 text-[11px] font-medium text-primary">
+                    ✓
+                  </span>
+                  <span>{bullet}</span>
+                </li>
+              ))}
+            </ul>
+
+            <div className="mt-10 flex flex-wrap items-center gap-3">
+              <Button
+                type="button"
+                variant="primary"
+                size="lg"
+                onClick={() =>
+                  isLastGuideStep
+                    ? startForm()
+                    : setGuideStep((s) => (s + 1) as 0 | 1 | 2)
+                }
+              >
+                {isLastGuideStep ? "Start with a reference →" : "Next →"}
+              </Button>
+              {!isLastGuideStep && (
+                <button
+                  type="button"
+                  onClick={startForm}
+                  className="px-3 py-2 text-sm font-medium text-muted transition-colors hover:text-ink"
+                >
+                  I know what to send
+                </button>
+              )}
+            </div>
+          </div>
+
+          <div className="col-span-12 md:col-span-6">
+            <div className="relative overflow-hidden rounded-lg border border-hairline bg-surface-card p-5 shadow-sm">
+              <div className="absolute inset-x-0 top-0 h-10 border-b border-hairline bg-canvas/70" />
+              <div className="relative pt-12">
+                <p className="caption-uppercase text-muted">
+                  {current.visualLabel}
+                </p>
+                <div className="mt-4 aspect-[4/3] rounded-md border border-dashed border-hairline bg-canvas p-5">
+                  <div className="grid h-full grid-cols-3 gap-3">
+                    <div className="col-span-1 rounded-md bg-surface-soft p-3">
+                      <div className="h-3 w-12 rounded-full bg-hairline" />
+                      <div className="mt-3 h-16 rounded-md bg-primary/15" />
+                      <div className="mt-3 h-2 w-16 rounded-full bg-hairline" />
+                      <div className="mt-2 h-2 w-10 rounded-full bg-hairline" />
+                    </div>
+                    <div className="col-span-2 space-y-3">
+                      {[0, 1, 2].map((item) => (
+                        <div
+                          key={item}
+                          className="rounded-md border border-hairline bg-surface-soft p-3"
+                        >
+                          <div className="h-2 w-24 rounded-full bg-hairline" />
+                          <div className="mt-3 grid grid-cols-3 gap-2">
+                            <div className="h-10 rounded bg-canvas" />
+                            <div className="h-10 rounded bg-canvas" />
+                            <div className="h-10 rounded bg-canvas" />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <p className="mt-4 text-sm text-muted">
+                  Image / lottie slot: {current.visualTitle}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   // ─── Done screen ────────────────────────────────────────────────────────────
 
   if (step === "done") {
@@ -229,12 +471,12 @@ export function SubmitForm() {
           className="display-lg mt-6 max-w-lg text-ink"
           style={{ fontFamily: "var(--font-display)" }}
         >
-          Your vision is pinned to the bench.
+          Your reference has reached AMI.
         </h2>
         <p className="mt-4 max-w-sm text-body">
-          We&rsquo;ll review your reference and reach out on WhatsApp within 24
-          hours with what can be made, what may need to change, and the next
-          step.
+          We&rsquo;ll review it privately with the right making route in mind
+          and reply on WhatsApp within 24 hours with feasibility, possible
+          changes, and the next step.
         </p>
         <Button href="/" variant="secondary" size="lg" className="mt-10">
           Back to home →
@@ -245,21 +487,64 @@ export function SubmitForm() {
 
   // ─── Step indicator ─────────────────────────────────────────────────────────
 
-  const STEP_LABELS = ["Reference", "Vision", "Contact"];
+  const STEP_LABELS = ["Reference", "Details", "Contact", "Review"];
 
   return (
-    <div className="mx-auto max-w-2xl px-6 py-16 md:py-20">
-      {/* Step indicator */}
-      <div className="mb-12 flex items-center gap-2">
+    <div
+      ref={formShellRef}
+      className="mx-auto grid max-w-[1200px] grid-cols-12 gap-10 px-6 py-14 md:py-20"
+    >
+      <aside className="col-span-12 md:col-span-4">
+        <div className="sticky top-24 space-y-5">
+          <div className="rounded-lg border border-hairline bg-surface-card p-6">
+            <p className="caption-uppercase text-muted">What happens next</p>
+            <div className="mt-5 space-y-4">
+              {[
+                ["1", "AMI checks your reference for craft, wearability, and budget fit."],
+                ["2", "The right making route is discussed with trusted craftsmen."],
+                ["3", "You hear back on WhatsApp with feasibility and next steps."],
+              ].map(([number, copy]) => (
+                <div key={number} className="flex gap-3">
+                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/15 text-xs font-medium text-primary">
+                    {number}
+                  </span>
+                  <p className="text-sm text-body">{copy}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-lg border border-hairline bg-canvas p-6">
+            <p className="caption-uppercase text-muted">Image slot</p>
+            <div className="mt-4 aspect-[4/3] rounded-md border border-dashed border-hairline bg-surface-soft p-4">
+              <div className="flex h-full items-end">
+                <p className="text-sm text-muted">
+                  Add a buyer-safe visual here: WhatsApp feasibility note,
+                  reference board, or craft consultation illustration.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <p className="text-sm text-muted">
+            Private reference. No spam. No obligation to proceed after the first
+            feasibility response.
+          </p>
+        </div>
+      </aside>
+
+      <div className="col-span-12 md:col-span-8">
+        {/* Step indicator */}
+        <div className="mb-10 flex flex-wrap items-center gap-2 md:mb-12">
         {STEP_LABELS.map((label, i) => {
-          const n = (i + 1) as 1 | 2 | 3;
+          const n = (i + 1) as 1 | 2 | 3 | 4;
           const isActive = step === n;
           const isDone = typeof step === "number" && step > n;
           return (
             <div key={label} className="flex items-center gap-2">
               {i > 0 && (
                 <div
-                  className={`h-px w-8 transition-colors ${isDone ? "bg-primary" : "bg-hairline"}`}
+                  className={`h-px w-4 transition-colors sm:w-8 ${isDone ? "bg-primary" : "bg-hairline"}`}
                 />
               )}
               <div className="flex items-center gap-2">
@@ -276,7 +561,7 @@ export function SubmitForm() {
                   {isDone ? "✓" : n}
                 </span>
                 <span
-                  className={`hidden text-sm sm:block ${isActive ? "text-ink" : "text-muted"}`}
+                  className={`text-xs sm:text-sm ${isActive ? "text-ink" : "text-muted"}`}
                 >
                   {label}
                 </span>
@@ -284,10 +569,10 @@ export function SubmitForm() {
             </div>
           );
         })}
-      </div>
+        </div>
 
-      {/* Steps */}
-      <form onSubmit={handleSubmit(onSubmit)} noValidate>
+        {/* Steps */}
+        <form onSubmit={handleSubmit(onSubmit)} noValidate>
         <div className="relative overflow-hidden">
           <AnimatePresence custom={direction} mode="wait">
             {/* ── Step 1: Reference ───────────────────────────────────────── */}
@@ -305,11 +590,12 @@ export function SubmitForm() {
                   className="display-md text-ink"
                   style={{ fontFamily: "var(--font-display)" }}
                 >
-                  Share your reference.
+                  Start with one reference.
                 </h1>
                 <p className="mt-3 max-w-md text-body">
-                  A Pinterest board, Instagram screenshot, reel — anything that
-                  captures the piece you have in mind.
+                  Send the clearest link or image you have. If you have more,
+                  mention them later in the notes or share them when AMI
+                  replies on WhatsApp.
                 </p>
 
                 {/* Mode toggle */}
@@ -398,7 +684,7 @@ export function SubmitForm() {
                             </span>
                           </p>
                           <p className="text-xs text-muted/60">
-                            JPG, PNG, WEBP — max 10 MB
+                            JPG, PNG, WEBP — max 4 MB
                           </p>
                         </>
                       )}
@@ -441,7 +727,7 @@ export function SubmitForm() {
               </motion.div>
             )}
 
-            {/* ── Step 2: Vision ──────────────────────────────────────────── */}
+            {/* ── Step 2: Details ─────────────────────────────────────────── */}
             {step === 2 && (
               <motion.div
                 key="step2"
@@ -456,17 +742,57 @@ export function SubmitForm() {
                   className="display-md text-ink"
                   style={{ fontFamily: "var(--font-display)" }}
                 >
-                  Tell us about the piece.
+                  Help us brief the craftsman.
                 </h1>
                 <p className="mt-3 max-w-md text-body">
-                  Nothing here is required — any detail you share helps the
-                  craftsman understand your occasion, budget, and style.
+                  These answers are optional, but they help AMI judge what can
+                  be made, what should change, and which making route fits.
                 </p>
 
                 <div className="mt-8 space-y-8">
+                  {/* Intent */}
+                  <div>
+                    <p className="mb-3 text-sm text-muted">
+                      How close should it be?
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {DESIGN_INTENT_OPTIONS.map((opt) => (
+                        <button
+                          key={opt.value}
+                          type="button"
+                          onClick={() => setValue("designIntent", opt.value)}
+                          className={chipCls(designIntent === opt.value)}
+                        >
+                          {opt.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Wear context */}
+                  <div>
+                    <p className="mb-3 text-sm text-muted">
+                      Where will it be worn?
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {WEAR_CONTEXT_OPTIONS.map((opt) => (
+                        <button
+                          key={opt.value}
+                          type="button"
+                          onClick={() => setValue("wearContext", opt.value)}
+                          className={chipCls(wearContext === opt.value)}
+                        >
+                          {opt.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
                   {/* Metal */}
                   <div>
-                    <p className="mb-3 text-sm text-muted">Metal preference</p>
+                    <p className="mb-3 text-sm text-muted">
+                      Metal, if you know it
+                    </p>
                     <div className="flex flex-wrap gap-2">
                       {METAL_OPTIONS.map((opt) => (
                         <button
@@ -483,7 +809,7 @@ export function SubmitForm() {
 
                   {/* Budget */}
                   <div>
-                    <p className="mb-3 text-sm text-muted">Comfortable budget</p>
+                    <p className="mb-3 text-sm text-muted">Planning range</p>
                     <div className="flex flex-wrap gap-2">
                       {BUDGET_OPTIONS.map((opt) => (
                         <button
@@ -497,14 +823,16 @@ export function SubmitForm() {
                       ))}
                     </div>
                     <p className="mt-2 text-xs text-muted">
-                      This helps us suggest the right metal, stone, and making
-                      route before quoting.
+                      This helps AMI suggest the right metal, stone, and
+                      craftsmanship route before quoting.
                     </p>
                   </div>
 
-                  {/* Occasion */}
+                  {/* Occasion and timeline */}
                   <div>
-                    <p className="mb-3 text-sm text-muted">Occasion</p>
+                    <p className="mb-3 text-sm text-muted">
+                      Occasion or reason
+                    </p>
                     <div className="flex flex-wrap gap-2">
                       {OCCASION_OPTIONS.map((opt) => (
                         <button
@@ -519,16 +847,34 @@ export function SubmitForm() {
                     </div>
                   </div>
 
+                  <div>
+                    <p className="mb-3 text-sm text-muted">
+                      When do you need it?
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {TIMELINE_OPTIONS.map((opt) => (
+                        <button
+                          key={opt.value}
+                          type="button"
+                          onClick={() => setValue("timeline", opt.value)}
+                          className={chipCls(timeline === opt.value)}
+                        >
+                          {opt.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
                   {/* Notes */}
                   <div>
                     <label className="mb-2 block text-sm text-muted">
-                      Anything else?{" "}
+                      What should we keep, change, or avoid?{" "}
                       <span className="text-muted/60">(optional)</span>
                     </label>
                     <textarea
                       {...register("designNotes")}
                       rows={4}
-                      placeholder="E.g. I want a thinner band, similar stone size. It's for my mother's 60th birthday in 22k gold…"
+                      placeholder="E.g. Keep the oval centre stone mood, make the band thinner, avoid a very high setting. It is for my mother's 60th birthday…"
                       className={inputCls + " resize-none"}
                     />
                     {errors.designNotes && (
@@ -574,14 +920,37 @@ export function SubmitForm() {
                   className="display-md text-ink"
                   style={{ fontFamily: "var(--font-display)" }}
                 >
-                  Stay in touch.
+                  Where should AMI reach you?
                 </h1>
                 <p className="mt-3 max-w-md text-body">
-                  We&rsquo;ll respond on WhatsApp within 24 hours with a
-                  feasibility note and the next step.
+                  We&rsquo;ll use this only for your reference. No spam, no
+                  catalogue blasts, no obligation to continue after the first
+                  feasibility response.
                 </p>
 
                 <div className="mt-8 space-y-6">
+                  <div>
+                    <p className="mb-3 text-sm text-muted">
+                      Preferred first response
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {CONTACT_OPTIONS.map((opt) => (
+                        <button
+                          key={opt.value}
+                          type="button"
+                          onClick={() => setValue("contactPreference", opt.value)}
+                          className={chipCls(contactPreference === opt.value)}
+                        >
+                          {opt.label}
+                        </button>
+                      ))}
+                    </div>
+                    <p className="mt-2 text-xs text-muted">
+                      AMI replies within 24 hours with feasibility, likely
+                      changes, and the next step.
+                    </p>
+                  </div>
+
                   <div>
                     <label className="mb-2 block text-sm text-muted">
                       Full name *
@@ -660,12 +1029,168 @@ export function SubmitForm() {
                     ← Back
                   </button>
                   <Button
+                    type="button"
+                    variant="primary"
+                    size="lg"
+                    onClick={advance}
+                  >
+                    Review →
+                  </Button>
+                </div>
+              </motion.div>
+            )}
+
+            {/* ── Step 4: Review ─────────────────────────────────────────── */}
+            {step === 4 && (
+              <motion.div
+                key="step4"
+                custom={direction}
+                variants={slide}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={transition}
+              >
+                <h1
+                  className="display-md text-ink"
+                  style={{ fontFamily: "var(--font-display)" }}
+                >
+                  Review before sending.
+                </h1>
+                <p className="mt-3 max-w-md text-body">
+                  This is the brief AMI will use to start the feasibility check.
+                  You can still refine everything over WhatsApp.
+                </p>
+
+                <div className="mt-8 space-y-4">
+                  <div className="rounded-lg border border-hairline bg-surface-card p-5">
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <p className="caption-uppercase text-muted">Reference</p>
+                        <p className="mt-2 break-words text-sm text-ink">
+                          {referenceMode === "url"
+                            ? referenceUrl || "Link shared"
+                            : uploadFile?.name || "Image uploaded"}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setDirection(-1);
+                          setStep(1);
+                        }}
+                        className="text-sm text-primary"
+                      >
+                        Edit
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="rounded-lg border border-hairline bg-canvas p-5">
+                    <div className="flex items-start justify-between gap-4">
+                      <p className="caption-uppercase text-muted">Making brief</p>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setDirection(-1);
+                          setStep(2);
+                        }}
+                        className="text-sm text-primary"
+                      >
+                        Edit
+                      </button>
+                    </div>
+                    <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
+                      <div>
+                        <dt className="text-muted">Direction</dt>
+                        <dd className="text-ink">
+                          {labelFor(DESIGN_INTENT_OPTIONS, designIntent)}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt className="text-muted">Wear context</dt>
+                        <dd className="text-ink">
+                          {labelFor(WEAR_CONTEXT_OPTIONS, wearContext)}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt className="text-muted">Metal</dt>
+                        <dd className="text-ink">{labelFor(METAL_OPTIONS, metal)}</dd>
+                      </div>
+                      <div>
+                        <dt className="text-muted">Budget</dt>
+                        <dd className="text-ink">
+                          {labelFor(BUDGET_OPTIONS, budget)}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt className="text-muted">Occasion</dt>
+                        <dd className="text-ink">
+                          {labelFor(OCCASION_OPTIONS, occasion)}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt className="text-muted">Timeline</dt>
+                        <dd className="text-ink">
+                          {labelFor(TIMELINE_OPTIONS, timeline)}
+                        </dd>
+                      </div>
+                    </dl>
+                    {designNotes?.trim() && (
+                      <p className="mt-4 whitespace-pre-wrap rounded-md bg-surface-soft p-4 text-sm text-body">
+                        {designNotes.trim()}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="rounded-lg border border-hairline bg-canvas p-5">
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <p className="caption-uppercase text-muted">Contact</p>
+                        <p className="mt-2 text-sm text-ink">
+                          {fullName} · +91 {whatsapp}
+                        </p>
+                        {email && <p className="mt-1 text-sm text-muted">{email}</p>}
+                        <p className="mt-2 text-sm text-muted">
+                          First response:{" "}
+                          {labelFor(CONTACT_OPTIONS, contactPreference)}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setDirection(-1);
+                          setStep(3);
+                        }}
+                        className="text-sm text-primary"
+                      >
+                        Edit
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {submitError && (
+                  <div className="mt-6 rounded-lg bg-primary/10 px-4 py-3 text-sm text-primary">
+                    {submitError}
+                  </div>
+                )}
+
+                <div className="mt-10 flex items-center justify-between">
+                  <button
+                    type="button"
+                    onClick={back}
+                    className="text-sm text-muted transition-colors hover:text-ink"
+                  >
+                    ← Back
+                  </button>
+                  <Button
                     type="submit"
                     variant="primary"
                     size="lg"
                     disabled={isSubmitting}
                   >
-                    {isSubmitting ? "Sending…" : "Send my reference →"}
+                    {isSubmitting ? "Sending…" : "Send to AMI →"}
                   </Button>
                 </div>
               </motion.div>
@@ -673,6 +1198,7 @@ export function SubmitForm() {
           </AnimatePresence>
         </div>
       </form>
+      </div>
     </div>
   );
 }
