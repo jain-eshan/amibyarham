@@ -10,6 +10,11 @@ type ServerEnvName = "SUPABASE_SERVICE_ROLE_KEY";
 function readEnv(name: PublicEnvName | ServerEnvName): string {
   const value = process.env[name];
   if (!value) {
+    if (typeof window !== "undefined") {
+      throw new Error(
+        "The app is not configured yet. Please contact the team.",
+      );
+    }
     throw new Error(
       `Missing required environment variable: ${name}. Add it to .env.local (see .env.local.example).`,
     );

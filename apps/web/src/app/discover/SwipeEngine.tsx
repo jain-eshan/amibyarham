@@ -352,6 +352,19 @@ export function SwipeEngine({
               if (favError) throw new Error(favError.message);
             }
 
+            fetch("/api/notify-submission", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                fullName: data.fullName,
+                whatsapp: data.whatsapp,
+                email: data.email || undefined,
+                requestType: "swipe_board",
+                designNotes: summary,
+                favoriteCount: favorites.length,
+              }),
+            }).catch(() => {});
+
             setPhase("done");
           } catch (err) {
             setSubmitError(
