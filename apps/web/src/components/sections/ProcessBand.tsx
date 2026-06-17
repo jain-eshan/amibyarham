@@ -57,23 +57,23 @@ function LotusPattern() {
 const STEPS = [
   {
     n: "01",
-    title: "Share the vision",
-    body: "A link, a screenshot, or a swipe board — however it lives in your mind.",
+    title: "Share the reference",
+    body: "Upload a screenshot, paste a Pinterest link, send a reel, or show us an old family photo.",
   },
   {
     n: "02",
-    title: "A conversation",
-    body: "We reach out within 24 hours. Refinements happen over WhatsApp.",
+    title: "Tell us the occasion",
+    body: "Wedding, engagement, gifting, self-purchase, budget, timeline, and who needs to approve it.",
   },
   {
     n: "03",
-    title: "Bench & stone",
-    body: "Wax, CAD, casting. Lab-grown diamonds selected and certified per piece.",
+    title: "Craftsman feasibility",
+    body: "AMI reviews what can be made, what should change, and which craft or material will hold the look.",
   },
   {
     n: "04",
-    title: "The heirloom",
-    body: "Delivered to you. Insured. Photographed for your archive.",
+    title: "Consult before making",
+    body: "You get a call or WhatsApp update within 24 hours before any commitment, advance, or production.",
   },
 ] as const;
 
@@ -86,20 +86,21 @@ export function ProcessBand() {
           <div>
             <Reveal>
               <p className="caption-uppercase text-muted">
-                From idea to heirloom
+                How it works
               </p>
             </Reveal>
             <Reveal delay={0.05}>
               <h2 className="display-lg mt-6 text-ink">
-                Four steps.{" "}
-                <em className="not-italic text-primary">No catalogue.</em>
+                First, we tell you what is{" "}
+                <em className="not-italic text-primary">possible</em>.
               </h2>
             </Reveal>
           </div>
           <Reveal delay={0.1}>
             <p className="max-w-sm text-body">
-              Every commission moves at your pace. No timelines we don&rsquo;t
-              honour, no estimates we can&rsquo;t hold.
+              The first step is not a sale. It is a feasibility conversation:
+              can this be made, will it wear well, and what choices will affect
+              the budget?
             </p>
           </Reveal>
         </div>

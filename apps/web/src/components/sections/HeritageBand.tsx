@@ -1,10 +1,10 @@
 import { Reveal } from "@/components/Reveal";
 
 const SPECS = [
-  ["Karat", "18k · 22k"],
-  ["Style", "Polki · Jadau · Modern"],
-  ["Origin", "Indian benches, five generations deep"],
-  ["Finish", "Hand-set. Never machine-grade."],
+  ["Legacy", "50 years in jewellery"],
+  ["Access", "Polki · Jadau · Diamond · Gold"],
+  ["Consult", "Call or WhatsApp within 24 hours"],
+  ["Assurance", "Hallmarking and certification where applicable"],
 ] as const;
 
 export function HeritageBand() {
@@ -15,19 +15,20 @@ export function HeritageBand() {
       <div className="relative mx-auto grid max-w-[1200px] grid-cols-12 gap-8 px-6">
         <div className="col-span-12 md:col-span-7">
           <Reveal>
-            <p className="caption-uppercase text-on-dark-soft">The Metal</p>
+            <p className="caption-uppercase text-on-dark-soft">Why trust AMI</p>
           </Reveal>
           <Reveal delay={0.05}>
             <h2 className="display-lg mt-6 max-w-[18ch] text-on-dark">
-              Gold, the way it was always{" "}
-              <em className="not-italic text-accent-amber">meant</em> to be worn.
+              The comfort of a{" "}
+              <em className="not-italic text-accent-amber">family jeweller</em>,
+              with the convenience of online.
             </h2>
           </Reveal>
           <Reveal delay={0.12}>
             <p className="mt-6 max-w-md text-on-dark-soft md:text-lg">
-              Worked by benches that have served families across five
-              generations — the kind of jeweller who knows your name before
-              they know your order.
+              AMI brings Arham&rsquo;s Delhi jewellery legacy online: a real
+              person to speak with, craftsmen who understand traditional and
+              modern work, and clear checkpoints before anything is made.
             </p>
           </Reveal>
         </div>
@@ -36,7 +37,7 @@ export function HeritageBand() {
           <Reveal delay={0.12}>
             <div className="rounded-lg border border-white/10 bg-surface-dark-elevated p-8">
               <div className="flex items-baseline justify-between">
-                <p className="caption-uppercase text-on-dark-soft">House Spec</p>
+                <p className="caption-uppercase text-on-dark-soft">Trust signals</p>
                 <span aria-hidden className="text-primary">
                   ✦
                 </span>

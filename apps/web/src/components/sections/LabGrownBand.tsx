@@ -2,19 +2,19 @@ import { Reveal } from "@/components/Reveal";
 
 const POINTS = [
   {
-    tag: "Origin",
-    title: "Atom for atom.",
-    body: "Identical lattice, identical brilliance — only the journey differs from a mined stone.",
+    tag: "References",
+    title: "Saved somewhere.",
+    body: "Pinterest boards, Instagram reels, screenshots, sketches, movie stills, and family heirloom photos.",
   },
   {
-    tag: "Conscience",
-    title: "No earth disturbed.",
-    body: "Cultivated above ground in weeks. Land and labour stay untouched.",
+    tag: "Crafts",
+    title: "Made the right way.",
+    body: "Polki, jadau, diamond setting, gold work, silver, and modern fine jewellery through trusted benches.",
   },
   {
-    tag: "Brilliance",
-    title: "Larger, finer.",
-    body: "Carat weights and clarities that mined budgets would never reach.",
+    tag: "Budgets",
+    title: "One look, many routes.",
+    body: "Natural stones, lab-grown diamonds, hollow gold, and material swaps can help achieve the vision responsibly.",
   },
 ] as const;
 
@@ -23,19 +23,19 @@ export function LabGrownBand() {
     <section className="border-t border-hairline-soft bg-canvas py-section">
       <div className="mx-auto max-w-[1200px] px-6">
         <Reveal>
-          <p className="caption-uppercase text-muted">The Stone</p>
+          <p className="caption-uppercase text-muted">What you can send</p>
         </Reveal>
         <Reveal delay={0.05}>
           <h2 className="display-lg mt-6 max-w-3xl text-ink">
-            A diamond,{" "}
-            <em className="not-italic text-primary">born above ground</em>.
+            Your dream piece probably already{" "}
+            <em className="not-italic text-primary">exists in your camera roll</em>.
           </h2>
         </Reveal>
         <Reveal delay={0.12}>
           <p className="mt-6 max-w-xl text-body md:text-lg">
-            Lab-grown is not synthetic. It is the same crystal lattice, the
-            same fire — grown in a controlled environment, ready in weeks
-            rather than ages.
+            You do not need to know the karigar, the stone size, or the right
+            gold weight before you begin. Send the reference. AMI will ask the
+            right questions and bring the right craftsman into the conversation.
           </p>
         </Reveal>
 

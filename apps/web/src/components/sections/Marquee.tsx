@@ -1,9 +1,10 @@
 const PHRASES = [
-  "A modern royal heirloom",
-  "Made for you",
-  "Lab-grown brilliance",
-  "Heritage gold",
-  "Commissioned, never catalogued",
+  "Send a screenshot",
+  "50 years of jewellery heritage",
+  "Trusted craftsmen",
+  "Polki · Jadau · Diamonds · Gold",
+  "Feasibility within 24 hours",
+  "Your family jeweller, online",
 ] as const;
 
 export function Marquee() {

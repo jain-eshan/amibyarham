@@ -6,10 +6,10 @@ import { useEffect, useState } from "react";
 import { BrandMark } from "@/components/BrandMark";
 
 const NAV_LINKS = [
-  { label: "Our Story", href: "/story" },
-  { label: "Discover Inspiration", href: "/discover" },
+  { label: "Send Reference", href: "/submit" },
+  { label: "Inspiration", href: "/discover" },
+  { label: "Our Legacy", href: "/story" },
   { label: "Contact", href: "/contact" },
-  { label: "Submit Vision", href: "/submit" },
 ] as const;
 
 export function Header() {

@@ -14,6 +14,9 @@ const schema = z.object({
   referenceMode: z.enum(["url", "upload"]),
   referenceUrl: z.string().optional(),
   metal: z.enum(["18k", "22k", "unsure"]).optional(),
+  budget: z
+    .enum(["under-50k", "50k-1l", "1l-3l", "3l-plus", "unsure"])
+    .optional(),
   occasion: z
     .enum(["myself", "gift", "anniversary", "engagement", "wedding", "other"])
     .optional(),
@@ -44,6 +47,14 @@ const OCCASION_OPTIONS = [
   { value: "engagement" as const, label: "Engagement" },
   { value: "wedding" as const, label: "Wedding" },
   { value: "other" as const, label: "Other" },
+];
+
+const BUDGET_OPTIONS = [
+  { value: "under-50k" as const, label: "Under ₹50k" },
+  { value: "50k-1l" as const, label: "₹50k–₹1L" },
+  { value: "1l-3l" as const, label: "₹1L–₹3L" },
+  { value: "3l-plus" as const, label: "₹3L+" },
+  { value: "unsure" as const, label: "Not sure yet" },
 ];
 
 // ─── Animation ───────────────────────────────────────────────────────────────
@@ -86,11 +97,12 @@ export function SubmitForm() {
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: { referenceMode: "url", metal: "unsure" },
+    defaultValues: { referenceMode: "url", metal: "unsure", budget: "unsure" },
   });
 
   const referenceMode = watch("referenceMode");
   const metal = watch("metal");
+  const budget = watch("budget");
   const occasion = watch("occasion");
 
   // ─── File handling ──────────────────────────────────────────────────────────
@@ -156,6 +168,7 @@ export function SubmitForm() {
         referenceMode: data.referenceMode,
         referenceUrl: data.referenceUrl,
         metal: data.metal,
+        budget: data.budget,
         occasion: data.occasion,
         designNotes: data.designNotes,
         fullName: data.fullName,
@@ -220,7 +233,8 @@ export function SubmitForm() {
         </h2>
         <p className="mt-4 max-w-sm text-body">
           We&rsquo;ll review your reference and reach out on WhatsApp within 24
-          hours with a confirmed design and quote.
+          hours with what can be made, what may need to change, and the next
+          step.
         </p>
         <Button href="/" variant="secondary" size="lg" className="mt-10">
           Back to home →
@@ -446,7 +460,7 @@ export function SubmitForm() {
                 </h1>
                 <p className="mt-3 max-w-md text-body">
                   Nothing here is required — any detail you share helps the
-                  karigar understand your vision.
+                  craftsman understand your occasion, budget, and style.
                 </p>
 
                 <div className="mt-8 space-y-8">
@@ -465,6 +479,27 @@ export function SubmitForm() {
                         </button>
                       ))}
                     </div>
+                  </div>
+
+                  {/* Budget */}
+                  <div>
+                    <p className="mb-3 text-sm text-muted">Comfortable budget</p>
+                    <div className="flex flex-wrap gap-2">
+                      {BUDGET_OPTIONS.map((opt) => (
+                        <button
+                          key={opt.value}
+                          type="button"
+                          onClick={() => setValue("budget", opt.value)}
+                          className={chipCls(budget === opt.value)}
+                        >
+                          {opt.label}
+                        </button>
+                      ))}
+                    </div>
+                    <p className="mt-2 text-xs text-muted">
+                      This helps us suggest the right metal, stone, and making
+                      route before quoting.
+                    </p>
                   </div>
 
                   {/* Occasion */}
@@ -542,8 +577,8 @@ export function SubmitForm() {
                   Stay in touch.
                 </h1>
                 <p className="mt-3 max-w-md text-body">
-                  We&rsquo;ll send your quote and confirmed design on WhatsApp
-                  within 24 hours.
+                  We&rsquo;ll respond on WhatsApp within 24 hours with a
+                  feasibility note and the next step.
                 </p>
 
                 <div className="mt-8 space-y-6">

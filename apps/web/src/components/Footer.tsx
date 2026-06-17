@@ -6,15 +6,15 @@ const FOOTER_GROUPS = [
   {
     title: "Explore",
     links: [
-      { label: "Our Story", href: "/story" },
+      { label: "Our Legacy", href: "/story" },
       { label: "Contact", href: "/contact" },
     ],
   },
   {
     title: "Begin",
     links: [
-      { label: "Submit Your Vision", href: "/submit" },
-      { label: "Discover Inspiration", href: "/discover" },
+      { label: "Send Your Reference", href: "/submit" },
+      { label: "Browse Inspiration", href: "/discover" },
     ],
   },
   {
@@ -33,8 +33,8 @@ export function Footer() {
         <div>
           <BrandMark tone="cream" size={64} />
           <p className="mt-6 max-w-xs text-sm leading-relaxed">
-            Bespoke lab-grown diamonds set in heritage gold. Each piece is
-            commissioned, never catalogued.
+            Custom fine jewellery from your references, backed by Arham&rsquo;s
+            jewellery legacy and a trusted network of craftsmen.
           </p>
           <div className="mt-5 flex items-center gap-4">
             <a href="https://www.instagram.com/amibyarham/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="text-on-dark-soft transition-colors hover:text-on-dark">

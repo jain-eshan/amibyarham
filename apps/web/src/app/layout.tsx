@@ -44,16 +44,17 @@ const brandFace = localFont({
 });
 
 const description =
-  "AMI by Arham is a bespoke atelier crafting lab-grown diamond and gold jewelry. Modern royal heirlooms, commissioned only for you — never catalogued, handcrafted in Delhi by master karigars.";
+  "AMI by Arham turns saved jewellery references into custom fine jewellery through Arham's 50-year Delhi jewellery heritage, trusted craftsmen, and guided online consultation.";
 
 const keywords = [
   "AMI by Arham",
-  "lab grown diamond jewelry",
-  "bespoke diamond jewelry India",
+  "custom jewellery from photo India",
+  "bespoke jewellery India",
   "custom engagement rings Delhi",
+  "custom polki jewellery",
+  "custom jadau jewellery",
   "lab grown diamonds India",
-  "heritage gold jewelry",
-  "ethical diamond jewelry",
+  "heritage gold jewellery",
   "commissioned fine jewelry",
   "Arham Diamonds",
   "modern Indian fine jewelry",
@@ -62,7 +63,7 @@ const keywords = [
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "AMI by Arham — Bespoke Lab-Grown Diamond Atelier",
+    default: "AMI by Arham — Your Family Jeweller, Online",
     template: "%s — AMI by Arham",
   },
   description,
@@ -83,7 +84,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: "AMI by Arham",
-    title: "AMI by Arham — Bespoke Lab-Grown Diamond Atelier",
+    title: "AMI by Arham — Your Family Jeweller, Online",
     description,
     url: SITE_URL,
     locale: "en_IN",
@@ -92,13 +93,13 @@ export const metadata: Metadata = {
         url: "/brand/og-image.png",
         width: 1200,
         height: 630,
-        alt: "AMI by Arham — bespoke lab-grown diamond jewelry",
+        alt: "AMI by Arham — custom jewellery from your references",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "AMI by Arham — Bespoke Lab-Grown Diamond Atelier",
+    title: "AMI by Arham — Your Family Jeweller, Online",
     description,
     images: ["/brand/og-image.png"],
   },
@@ -137,8 +138,7 @@ const jsonLd = {
       url: SITE_URL,
       logo: `${SITE_URL}/brand/ami-mark-ink.svg`,
       description,
-      foundingDate: "2026",
-      slogan: "Heirlooms born of vision, not of catalogue.",
+      slogan: "Your family jeweller, online.",
       areaServed: { "@type": "Country", name: "India" },
       address: {
         "@type": "PostalAddress",
@@ -160,15 +160,15 @@ const jsonLd = {
       image: `${SITE_URL}/brand/ami-mark-ink.svg`,
       priceRange: "₹₹₹",
       description:
-        "Bespoke atelier for lab-grown diamond and heritage gold jewelry, commissioned only for you.",
+        "Bespoke fine jewellery from saved references, guided by Arham's jewellery legacy and trusted craftsmen.",
       makesOffer: [
         {
           "@type": "Offer",
           itemOffered: {
             "@type": "Product",
-            name: "Bespoke lab-grown diamond jewelry",
+            name: "Custom fine jewellery from references",
             category: "Fine Jewelry",
-            material: ["Lab-grown diamond", "18k gold"],
+            material: ["Gold", "Diamond", "Lab-grown diamond", "Polki"],
           },
         },
       ],
