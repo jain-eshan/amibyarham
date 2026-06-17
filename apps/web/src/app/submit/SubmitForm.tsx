@@ -7,7 +7,6 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { Button } from "@/components/Button";
-import { getSupabaseBrowserClient } from "@/lib/supabase";
 
 // ─── Schema ──────────────────────────────────────────────────────────────────
 
@@ -153,71 +152,33 @@ export function SubmitForm() {
     setSubmitError(null);
 
     try {
-      const supabase = getSupabaseBrowserClient();
+      const metadata = {
+        referenceMode: data.referenceMode,
+        referenceUrl: data.referenceUrl,
+        metal: data.metal,
+        occasion: data.occasion,
+        designNotes: data.designNotes,
+        fullName: data.fullName,
+        whatsapp: data.whatsapp,
+        email: data.email || "",
+      };
 
-      const { data: lead, error: leadError } = await supabase
-        .from("leads")
-        .insert({
-          full_name: data.fullName,
-          whatsapp_number: data.whatsapp,
-          email: data.email || null,
-        })
-        .select("id")
-        .single();
-
-      if (leadError ?? !lead) {
-        throw new Error(leadError?.message ?? "Failed to save your contact details");
-      }
-
-      let uploadedMediaUrl: string | null = null;
+      let res: Response;
       if (data.referenceMode === "upload" && uploadFile) {
-        const ext = uploadFile.name.split(".").pop() ?? "jpg";
-        const path = `uploads/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-        const { error: storageError } = await supabase.storage
-          .from("user-uploads")
-          .upload(path, uploadFile, { cacheControl: "3600", upsert: false });
-        if (storageError) throw new Error(storageError.message);
-        const { data: urlData } = supabase.storage
-          .from("user-uploads")
-          .getPublicUrl(path);
-        uploadedMediaUrl = urlData.publicUrl;
+        const form = new FormData();
+        form.append("metadata", JSON.stringify(metadata));
+        form.append("file", uploadFile);
+        res = await fetch("/api/submit-request", { method: "POST", body: form });
+      } else {
+        res = await fetch("/api/submit-request", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(metadata),
+        });
       }
 
-      const noteParts: string[] = [];
-      if (data.metal && data.metal !== "unsure") {
-        noteParts.push(`Metal: ${METAL_OPTIONS.find((o) => o.value === data.metal)?.label ?? data.metal}`);
-      }
-      if (data.occasion) {
-        noteParts.push(`Occasion: ${OCCASION_OPTIONS.find((o) => o.value === data.occasion)?.label ?? data.occasion}`);
-      }
-      if (data.designNotes?.trim()) noteParts.push(data.designNotes.trim());
-
-      const { error: requestError } = await supabase.from("custom_requests").insert({
-        lead_id: lead.id,
-        request_type: data.referenceMode === "url" ? "external_link" : "direct_upload",
-        external_url: data.referenceMode === "url" ? (data.referenceUrl ?? null) : null,
-        uploaded_media_url: uploadedMediaUrl,
-        design_notes: noteParts.length > 0 ? noteParts.join("\n") : null,
-      });
-
-      if (requestError) throw new Error(requestError.message);
-
-      fetch("/api/notify-submission", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          fullName: data.fullName,
-          whatsapp: data.whatsapp,
-          email: data.email || undefined,
-          requestType:
-            data.referenceMode === "url" ? "external_link" : "direct_upload",
-          designNotes: noteParts.length > 0 ? noteParts.join("\n") : undefined,
-          referenceUrl:
-            data.referenceMode === "url"
-              ? (data.referenceUrl ?? undefined)
-              : undefined,
-        }),
-      }).catch(() => {});
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error ?? "Something went wrong");
 
       setDirection(1);
       setStep("done");

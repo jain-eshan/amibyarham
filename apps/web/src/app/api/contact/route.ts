@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 import { z } from "zod";
 
-import { createSupabaseServerClient } from "@/lib/supabase";
+import { getClientIp, rateLimit } from "@/lib/rate-limit";
+import { createSupabaseServiceRoleClient } from "@/lib/supabase";
 
 const contactSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -20,6 +21,15 @@ function escapeHtml(str: string): string {
 }
 
 export async function POST(request: Request) {
+  const ip = getClientIp(request);
+  const { ok } = rateLimit(`contact:${ip}`, 3, 60_000);
+  if (!ok) {
+    return NextResponse.json(
+      { error: "Too many requests — please try again later." },
+      { status: 429 },
+    );
+  }
+
   let body: unknown;
   try {
     body = await request.json();
@@ -37,7 +47,7 @@ export async function POST(request: Request) {
   const timestamp = new Date().toISOString();
 
   // ── 1. Insert into Supabase (source of truth) ────────────────────────────
-  const supabase = createSupabaseServerClient();
+  const supabase = createSupabaseServiceRoleClient();
   const { error: dbError } = await supabase
     .from("contact_submissions")
     .insert({ name, email, message });
