@@ -1,12 +1,8 @@
-// Fire-and-forget swipe-event logger. SwipeEngine calls this per decision; the
-// route inserts into `swipe_events` under the anon key (RLS allows guest
-// inserts), then returns 204. Failures are intentionally non-fatal — the swipe
-// UX must never block on this.
-
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import { createSupabaseServerClient } from "@/lib/supabase";
+import { getClientIp, rateLimit } from "@/lib/rate-limit";
+import { createSupabaseServiceRoleClient } from "@/lib/supabase";
 
 export const runtime = "nodejs";
 
@@ -18,6 +14,10 @@ const bodySchema = z.object({
 });
 
 export async function POST(req: Request) {
+  const ip = getClientIp(req);
+  const { ok } = rateLimit(`swipe-event:${ip}`, 60, 60_000);
+  if (!ok) return new NextResponse(null, { status: 429 });
+
   let parsed;
   try {
     parsed = bodySchema.parse(await req.json());
@@ -25,10 +25,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "bad_request" }, { status: 400 });
   }
 
-  // Fallback decks emit non-uuid ids; only persist DB-backed cards.
   if (!parsed.imageId) return new NextResponse(null, { status: 204 });
 
-  const supabase = createSupabaseServerClient();
+  const supabase = createSupabaseServiceRoleClient();
   const { error } = await supabase.from("swipe_events").insert({
     session_id: parsed.sessionId,
     image_id: parsed.imageId,
@@ -36,7 +35,6 @@ export async function POST(req: Request) {
     position: parsed.position ?? null,
   });
 
-  // Don't surface DB errors to the client — logging is best-effort.
   if (error) {
     return NextResponse.json({ error: "log_failed" }, { status: 202 });
   }

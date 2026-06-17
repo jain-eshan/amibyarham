@@ -14,7 +14,6 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { Button } from "@/components/Button";
-import { getSupabaseBrowserClient } from "@/lib/supabase";
 import type { InspirationItem } from "@/lib/inspiration";
 
 // ─── Contact schema ──────────────────────────────────────────────────────────
@@ -299,21 +298,6 @@ export function SwipeEngine({
           setIsSubmitting(true);
           setSubmitError(null);
           try {
-            const supabase = getSupabaseBrowserClient();
-
-            const { data: lead, error: leadError } = await supabase
-              .from("leads")
-              .insert({
-                full_name: data.fullName,
-                whatsapp_number: data.whatsapp,
-                email: data.email || null,
-              })
-              .select("id")
-              .single();
-            if (leadError ?? !lead) {
-              throw new Error(leadError?.message ?? "Failed to save your details");
-            }
-
             const filterPrefix = filterSummary
               ? `Filters — ${filterSummary}. `
               : "";
@@ -326,44 +310,22 @@ export function SwipeEngine({
                     .join("; ")
                 : "Swipe board — no favourites selected");
 
-            const { data: request, error: requestError } = await supabase
-              .from("custom_requests")
-              .insert({
-                lead_id: lead.id,
-                request_type: "swipe_board",
-                design_notes: summary,
-              })
-              .select("id")
-              .single();
-            if (requestError ?? !request) {
-              throw new Error(requestError?.message ?? "Failed to save your board");
-            }
-
             const dbFavorites = favorites.filter((f) => f.isFromDb);
-            if (dbFavorites.length > 0) {
-              const { error: favError } = await supabase
-                .from("request_favorite_items")
-                .insert(
-                  dbFavorites.map((f) => ({
-                    request_id: request.id,
-                    image_id: f.id,
-                  })),
-                );
-              if (favError) throw new Error(favError.message);
-            }
 
-            fetch("/api/notify-submission", {
+            const res = await fetch("/api/submit-board", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
                 fullName: data.fullName,
                 whatsapp: data.whatsapp,
-                email: data.email || undefined,
-                requestType: "swipe_board",
+                email: data.email || "",
                 designNotes: summary,
-                favoriteCount: favorites.length,
+                favoriteImageIds: dbFavorites.map((f) => f.id),
               }),
-            }).catch(() => {});
+            });
+
+            const result = await res.json();
+            if (!res.ok) throw new Error(result.error ?? "Something went wrong");
 
             setPhase("done");
           } catch (err) {

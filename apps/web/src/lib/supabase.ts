@@ -7,20 +7,9 @@ export type AppSupabaseClient = SupabaseClient<Database>;
 type PublicEnvName = "NEXT_PUBLIC_SUPABASE_URL" | "NEXT_PUBLIC_SUPABASE_ANON_KEY";
 type ServerEnvName = "SUPABASE_SERVICE_ROLE_KEY";
 
-const PUBLIC_DEFAULTS: Record<string, string> = {
-  NEXT_PUBLIC_SUPABASE_URL: "https://bkigritfxabsvpgzgajs.supabase.co",
-  NEXT_PUBLIC_SUPABASE_ANON_KEY:
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJraWdyaXRmeGFic3ZwZ3pnYWpzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0Nzc5MTgsImV4cCI6MjA5NjA1MzkxOH0.QKydFM5Ik3hot2TknoMU1uh9EmISAG5A3G7azFv7Yu4",
-};
-
 function readEnv(name: PublicEnvName | ServerEnvName): string {
-  const value = process.env[name] || PUBLIC_DEFAULTS[name];
+  const value = process.env[name];
   if (!value) {
-    if (typeof window !== "undefined") {
-      throw new Error(
-        "The app is not configured yet. Please contact the team.",
-      );
-    }
     throw new Error(
       `Missing required environment variable: ${name}. Add it to .env.local (see .env.local.example).`,
     );
