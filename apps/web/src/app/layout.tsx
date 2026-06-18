@@ -4,8 +4,7 @@ import localFont from "next/font/local";
 import Script from "next/script";
 import type { ReactNode } from "react";
 
-import { Footer } from "@/components/Footer";
-import { Header } from "@/components/Header";
+import { PublicShell } from "@/components/PublicShell";
 
 import "./globals.css";
 
@@ -199,9 +198,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         />
       </head>
       <body className="min-h-screen bg-canvas text-ink antialiased">
-        <Header />
-        <main>{children}</main>
-        <Footer />
+        <PublicShell>{children}</PublicShell>
         {GA_ID && (
           <>
             <Script

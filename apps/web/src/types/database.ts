@@ -261,6 +261,30 @@ export type Database = {
         };
         Relationships: [];
       };
+      studio_users: {
+        Row: {
+          id: string;
+          email: string;
+          password_hash: string;
+          name: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          email: string;
+          password_hash: string;
+          name: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          email?: string;
+          password_hash?: string;
+          name?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -343,3 +367,5 @@ export type ContactSubmission =
   Database["public"]["Tables"]["contact_submissions"]["Row"];
 export type ContactSubmissionInsert =
   Database["public"]["Tables"]["contact_submissions"]["Insert"];
+
+export type StudioUser = Database["public"]["Tables"]["studio_users"]["Row"];

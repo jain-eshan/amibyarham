@@ -1,31 +1,54 @@
-import type { Metadata } from "next";
+"use client";
+
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { signIn } from "next-auth/react";
 
 import { BrandMark } from "@/components/BrandMark";
 import { Button } from "@/components/Button";
 
-export const metadata: Metadata = {
-  title: "Studio Access",
-  description: "Admin login for the AMI by Arham studio.",
-  robots: { index: false, follow: false },
-};
-
 export default function AdminLoginPage() {
+  const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+
+    const result = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+    });
+
+    if (result?.error) {
+      setError("Invalid email or password.");
+      setLoading(false);
+    } else {
+      router.push("/admin");
+      router.refresh();
+    }
+  }
+
   return (
     <div className="flex min-h-[80vh] items-center justify-center bg-canvas px-6">
       <div className="w-full max-w-sm">
         <div className="rounded-xl border border-hairline bg-white p-8 shadow-sm">
-          {/* Brand mark */}
           <div className="flex justify-center">
             <BrandMark size={32} />
           </div>
 
-          {/* Headline */}
           <h1 className="display-sm mt-6 text-center text-ink">
             Studio Access
           </h1>
 
-          {/* Form — authentication not yet implemented */}
-          <form className="mt-8 space-y-5">
+          <form onSubmit={handleSubmit} className="mt-8 space-y-5">
             <div>
               <label
                 htmlFor="admin-email"
@@ -62,15 +85,14 @@ export default function AdminLoginPage() {
               />
             </div>
 
-            <Button type="button" size="lg" fullWidth>
-              Sign In
+            {error && (
+              <p className="text-sm text-error text-center">{error}</p>
+            )}
+
+            <Button type="submit" size="lg" fullWidth disabled={loading}>
+              {loading ? "Signing in…" : "Sign In"}
             </Button>
           </form>
-
-          {/* Footer note */}
-          <p className="mt-6 text-center text-xs text-muted">
-            Studio admin — coming soon. Contact studio for access.
-          </p>
         </div>
       </div>
     </div>
