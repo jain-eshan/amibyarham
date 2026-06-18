@@ -157,10 +157,15 @@ def _score(image_feat: torch.Tensor, facet: str) -> list[tuple[str, float]]:
     return list(zip(labels, sims, strict=False))
 
 
+MIN_JEWELRY_TYPE_MARGIN = 0.03
+
 def _argmax(scores: list[tuple[str, float]]) -> str | None:
     if not scores:
         return None
-    return max(scores, key=lambda kv: kv[1])[0]
+    ranked = sorted(scores, key=lambda kv: kv[1], reverse=True)
+    if len(ranked) >= 2 and ranked[0][1] - ranked[1][1] < MIN_JEWELRY_TYPE_MARGIN:
+        return None
+    return ranked[0][0]
 
 
 def _above(scores: list[tuple[str, float]], threshold: float) -> list[str]:
