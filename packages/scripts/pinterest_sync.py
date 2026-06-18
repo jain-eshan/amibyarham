@@ -239,12 +239,12 @@ def _extract_image_url(pin: dict) -> str | None:
 # ── Tier 1: Board-name → baseline tags ─────────────────────────────────────
 
 _BOARD_JEWELRY_TYPE: list[tuple[re.Pattern, str]] = [
-    (re.compile(r"\bearing|stud|hoop|chandbali|jhumk", re.I), "Earrings"),
-    (re.compile(r"\bnecklace|pendant|choker|chain\b",   re.I), "Necklace"),
-    (re.compile(r"\bbracelet|bangle|cuff\b",            re.I), "Bracelet"),
-    (re.compile(r"\btikka|maang\b",                     re.I), "Maang Tikka"),
-    (re.compile(r"\bbridal\s*set|\bset\b",              re.I), "Set"),
-    (re.compile(r"\bring\b",                            re.I), "Ring"),
+    (re.compile(r"\bearrings?|studs?|hoops?|chandbali|jhumk", re.I), "Earrings"),
+    (re.compile(r"\bnecklaces?|pendants?|chokers?|chains?\b", re.I), "Necklace"),
+    (re.compile(r"\bbracelets?|bangles?|cuffs?\b",            re.I), "Bracelet"),
+    (re.compile(r"\btikka|maang\b",                           re.I), "Maang Tikka"),
+    (re.compile(r"\bbridal\s*set|\bsets?\b",                  re.I), "Set"),
+    (re.compile(r"\brings?\b",                                re.I), "Ring"),
 ]
 
 _BOARD_METALS: list[tuple[re.Pattern, str]] = [
@@ -370,12 +370,12 @@ _TEXT_MOTIF: list[tuple[re.Pattern, str]] = [
 ]
 
 _TEXT_JEWELRY_TYPE: list[tuple[re.Pattern, str]] = [
-    (re.compile(r"\bearring|stud|hoop|drop\s*earring|chandbali|jhumk", re.I), "Earrings"),
-    (re.compile(r"\bnecklace|pendant|choker|\bchain\b",                 re.I), "Necklace"),
-    (re.compile(r"\bbracelet|bangle|cuff\b",                            re.I), "Bracelet"),
-    (re.compile(r"\btikka|maang",                                       re.I), "Maang Tikka"),
-    (re.compile(r"\bbridal\s*set|\bjewellery\s*set|\bjewelry\s*set",   re.I), "Set"),
-    (re.compile(r"\bring\b",                                            re.I), "Ring"),
+    (re.compile(r"\bearrings?|studs?|hoops?|drop\s*earrings?|chandbali|jhumk", re.I), "Earrings"),
+    (re.compile(r"\bnecklaces?|pendants?|chokers?|\bchains?\b",                 re.I), "Necklace"),
+    (re.compile(r"\bbracelets?|bangles?|cuffs?\b",                              re.I), "Bracelet"),
+    (re.compile(r"\btikka|maang",                                               re.I), "Maang Tikka"),
+    (re.compile(r"\bbridal\s*set|\bjewellery\s*set|\bjewelry\s*set",           re.I), "Set"),
+    (re.compile(r"\brings?\b",                                                  re.I), "Ring"),
 ]
 
 
