@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { usePostHog } from "posthog-js/react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -147,6 +148,7 @@ const inputCls =
 // ─── Component ───────────────────────────────────────────────────────────────
 
 export function SubmitForm() {
+  const ph = usePostHog();
   const [showGuide, setShowGuide] = useState(true);
   const [guideStep, setGuideStep] = useState<0 | 1 | 2>(0);
   const [step, setStep] = useState<1 | 2 | 3 | 4 | "done">(1);
@@ -195,6 +197,11 @@ export function SubmitForm() {
   const email = watch("email");
 
   useEffect(() => {
+    ph?.capture("submit_guide_viewed");
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
     if (step !== 1 && step !== "done") {
       formShellRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     }
@@ -239,18 +246,25 @@ export function SubmitForm() {
           return;
         }
       }
+      ph?.capture("submit_step_completed", {
+        step: 1,
+        step_name: "reference",
+        reference_mode: referenceMode,
+      });
       setDirection(1);
       setStep(2);
     } else if (step === 2) {
+      ph?.capture("submit_step_completed", { step: 2, step_name: "details" });
       setDirection(1);
       setStep(3);
     } else if (step === 3) {
       const isValid = await trigger(["fullName", "whatsapp", "email"]);
       if (!isValid) return;
+      ph?.capture("submit_step_completed", { step: 3, step_name: "contact" });
       setDirection(1);
       setStep(4);
     }
-  }, [step, referenceMode, watch, uploadFile, trigger]);
+  }, [step, referenceMode, watch, uploadFile, trigger, ph]);
 
   const back = useCallback(() => {
     setDirection(-1);
@@ -299,9 +313,24 @@ export function SubmitForm() {
       const result = await res.json();
       if (!res.ok) throw new Error(result.error ?? "Something went wrong");
 
+      ph?.capture("submit_request_sent", {
+        reference_mode: data.referenceMode,
+        metal: data.metal,
+        budget: data.budget,
+        design_intent: data.designIntent,
+        wear_context: data.wearContext,
+        timeline: data.timeline,
+        occasion: data.occasion,
+        contact_preference: data.contactPreference,
+        has_notes: Boolean(data.designNotes?.trim()),
+        has_email: Boolean(data.email),
+      });
       setDirection(1);
       setStep("done");
     } catch (err) {
+      ph?.capture("submit_request_failed", {
+        error: err instanceof Error ? err.message : "unknown",
+      });
       setSubmitError(
         err instanceof Error ? err.message : "Something went wrong — please try again.",
       );
@@ -325,7 +354,8 @@ export function SubmitForm() {
     value?: T,
   ) => options.find((opt) => opt.value === value)?.label ?? "Not shared";
 
-  const startForm = () => {
+  const startForm = (source: "guide_completed" | "skipped") => {
+    ph?.capture("submit_form_started", { source });
     setShowGuide(false);
     setStep(1);
     setDirection(1);
@@ -344,9 +374,7 @@ export function SubmitForm() {
           <button
             type="button"
             onClick={() =>
-              guideStep === 0
-                ? history.back()
-                : setGuideStep((s) => (s - 1) as 0 | 1 | 2)
+              guideStep === 0 ? history.back() : setGuideStep((s) => (s - 1) as 0 | 1 | 2)
             }
             className="text-sm font-medium text-ink transition-colors hover:text-primary"
           >
@@ -354,7 +382,7 @@ export function SubmitForm() {
           </button>
           <button
             type="button"
-            onClick={startForm}
+            onClick={() => startForm("skipped")}
             className="rounded-full border border-hairline px-5 py-2 text-sm font-medium text-ink transition-colors hover:border-primary/50 hover:text-primary"
           >
             Skip
@@ -395,7 +423,7 @@ export function SubmitForm() {
                 size="lg"
                 onClick={() =>
                   isLastGuideStep
-                    ? startForm()
+                    ? startForm("guide_completed")
                     : setGuideStep((s) => (s + 1) as 0 | 1 | 2)
                 }
               >
@@ -404,7 +432,7 @@ export function SubmitForm() {
               {!isLastGuideStep && (
                 <button
                   type="button"
-                  onClick={startForm}
+                  onClick={() => startForm("skipped")}
                   className="px-3 py-2 text-sm font-medium text-muted transition-colors hover:text-ink"
                 >
                   I know what to send
