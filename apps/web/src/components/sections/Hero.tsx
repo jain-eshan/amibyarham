@@ -35,21 +35,12 @@ export function Hero() {
   return (
     <section className="relative z-10 overflow-x-clip bg-canvas pt-20 pb-14 md:pt-28 md:pb-20">
       <div className="mx-auto grid max-w-[1200px] grid-cols-1 items-center gap-10 px-6 md:grid-cols-12">
-        <div className="md:col-span-6">
-          <motion.span
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: easeOut }}
-            className="caption-uppercase inline-block text-muted"
-          >
-            AMI by Arham
-          </motion.span>
-
+        <div className="order-2 md:order-1 md:col-span-6">
           <motion.h1
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.05, ease: easeOut }}
-            className="display-xl mt-6 max-w-[14ch] text-ink"
+            className="display-xl max-w-[14ch] text-ink"
           >
             Custom jewellery from{" "}
             <em className="not-italic text-primary">any reference</em>.
@@ -112,7 +103,7 @@ export function Hero() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.1, delay: 0.08, ease: easeOut }}
-          className="md:col-span-6"
+          className="order-1 md:order-2 md:col-span-6"
         >
           <div className="relative">
             <VideoSketch
@@ -122,7 +113,7 @@ export function Hero() {
               objectFit="contain"
             />
 
-            <div className="mt-4 grid gap-3 md:grid-cols-3">
+            <div className="mt-4 hidden gap-3 md:grid md:grid-cols-3">
               {FLOW.map((item) => (
                 <article
                   key={item.step}
