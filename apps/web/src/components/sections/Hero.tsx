@@ -10,7 +10,7 @@ const easeOut = [0.16, 1, 0.3, 1] as const;
 const TRUST_CUES = [
   "No commitment",
   "50-year jewellery legacy",
-  "WhatsApp-first",
+  "Personal design guidance",
 ] as const;
 
 const FLOW = [
@@ -42,7 +42,7 @@ export function Hero() {
             transition={{ duration: 0.9, delay: 0.05, ease: easeOut }}
             className="display-xl max-w-[14ch] text-ink"
           >
-            Custom jewellery from{" "}
+            Custom jewellery made from{" "}
             <em className="not-italic text-primary">any reference</em>.
           </motion.h1>
 
@@ -52,8 +52,9 @@ export function Hero() {
             transition={{ duration: 0.9, delay: 0.18, ease: easeOut }}
             className="mt-6 max-w-lg text-base leading-relaxed text-body md:text-lg"
           >
-            Send a screenshot, reel, Pinterest board, or old family photo. AMI
-            checks it with trusted craftsmen and replies within 24 hours.
+            Send us your vision in a screenshot, reel, Pinterest board, or old
+            family photo, and we will turn it into reality with our trusted
+            karigars.
           </motion.p>
 
           <motion.div
@@ -88,15 +89,6 @@ export function Hero() {
             ))}
           </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.7, delay: 0.6 }}
-            className="mt-16 hidden items-center gap-4 text-xs uppercase tracking-[0.18em] text-muted md:flex"
-          >
-            <span>Scroll</span>
-            <span className="block h-px w-12 bg-hairline" />
-          </motion.div>
         </div>
 
         <motion.div
@@ -113,21 +105,25 @@ export function Hero() {
               objectFit="contain"
             />
 
-            <div className="mt-4 hidden gap-3 md:grid md:grid-cols-3">
-              {FLOW.map((item) => (
-                <article
-                  key={item.step}
-                  className="rounded-lg border border-hairline bg-canvas/90 p-4 shadow-sm backdrop-blur-sm"
-                >
-                  <p className="caption-uppercase text-muted">{item.step}</p>
-                  <h2 className="mt-2 text-sm font-medium text-ink">
-                    {item.title}
-                  </h2>
-                  <p className="mt-1 text-xs leading-relaxed text-body">
-                    {item.body}
-                  </p>
-                </article>
-              ))}
+            <div className="mt-4 hidden md:block">
+              <div className="grid gap-0 border-y border-hairline-soft md:grid-cols-3">
+                {FLOW.map((item) => (
+                  <article
+                    key={item.step}
+                    className="border-hairline-soft py-4 md:border-l md:first:border-l-0 md:px-5"
+                  >
+                    <p className="font-mono text-[11px] tracking-[0.24em] text-muted">
+                      {item.step}
+                    </p>
+                    <h2 className="mt-3 text-sm font-medium leading-snug text-ink">
+                      {item.title}
+                    </h2>
+                    <p className="mt-1.5 text-xs leading-relaxed text-body">
+                      {item.body}
+                    </p>
+                  </article>
+                ))}
+              </div>
             </div>
           </div>
         </motion.div>

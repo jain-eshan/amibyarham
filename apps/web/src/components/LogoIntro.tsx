@@ -5,7 +5,8 @@ import { useEffect, useRef, useState } from "react";
 
 const SESSION_KEY = "ami-logo-intro-seen";
 const easeOut = [0.16, 1, 0.3, 1] as const;
-const totalDurationMs = 9800;
+const totalDurationMs = 8900;
+const apertureStartHeight = "1vh";
 
 const storyFrames = [
   {
@@ -61,10 +62,10 @@ export function LogoIntro() {
     document.body.style.overflow = "hidden";
 
     const phaseTimers = [
-      window.setTimeout(() => setPhase(0), 900),
+      window.setTimeout(() => setPhase(0), 1300),
       window.setTimeout(() => setPhase(1), 3000),
-      window.setTimeout(() => setPhase(2), 5100),
-      window.setTimeout(() => setPhase(3), 7350),
+      window.setTimeout(() => setPhase(2), 4750),
+      window.setTimeout(() => setPhase(3), 6650),
     ];
     const exitTimer = window.setTimeout(() => setActive(false), totalDurationMs);
 
@@ -80,7 +81,7 @@ export function LogoIntro() {
   const currentFrame =
     phase === 0 || phase === 1 || phase === 2 ? storyFrames[phase] : null;
   const railScale =
-    phase === 0 ? 0.86 : phase === 1 ? 0.72 : phase === 2 ? 0.58 : phase === 3 ? 0.44 : 1;
+    phase === 0 ? 0.86 : phase === 1 ? 0.68 : phase === 2 ? 0.5 : phase === 3 ? 0.18 : 1;
 
   return (
     <AnimatePresence
@@ -99,67 +100,52 @@ export function LogoIntro() {
           aria-hidden="true"
           className="fixed inset-0 z-[100] overflow-hidden bg-[#050505] text-ink"
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.22, delay: 0.62, ease: easeOut }}
+          transition={{ duration: 0.22, delay: 0.52, ease: easeOut }}
         >
           <motion.div
-            className="absolute left-0 top-1/2 h-[min(54vh,470px)] w-full -translate-y-1/2 bg-canvas"
-            initial={{ scaleY: 0.004 }}
-            animate={{ scaleY: 1 }}
-            exit={{ scaleY: 2.45 }}
+            className="absolute left-0 top-1/2 w-full -translate-y-1/2 bg-canvas"
+            initial={{ height: apertureStartHeight }}
+            animate={{ height: "100vh" }}
+            exit={{ height: "150vh" }}
             style={{ transformOrigin: "50% 50%" }}
-            transition={{ duration: 1.1, delay: 0.12, ease: easeOut }}
+            transition={{
+              duration: 6.8,
+              delay: 0.08,
+              ease: "linear",
+            }}
           />
 
           <motion.div
-            className="absolute left-0 top-1/2 flex h-[min(54vh,470px)] w-full -translate-y-1/2 items-center justify-center overflow-hidden"
-            initial={{ opacity: 1 }}
-            animate={{ opacity: 1 }}
+            className="absolute left-0 top-1/2 flex w-full -translate-y-1/2 items-center justify-center overflow-hidden"
+            initial={{ height: apertureStartHeight, opacity: 1 }}
+            animate={{ height: "100vh", opacity: 1 }}
             exit={{ opacity: 0, y: -18 }}
-            transition={{ duration: 0.48, ease: easeOut }}
+            transition={{
+              height: {
+                duration: 6.8,
+                delay: 0.08,
+                ease: "linear",
+              },
+              opacity: { duration: 0.48, ease: easeOut },
+              y: { duration: 0.48, ease: easeOut },
+            }}
           >
             <motion.div
               className="absolute inset-x-0 top-0 h-px bg-ink/70"
               initial={{ opacity: 0, scaleX: 1 }}
               animate={{ opacity: phase >= 0 ? 0.65 : 0, scaleX: railScale }}
               exit={{ opacity: 0, scaleX: 0 }}
-              transition={{ duration: 0.95, ease: easeOut }}
+              transition={{ duration: 0.72, ease: easeOut }}
             />
             <motion.div
               className="absolute inset-x-0 bottom-0 h-px bg-ink/70"
               initial={{ opacity: 0, scaleX: 1 }}
               animate={{ opacity: phase >= 0 ? 0.65 : 0, scaleX: railScale }}
               exit={{ opacity: 0, scaleX: 0 }}
-              transition={{ duration: 0.95, ease: easeOut }}
+              transition={{ duration: 0.72, ease: easeOut }}
             />
 
             <div className="relative flex h-full w-full max-w-[1200px] items-center justify-center px-7">
-              <motion.div
-                className="absolute left-7 top-7 font-mono text-[10px] uppercase tracking-[0.18em] text-muted md:left-10 md:top-9"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: phase >= 0 ? 1 : 0 }}
-                transition={{ duration: 0.35 }}
-              >
-                AMI by Arham
-              </motion.div>
-
-              <motion.div
-                className="absolute bottom-7 left-7 font-mono text-xs text-muted md:bottom-9 md:left-10"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: phase >= 0 && phase < 3 ? 1 : 0 }}
-                transition={{ duration: 0.35 }}
-              >
-                {currentFrame?.index ?? "003"}
-              </motion.div>
-
-              <motion.div
-                className="absolute bottom-7 right-7 font-mono text-xs text-muted md:bottom-9 md:right-10"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: phase >= 0 && phase < 3 ? 1 : 0 }}
-                transition={{ duration: 0.35 }}
-              >
-                ©2026
-              </motion.div>
-
               <AnimatePresence>
                 {currentFrame && <StoryWord key={currentFrame.word} frame={currentFrame} />}
                 {phase === 3 && <AmiLogoLockup key="ami-logo" />}
@@ -178,9 +164,10 @@ function StoryWord({ frame }: { frame: (typeof storyFrames)[number] }) {
   return (
     <motion.div
       className="absolute inset-0 flex w-full flex-col items-center justify-center px-7 text-center"
-      initial={{ opacity: 1 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 1 }}
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -22 }}
+      transition={{ duration: 0.62, ease: easeOut }}
     >
       <p
         className="flex items-center justify-center font-brand text-[4.75rem] leading-[1.04] tracking-[0] text-ink sm:text-[6.5rem] md:text-[9rem] lg:text-[11rem]"
@@ -198,8 +185,8 @@ function StoryWord({ frame }: { frame: (typeof storyFrames)[number] }) {
               animate={{ y: "0%", opacity: 1 }}
               exit={{ y: "-112%", opacity: 0 }}
               transition={{
-                duration: 0.7,
-                delay: index * 0.045,
+                duration: 0.72,
+                delay: index * 0.048,
                 ease: easeOut,
               }}
             >
@@ -213,7 +200,7 @@ function StoryWord({ frame }: { frame: (typeof storyFrames)[number] }) {
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -14 }}
-        transition={{ duration: 0.55, delay: 0.34, ease: easeOut }}
+        transition={{ duration: 0.54, delay: 0.38, ease: easeOut }}
       >
         {frame.note}
       </motion.p>
@@ -228,7 +215,7 @@ function AmiLogoLockup() {
       initial={{ opacity: 0, scale: 0.92, y: 32 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.96 }}
-      transition={{ duration: 0.62, ease: easeOut }}
+      transition={{ duration: 0.72, delay: 0.28, ease: easeOut }}
     >
       <motion.svg
         xmlns="http://www.w3.org/2000/svg"
@@ -254,14 +241,31 @@ function AmiLogoLockup() {
           />
         </motion.g>
 
-        <motion.path
-          d="M1425.53 0C1433.33 65.8724 1439.64 72.2135 1505.54 80.0065L1505.14 80.0651C1439.64 87.832 1433.3 94.2513 1425.53 160.02C1417.73 94.1146 1411.43 87.806 1345.52 80.0065C1411.43 72.2135 1417.73 65.8984 1425.53 0Z"
-          fill="#CC785C"
-          initial={{ opacity: 0, scale: 0.2, rotate: -30 }}
-          animate={{ opacity: 1, scale: [0.2, 1.18, 1], rotate: [-30, 8, 0] }}
-          transition={{ duration: 0.58, delay: 0.44, ease: easeOut }}
+        <motion.g
+          initial={{ opacity: 0, scale: 0.18, rotate: -120 }}
+          animate={{ opacity: 1, scale: [0.18, 1.22, 1], rotate: [-120, 240, 360] }}
+          transition={{ duration: 1, delay: 0.28, ease: easeOut }}
           style={{ transformOrigin: "1425px 80px" }}
-        />
+        >
+          <motion.circle
+            cx="1425.53"
+            cy="80.01"
+            r="88"
+            fill="none"
+            stroke="#CC785C"
+            strokeWidth="8"
+            strokeLinecap="round"
+            strokeDasharray="86 470"
+            initial={{ opacity: 0, rotate: -80 }}
+            animate={{ opacity: [0, 0.72, 0], rotate: 280 }}
+            transition={{ duration: 1, delay: 0.2, ease: easeOut }}
+            style={{ transformOrigin: "1425px 80px" }}
+          />
+          <path
+            d="M1425.53 0C1433.33 65.8724 1439.64 72.2135 1505.54 80.0065L1505.14 80.0651C1439.64 87.832 1433.3 94.2513 1425.53 160.02C1417.73 94.1146 1411.43 87.806 1345.52 80.0065C1411.43 72.2135 1417.73 65.8984 1425.53 0Z"
+            fill="#CC785C"
+          />
+        </motion.g>
 
         <motion.text
           x="1138"
