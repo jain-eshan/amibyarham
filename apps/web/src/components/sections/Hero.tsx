@@ -75,9 +75,9 @@ export function Hero() {
               Send a Reference
               <Arrow />
             </Button>
-            <Button href="/discover" size="lg" variant="secondary">
+            {/* <Button href="/discover" size="lg" variant="secondary">
               See Examples
-            </Button>
+            </Button> */}
           </motion.div>
 
           <motion.div
