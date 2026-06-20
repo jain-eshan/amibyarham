@@ -10,7 +10,7 @@ const easeOut = [0.16, 1, 0.3, 1] as const;
 const TRUST_CUES = [
   "No commitment",
   "50-year jewellery legacy",
-  "WhatsApp-first",
+  "Personal design guidance",
 ] as const;
 
 const FLOW = [
@@ -35,23 +35,14 @@ export function Hero() {
   return (
     <section className="relative z-10 overflow-x-clip bg-canvas pt-20 pb-14 md:pt-28 md:pb-20">
       <div className="mx-auto grid max-w-[1200px] grid-cols-1 items-center gap-10 px-6 md:grid-cols-12">
-        <div className="md:col-span-6">
-          <motion.span
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: easeOut }}
-            className="caption-uppercase inline-block text-muted"
-          >
-            AMI by Arham
-          </motion.span>
-
+        <div className="order-2 md:order-1 md:col-span-6">
           <motion.h1
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.05, ease: easeOut }}
-            className="display-xl mt-6 max-w-[14ch] text-ink"
+            className="display-xl max-w-[14ch] text-ink"
           >
-            Custom jewellery from{" "}
+            Custom jewellery made from{" "}
             <em className="not-italic text-primary">any reference</em>.
           </motion.h1>
 
@@ -61,8 +52,9 @@ export function Hero() {
             transition={{ duration: 0.9, delay: 0.18, ease: easeOut }}
             className="mt-6 max-w-lg text-base leading-relaxed text-body md:text-lg"
           >
-            Send a screenshot, reel, Pinterest board, or old family photo. AMI
-            checks it with trusted craftsmen and replies within 24 hours.
+            Send us your vision in a screenshot, reel, Pinterest board, or old
+            family photo, and we will turn it into reality with our trusted
+            karigars.
           </motion.p>
 
           <motion.div
@@ -97,22 +89,13 @@ export function Hero() {
             ))}
           </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.7, delay: 0.6 }}
-            className="mt-16 hidden items-center gap-4 text-xs uppercase tracking-[0.18em] text-muted md:flex"
-          >
-            <span>Scroll</span>
-            <span className="block h-px w-12 bg-hairline" />
-          </motion.div>
         </div>
 
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.1, delay: 0.08, ease: easeOut }}
-          className="md:col-span-6"
+          className="order-1 md:order-2 md:col-span-6"
         >
           <div className="relative">
             <VideoSketch
@@ -122,21 +105,25 @@ export function Hero() {
               objectFit="contain"
             />
 
-            <div className="mt-4 grid gap-3 md:grid-cols-3">
-              {FLOW.map((item) => (
-                <article
-                  key={item.step}
-                  className="rounded-lg border border-hairline bg-canvas/90 p-4 shadow-sm backdrop-blur-sm"
-                >
-                  <p className="caption-uppercase text-muted">{item.step}</p>
-                  <h2 className="mt-2 text-sm font-medium text-ink">
-                    {item.title}
-                  </h2>
-                  <p className="mt-1 text-xs leading-relaxed text-body">
-                    {item.body}
-                  </p>
-                </article>
-              ))}
+            <div className="mt-4 hidden md:block">
+              <div className="grid gap-0 border-y border-hairline-soft md:grid-cols-3">
+                {FLOW.map((item) => (
+                  <article
+                    key={item.step}
+                    className="border-hairline-soft py-4 md:border-l md:first:border-l-0 md:px-5"
+                  >
+                    <p className="font-mono text-[11px] tracking-[0.24em] text-muted">
+                      {item.step}
+                    </p>
+                    <h2 className="mt-3 text-sm font-medium leading-snug text-ink">
+                      {item.title}
+                    </h2>
+                    <p className="mt-1.5 text-xs leading-relaxed text-body">
+                      {item.body}
+                    </p>
+                  </article>
+                ))}
+              </div>
             </div>
           </div>
         </motion.div>

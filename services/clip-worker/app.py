@@ -20,17 +20,35 @@ embeddings.
 
 from __future__ import annotations
 
+import atexit
 import base64
 import io
+import os
 from typing import Iterable
 
 import numpy as np
 import open_clip
 import torch
+from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from PIL import Image
+from posthog import Posthog
 from pydantic import BaseModel, Field
 import httpx
+
+# ─── PostHog ─────────────────────────────────────────────────────────────────
+load_dotenv()
+
+_POSTHOG_TOKEN = os.environ.get("POSTHOG_PROJECT_TOKEN", "")
+_POSTHOG_HOST = os.environ.get("POSTHOG_HOST", "https://us.i.posthog.com")
+
+posthog_client = Posthog(
+    api_key=_POSTHOG_TOKEN or "phc_placeholder",
+    host=_POSTHOG_HOST,
+    disabled=not _POSTHOG_TOKEN,
+    enable_exception_autocapture=True,
+)
+atexit.register(posthog_client.shutdown)
 
 # ─── Model bootstrap ─────────────────────────────────────────────────────────
 # Forced to CPU on purpose — the discovery plan calls for a $0-ops worker.
@@ -111,12 +129,22 @@ def _load_image(req: ImageRequest) -> Image.Image:
             r.raise_for_status()
             return Image.open(io.BytesIO(r.content)).convert("RGB")
         except Exception as exc:  # noqa: BLE001
+            posthog_client.capture(
+                "clip-worker",
+                "image_fetch_failed",
+                properties={"source_type": "url", "error_type": type(exc).__name__},
+            )
             raise HTTPException(400, f"failed to fetch image: {exc}") from exc
     if req.image_base64:
         try:
             raw = base64.b64decode(req.image_base64)
             return Image.open(io.BytesIO(raw)).convert("RGB")
         except Exception as exc:  # noqa: BLE001
+            posthog_client.capture(
+                "clip-worker",
+                "image_fetch_failed",
+                properties={"source_type": "base64", "error_type": type(exc).__name__},
+            )
             raise HTTPException(400, f"failed to decode image: {exc}") from exc
     raise HTTPException(400, "provide image_url or image_base64")
 
@@ -228,14 +256,33 @@ def healthz() -> dict[str, str]:
 def embed(req: ImageRequest) -> EmbedResponse:
     img = _load_image(req)
     feat = _encode_image(img).squeeze(0).tolist()
+    posthog_client.capture(
+        "clip-worker",
+        "image_embedded",
+        properties={"source_type": "url" if req.image_url else "base64"},
+    )
     return EmbedResponse(embedding=feat)
 
 
 @app.post("/tag", response_model=TagResponse)
-def tag(req: ImageRequest) -> TagResponse:
+def tag_image(req: ImageRequest) -> TagResponse:
     img = _load_image(req)
     feat = _encode_image(img)
-    return TagResponse(**_build_tags(feat))
+    tags = _build_tags(feat)
+    posthog_client.capture(
+        "clip-worker",
+        "image_tagged",
+        properties={
+            "source_type": "url" if req.image_url else "base64",
+            "jewelry_type": tags["jewelry_type"],
+            "metal_count": len(tags["metal"]),
+            "styles_count": len(tags["styles"]),
+            "stones_count": len(tags["stones"]),
+            "motif_count": len(tags["motif"]),
+            "occasions_count": len(tags["occasions"]),
+        },
+    )
+    return TagResponse(**tags)
 
 
 @app.post("/enrich", response_model=EnrichResponse)
@@ -243,8 +290,22 @@ def enrich(req: ImageRequest) -> EnrichResponse:
     """One decode → embedding + pHash + zero-shot tags. Used by the ingester."""
     img = _load_image(req)
     feat = _encode_image(img)
+    tags = _build_tags(feat)
+    posthog_client.capture(
+        "clip-worker",
+        "image_enriched",
+        properties={
+            "source_type": "url" if req.image_url else "base64",
+            "jewelry_type": tags["jewelry_type"],
+            "metal_count": len(tags["metal"]),
+            "styles_count": len(tags["styles"]),
+            "stones_count": len(tags["stones"]),
+            "motif_count": len(tags["motif"]),
+            "occasions_count": len(tags["occasions"]),
+        },
+    )
     return EnrichResponse(
         embedding=feat.squeeze(0).tolist(),
         phash=_phash(img),
-        **_build_tags(feat),
+        **tags,
     )
