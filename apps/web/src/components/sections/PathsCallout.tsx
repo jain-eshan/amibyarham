@@ -29,7 +29,7 @@ export function PathsCallout() {
           ))}
         </div>
 
-        <div className="mt-12 grid gap-6 md:mt-16 md:grid-cols-2">
+        <div className="mt-12 grid gap-6 md:mt-16 md:grid-cols-1 md:max-w-2xl md:mx-auto">
           <Reveal delay={0.1}>
             <article className="group relative flex h-full flex-col justify-between overflow-hidden rounded-lg bg-primary p-10 text-on-primary md:p-12">
               <div>
@@ -63,6 +63,7 @@ export function PathsCallout() {
             </article>
           </Reveal>
 
+          {/* Discover inspiration card commented out — focusing on Send Reference flow
           <Reveal delay={0.18}>
             <article className="group relative flex h-full flex-col justify-between overflow-hidden rounded-lg border border-hairline bg-canvas p-10 text-ink md:p-12">
               <div>
@@ -90,6 +91,7 @@ export function PathsCallout() {
               />
             </article>
           </Reveal>
+          */}
         </div>
       </div>
     </section>
