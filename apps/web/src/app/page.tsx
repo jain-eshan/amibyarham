@@ -20,7 +20,7 @@ export default function HomePage() {
       <ReferenceReality />
       <BudgetGuidance />
       <HeritageBand />
-      <BuyerQuestions />
+      <BuyerQuestions showAllLink />
       <MakersSection />
       <PathsCallout />
       <Marquee />

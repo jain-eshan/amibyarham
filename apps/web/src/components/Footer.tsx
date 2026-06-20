@@ -7,6 +7,7 @@ const FOOTER_GROUPS = [
     title: "Explore",
     links: [
       { label: "Our Legacy", href: "/story" },
+      { label: "FAQs", href: "/faqs" },
       { label: "Contact", href: "/contact" },
     ],
   },

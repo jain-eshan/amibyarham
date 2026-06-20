@@ -9,6 +9,7 @@ const NAV_LINKS = [
   { label: "Send Reference", href: "/submit" },
   // { label: "Inspiration", href: "/discover" },
   { label: "Our Legacy", href: "/story" },
+  { label: "FAQs", href: "/faqs" },
   { label: "Contact", href: "/contact" },
 ] as const;
 
