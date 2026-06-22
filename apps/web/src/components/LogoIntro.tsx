@@ -32,7 +32,7 @@ type IntroPhase = -1 | 0 | 1 | 2;
 export function LogoIntro() {
   const reduceMotion = useReducedMotion();
   const previousOverflow = useRef<string | null>(null);
-  const [mounted, setMounted] = useState(true);
+  const [shouldPlay, setShouldPlay] = useState(false);
   const [active, setActive] = useState(true);
   const [phase, setPhase] = useState<IntroPhase>(-1);
 
@@ -43,21 +43,22 @@ export function LogoIntro() {
   }
 
   useEffect(() => {
-    if (reduceMotion) {
-      setMounted(false);
-      return;
-    }
-
-    const forceReplay = new URLSearchParams(window.location.search).has("intro");
+    if (reduceMotion) return;
 
     try {
-      if (window.sessionStorage.getItem(SESSION_KEY) && !forceReplay) {
-        setMounted(false);
-        return;
-      }
+      if (window.sessionStorage.getItem(SESSION_KEY)) return;
+      // Claim this browser session before starting, so reloads cannot restart
+      // the intro while it is still playing.
+      window.sessionStorage.setItem(SESSION_KEY, "true");
     } catch {
       // sessionStorage can be unavailable in private browsing; the intro can still run.
     }
+
+    setShouldPlay(true);
+  }, [reduceMotion]);
+
+  useEffect(() => {
+    if (!shouldPlay) return;
 
     previousOverflow.current = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -75,9 +76,11 @@ export function LogoIntro() {
       window.clearTimeout(exitTimer);
       restoreBodyScroll();
     };
-  }, [reduceMotion]);
+  }, [shouldPlay]);
 
-  if (!mounted) return null;
+  // Do not render an overlay until the browser has confirmed this is the
+  // session's first visit. This prevents a reload flash for returning visitors.
+  if (!shouldPlay) return null;
 
   const currentFrame =
     phase === 0 || phase === 1 || phase === 2 ? storyFrames[phase] : null;
@@ -88,12 +91,7 @@ export function LogoIntro() {
     <AnimatePresence
       onExitComplete={() => {
         restoreBodyScroll();
-        try {
-          window.sessionStorage.setItem(SESSION_KEY, "true");
-        } catch {
-          // Non-essential; avoid blocking the animation when storage is restricted.
-        }
-        setMounted(false);
+        setShouldPlay(false);
       }}
     >
       {active && (
