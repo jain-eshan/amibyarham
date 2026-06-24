@@ -8,6 +8,35 @@ export const metadata: Metadata = {
   title: "Contact",
   description:
     "Get in touch with AMI by Arham. Whether you have a vision or just a question — we'd love to hear from you.",
+  alternates: { canonical: "/contact" },
+};
+
+const localBusinessJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "JewelryStore",
+  name: "AMI by Arham",
+  description:
+    "Online-first custom fine jewellery service backed by Arham Diamonds in Delhi. Commission bespoke jewellery from any reference.",
+  url: "https://www.arhamdiamonds.in",
+  telephone: "+919958863129",
+  email: "amibyarham@gmail.com",
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: "Delhi",
+    addressCountry: "IN",
+  },
+  sameAs: [
+    "https://www.instagram.com/amibyarham/",
+    "https://www.linkedin.com/company/arham-diamond",
+    "https://www.facebook.com/profile.php?id=61590698912033",
+  ],
+  contactPoint: {
+    "@type": "ContactPoint",
+    telephone: "+919958863129",
+    contactType: "customer service",
+    availableLanguage: ["English", "Hindi"],
+    contactOption: "TollFree",
+  },
 };
 
 const CHANNELS = [
@@ -36,6 +65,11 @@ const CHANNELS = [
 export default function ContactPage() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }}
+      />
       {/* ── Hero ─────────────────────────────────────────────────── */}
       <section className="bg-canvas py-section">
         <div className="mx-auto max-w-[1200px] px-6">
