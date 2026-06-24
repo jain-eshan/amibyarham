@@ -52,9 +52,9 @@ export function Hero() {
             transition={{ duration: 0.9, delay: 0.18, ease: easeOut }}
             className="mt-6 max-w-lg text-base leading-relaxed text-body md:text-lg"
           >
-            Send us your vision in a screenshot, reel, Pinterest board, or old
-            family photo, and we will turn it into reality with our trusted
-            karigars.
+            Send us a screenshot, reel, Pinterest board, or photo. Our karigar
+            reviews it and we reply on WhatsApp within 24 hours — feasibility,
+            price signal, and next step.
           </motion.p>
 
           <motion.div

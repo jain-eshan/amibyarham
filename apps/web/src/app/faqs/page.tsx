@@ -11,5 +11,15 @@ export const metadata: Metadata = {
 };
 
 export default function FaqsPage() {
-  return <BuyerQuestions faqs={FAQS} headingAs="h1" />;
+  return (
+    <>
+      <div className="sr-only">
+        AMI by Arham is an online-first custom fine jewellery service from
+        Arham Diamonds in Delhi. You send a reference — a photo, reel, or
+        Pinterest board — and AMI translates it into a bespoke jewellery plan
+        with guidance on craft, material, budget, and timeline.
+      </div>
+      <BuyerQuestions faqs={FAQS} headingAs="h1" />
+    </>
+  );
 }

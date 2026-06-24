@@ -11,12 +11,25 @@ function PageViewTracker() {
   const ph = usePostHog();
 
   useEffect(() => {
-    if (pathname && !pathname.startsWith("/admin") && ph) {
-      const url =
-        window.location.origin +
-        pathname +
-        (searchParams?.toString() ? `?${searchParams.toString()}` : "");
-      ph.capture("$pageview", { $current_url: url });
+    if (!pathname || pathname.startsWith("/admin") || !ph) return;
+
+    const url =
+      window.location.origin +
+      pathname +
+      (searchParams?.toString() ? `?${searchParams.toString()}` : "");
+    ph.capture("$pageview", { $current_url: url });
+
+    // Track creator-originated traffic (DM campaign links include ?ref=creator or ?utm_source=creator)
+    const ref = searchParams?.get("ref");
+    const utmSource = searchParams?.get("utm_source");
+    if (ref === "creator" || utmSource === "creator") {
+      ph.capture("creator_referral_landing", {
+        ref,
+        utm_source: utmSource,
+        utm_medium: searchParams?.get("utm_medium"),
+        utm_campaign: searchParams?.get("utm_campaign"),
+        landing_page: pathname,
+      });
     }
   }, [pathname, searchParams, ph]);
 

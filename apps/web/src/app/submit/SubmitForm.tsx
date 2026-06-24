@@ -91,8 +91,8 @@ const CONTACT_OPTIONS = [
 
 const GUIDE_STEPS = [
   {
-    eyebrow: "Step 1",
-    title: "Share whatever holds the idea.",
+    eyebrow: "Share it",
+    title: "Send whatever holds the idea.",
     body: "A screenshot, reel, Pinterest board, old family photo, or rough sketch is enough. You do not need a polished brief before AMI can help.",
     bullets: [
       "Upload an image or paste a link",
@@ -103,8 +103,8 @@ const GUIDE_STEPS = [
     visualTitle: "Saved image, reel, board, or family photo",
   },
   {
-    eyebrow: "Step 2",
-    title: "AMI checks what can actually be made.",
+    eyebrow: "We check it",
+    title: "Our karigar reviews what can be made.",
     body: "Your reference is reviewed for craft, wearability, metal, stone options, timeline, and budget fit before it goes into a making conversation.",
     bullets: [
       "What can be made closely",
@@ -115,9 +115,9 @@ const GUIDE_STEPS = [
     visualTitle: "Craft, budget, wearability, and timeline check",
   },
   {
-    eyebrow: "Step 3",
-    title: "You get a clear WhatsApp response.",
-    body: "Within 24 hours, AMI replies with feasibility, likely changes, and the next step. No obligation, no spam, no pressure to proceed.",
+    eyebrow: "You hear back",
+    title: "A WhatsApp reply within 24 hours.",
+    body: "AMI replies with feasibility, a price signal, and the next step. No obligation, no spam, no pressure to proceed.",
     bullets: [
       "Private response on WhatsApp",
       "Expected changes explained clearly",

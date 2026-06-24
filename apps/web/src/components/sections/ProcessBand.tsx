@@ -81,9 +81,28 @@ const STEPS = [
   },
 ] as const;
 
+const howToJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  name: "How to commission custom jewellery with AMI by Arham",
+  description:
+    "Send a reference, share the occasion, get a craftsman feasibility review, then consult before any commitment.",
+  step: STEPS.map((s, i) => ({
+    "@type": "HowToStep",
+    position: i + 1,
+    name: s.title,
+    text: s.body,
+  })),
+};
+
 export function ProcessBand() {
   return (
     <section className="relative overflow-hidden border-t border-hairline-soft bg-canvas py-16 md:py-18 lg:py-20">
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(howToJsonLd) }}
+      />
       <LotusPattern />
       <div className="relative mx-auto max-w-[1200px] px-6">
         <div className="flex flex-col items-start justify-between gap-8 md:flex-row md:items-end">
