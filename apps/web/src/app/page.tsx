@@ -1,5 +1,6 @@
 import { BudgetGuidance } from "@/components/sections/BudgetGuidance";
 import { BuyerQuestions } from "@/components/sections/BuyerQuestions";
+import { ExamplePiece } from "@/components/sections/ExamplePiece";
 import { Hero } from "@/components/sections/Hero";
 import { HeritageBand } from "@/components/sections/HeritageBand";
 import { LabGrownBand } from "@/components/sections/LabGrownBand";
@@ -15,8 +16,9 @@ export default function HomePage() {
     <>
       <LogoIntro />
       <Hero />
-      <LabGrownBand />
+      <ExamplePiece />
       <ProcessBand />
+      <LabGrownBand />
       <ReferenceReality />
       <BudgetGuidance />
       <HeritageBand />

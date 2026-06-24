@@ -5,38 +5,43 @@ import { Reveal } from "@/components/Reveal";
 const MAKERS = [
   {
     role: "Design guide",
-    objectPosition: "0% 52%",
+    src: "/team/makers/design-guide.jpg",
+    objectPosition: "50% 38%",
     left: "18%",
     top: "48%",
     size: 94,
   },
   {
-    role: "Karigar",
-    objectPosition: "39% 50%",
-    left: "47%",
-    top: "38%",
-    size: 160,
-  },
-  {
     role: "Stone setter",
-    objectPosition: "100% 54%",
+    src: "/team/makers/stone-setter.jpg",
+    objectPosition: "50% 38%",
     left: "75%",
     top: "46%",
     size: 108,
   },
   {
     role: "Finishing",
-    objectPosition: "12% 54%",
+    src: "/team/makers/finishing.jpg",
+    objectPosition: "51% 34%",
     left: "34%",
     top: "76%",
     size: 104,
   },
   {
     role: "Final check",
-    objectPosition: "100% 54%",
+    src: "/team/makers/final-check.jpg",
+    objectPosition: "62% 41%",
     left: "65%",
     top: "78%",
     size: 88,
+  },
+  {
+    role: "Family liaison",
+    src: "/team/makers/family-liaison.jpg",
+    objectPosition: "50% 36%",
+    left: "85%",
+    top: "72%",
+    size: 92,
   },
 ] as const;
 
@@ -82,11 +87,12 @@ export function MakersSection() {
                   style={{ height: maker.size, width: maker.size }}
                 >
                   <Image
-                    src="/team/karigar-placeholder.jpg"
+                    src={maker.src}
                     alt=""
                     fill
-                    sizes="160px"
-                    className="object-cover grayscale"
+                    loading="eager"
+                    sizes={`${maker.size}px`}
+                    className="object-cover"
                     style={{
                       objectPosition: maker.objectPosition,
                     }}
