@@ -447,17 +447,18 @@ export function SubmitForm() {
             {current.visualLabel === "Reference" ? (
               <div className="relative aspect-[4/3] overflow-hidden rounded-2xl shadow-[8px_8px_24px_rgba(48,39,31,0.13),-6px_-6px_18px_rgba(255,255,255,0.88)]">
                 <Image
-                  src="/submit-reference-example.png"
+                  src="/submit-reference-example.jpg"
                   alt="Example references: phone with Pinterest board, antique ring illustration, and family heirloom ring"
                   fill
                   className="object-cover"
                   sizes="50vw"
+                  priority
                 />
               </div>
             ) : current.visualLabel === "Feasibility" ? (
               <div className="relative aspect-[4/3] overflow-hidden rounded-2xl shadow-[8px_8px_24px_rgba(48,39,31,0.13),-6px_-6px_18px_rgba(255,255,255,0.88)]">
                 <Image
-                  src="/submit-feasibility-example.png"
+                  src="/submit-feasibility-example.jpg"
                   alt="Karigar's workbench: 22K gold bar, loupe, ruby and diamonds, handwritten project notes"
                   fill
                   className="object-cover"
@@ -467,7 +468,7 @@ export function SubmitForm() {
             ) : (
               <div className="relative aspect-[4/3] overflow-hidden rounded-2xl shadow-[8px_8px_24px_rgba(48,39,31,0.13),-6px_-6px_18px_rgba(255,255,255,0.88)]">
                 <Image
-                  src="/submit-response-example.png"
+                  src="/submit-response-example.jpg"
                   alt="WhatsApp reply from AMI by Arham with feasibility, price estimate, and next step"
                   fill
                   className="object-cover"
