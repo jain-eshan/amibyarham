@@ -307,8 +307,8 @@ export function ReferenceReality() {
             <div className="flex flex-col gap-3">
               <ContentSlider
                 key={activeTab}
-                inputNode={TABS[activeTab].inputPreview}
-                tabId={TABS[activeTab].id}
+                inputNode={TABS[activeTab]!.inputPreview}
+                tabId={TABS[activeTab]!.id}
               />
               <p className="text-center text-xs text-muted">
                 Drag to compare your reference with the finished piece
