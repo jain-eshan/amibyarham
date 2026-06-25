@@ -78,6 +78,10 @@ export function VideoSketch({
     });
   }, []);
 
+  const onEnded = useCallback(() => {
+    setShown(new Set(ANNOTATIONS.map((a) => a.id)));
+  }, []);
+
   return (
     <div className="relative w-full" style={{ aspectRatio }}>
       <video
@@ -86,8 +90,8 @@ export function VideoSketch({
         autoPlay
         muted
         playsInline
-        loop
         onTimeUpdate={onTimeUpdate}
+        onEnded={onEnded}
         className="absolute inset-0 h-full w-full"
         style={{ display: "block", mixBlendMode: "multiply", objectFit }}
       />

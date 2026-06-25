@@ -1,4 +1,5 @@
 import { Reveal } from "@/components/Reveal";
+import { LottiePlayer } from "@/components/LottiePlayer";
 
 function LotusPattern() {
   const petals = [0, 45, 90, 135, 180, 225, 270, 315];
@@ -143,8 +144,38 @@ export function ProcessBand() {
                       </span>
                       <span className="ml-4 block h-px flex-1 bg-hairline-soft" />
                     </div>
-                    <div className="mt-4 flex aspect-[16/10] items-center justify-center rounded-xl bg-[#f7f5f1] text-ink/45 shadow-[inset_4px_4px_12px_rgba(48,39,31,0.06),inset_-5px_-5px_14px_rgba(255,255,255,0.95)]">
-                      <StepIllustration type={s.illustration} />
+                    <div className="mt-4 overflow-hidden rounded-xl bg-[#f7f5f1] text-ink/45 shadow-[inset_4px_4px_12px_rgba(48,39,31,0.06),inset_-5px_-5px_14px_rgba(255,255,255,0.95)]">
+                      {s.illustration === "reference" ? (
+                        <div className="flex aspect-[16/10] items-center justify-center overflow-hidden">
+                          <div className="scale-[1.2] w-full h-full">
+                            <LottiePlayer src="/step-01-photobook.json" />
+                          </div>
+                        </div>
+                      ) : s.illustration === "occasion" ? (
+                        <div className="flex aspect-[16/10] items-center justify-center overflow-hidden">
+                          <div className="scale-[1.45] w-full h-full">
+                            <LottiePlayer src="/step-02-discussion.json" />
+                          </div>
+                        </div>
+                      ) : s.illustration === "feasibility" ? (
+                        <video
+                          src="/process-step-03.mp4"
+                          autoPlay
+                          loop
+                          muted
+                          playsInline
+                          className="aspect-[16/10] w-full object-cover"
+                        />
+                      ) : (
+                        <video
+                          src="/process-step-04.mp4"
+                          autoPlay
+                          loop
+                          muted
+                          playsInline
+                          className="aspect-[16/10] w-full object-cover"
+                        />
+                      )}
                     </div>
                   </div>
                   <div className="px-4 py-5 md:px-5">

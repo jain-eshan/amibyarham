@@ -7,6 +7,8 @@ import { usePostHog } from "posthog-js/react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import Image from "next/image";
+
 import { Button } from "@/components/Button";
 
 // ─── Schema ──────────────────────────────────────────────────────────────────
@@ -369,7 +371,7 @@ export function SubmitForm() {
     const isLastGuideStep = guideStep === GUIDE_STEPS.length - 1;
 
     return (
-      <section className="min-h-[calc(100vh-4rem)] bg-canvas px-6 py-8 md:py-12">
+      <section className="overflow-x-hidden bg-canvas px-6 py-8 md:py-16">
         <div className="mx-auto flex max-w-[1200px] items-center justify-between">
           <button
             type="button"
@@ -389,7 +391,7 @@ export function SubmitForm() {
           </button>
         </div>
 
-        <div className="mx-auto grid max-w-[980px] grid-cols-12 items-center gap-10 pt-14 md:min-h-[70vh] md:pt-8">
+        <div className="mx-auto grid max-w-[980px] grid-cols-12 items-center gap-6 pt-8 md:gap-10 md:min-h-[70vh] md:pt-8">
           <div className="col-span-12 md:col-span-6">
             <div className="mb-8 h-1.5 w-full max-w-xs overflow-hidden rounded-full bg-surface-card">
               <div
@@ -399,7 +401,7 @@ export function SubmitForm() {
             </div>
             <p className="caption-uppercase text-muted">{current.eyebrow}</p>
             <h1
-              className="display-lg mt-4 max-w-[12ch] text-ink"
+              className="display-md mt-4 max-w-[16ch] text-ink md:display-lg md:max-w-[12ch]"
               style={{ fontFamily: "var(--font-display)" }}
             >
               {current.title}
@@ -441,43 +443,38 @@ export function SubmitForm() {
             </div>
           </div>
 
-          <div className="col-span-12 md:col-span-6">
-            <div className="relative overflow-hidden rounded-lg border border-hairline bg-surface-card p-5 shadow-sm">
-              <div className="absolute inset-x-0 top-0 h-10 border-b border-hairline bg-canvas/70" />
-              <div className="relative pt-12">
-                <p className="caption-uppercase text-muted">
-                  {current.visualLabel}
-                </p>
-                <div className="mt-4 aspect-[4/3] rounded-md border border-dashed border-hairline bg-canvas p-5">
-                  <div className="grid h-full grid-cols-3 gap-3">
-                    <div className="col-span-1 rounded-md bg-surface-soft p-3">
-                      <div className="h-3 w-12 rounded-full bg-hairline" />
-                      <div className="mt-3 h-16 rounded-md bg-primary/15" />
-                      <div className="mt-3 h-2 w-16 rounded-full bg-hairline" />
-                      <div className="mt-2 h-2 w-10 rounded-full bg-hairline" />
-                    </div>
-                    <div className="col-span-2 space-y-3">
-                      {[0, 1, 2].map((item) => (
-                        <div
-                          key={item}
-                          className="rounded-md border border-hairline bg-surface-soft p-3"
-                        >
-                          <div className="h-2 w-24 rounded-full bg-hairline" />
-                          <div className="mt-3 grid grid-cols-3 gap-2">
-                            <div className="h-10 rounded bg-canvas" />
-                            <div className="h-10 rounded bg-canvas" />
-                            <div className="h-10 rounded bg-canvas" />
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-                <p className="mt-4 text-sm text-muted">
-                  Image / lottie slot: {current.visualTitle}
-                </p>
+          <div className="hidden md:col-span-6 md:block">
+            {current.visualLabel === "Reference" ? (
+              <div className="relative aspect-[4/3] overflow-hidden rounded-2xl shadow-[8px_8px_24px_rgba(48,39,31,0.13),-6px_-6px_18px_rgba(255,255,255,0.88)]">
+                <Image
+                  src="/submit-reference-example.png"
+                  alt="Example references: phone with Pinterest board, antique ring illustration, and family heirloom ring"
+                  fill
+                  className="object-cover"
+                  sizes="50vw"
+                />
               </div>
-            </div>
+            ) : current.visualLabel === "Feasibility" ? (
+              <div className="relative aspect-[4/3] overflow-hidden rounded-2xl shadow-[8px_8px_24px_rgba(48,39,31,0.13),-6px_-6px_18px_rgba(255,255,255,0.88)]">
+                <Image
+                  src="/submit-feasibility-example.png"
+                  alt="Karigar's workbench: 22K gold bar, loupe, ruby and diamonds, handwritten project notes"
+                  fill
+                  className="object-cover"
+                  sizes="50vw"
+                />
+              </div>
+            ) : (
+              <div className="relative aspect-[4/3] overflow-hidden rounded-2xl shadow-[8px_8px_24px_rgba(48,39,31,0.13),-6px_-6px_18px_rgba(255,255,255,0.88)]">
+                <Image
+                  src="/submit-response-example.png"
+                  alt="WhatsApp reply from AMI by Arham with feasibility, price estimate, and next step"
+                  fill
+                  className="object-cover"
+                  sizes="50vw"
+                />
+              </div>
+            )}
           </div>
         </div>
       </section>
