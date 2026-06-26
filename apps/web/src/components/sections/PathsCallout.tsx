@@ -4,7 +4,7 @@ import { Reveal } from "@/components/Reveal";
 export function PathsCallout() {
   return (
     <section className="bg-canvas pb-section">
-      <div className="mx-auto max-w-2xl px-6">
+      <div className="mx-auto max-w-4xl px-6">
         <Reveal delay={0.1}>
           <article className="group relative flex flex-col justify-between overflow-hidden rounded-lg bg-primary p-10 text-on-primary md:p-12">
             <div>
