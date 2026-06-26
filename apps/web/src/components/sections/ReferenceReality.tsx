@@ -10,6 +10,9 @@ import { Reveal } from "@/components/Reveal";
 const TABS = [
   {
     id: "text",
+    outputImage: "/hero/polki-necklace-output.jpg",
+    outputVideo: null,
+    outputImageFit: "cover" as const,
     label: "WhatsApp message",
     description: "Type a rough description — the occasion, budget, who it's for. No need to be formal. We read every message personally.",
     icon: (
@@ -53,6 +56,9 @@ const TABS = [
   },
   {
     id: "image",
+    outputImage: null,
+    outputVideo: "/hero/making-the-necklace-video.mp4",
+    outputImageFit: "cover" as const,
     label: "Saved image",
     description: "Screenshot a Pinterest pin, camera roll photo, or any image you've bookmarked. Any format works — WhatsApp, email, or Google Photos link.",
     icon: (
@@ -65,8 +71,8 @@ const TABS = [
     inputPreview: (
       <div className="relative h-full w-full bg-[#1a1a1a]">
         <Image
-          src="/hero/hand-rings.png"
-          alt="Pinterest ring reference"
+          src="/hero/pinterest-got-necklace.jpg"
+          alt="Pinterest GOT necklace reference"
           fill
           className="object-cover opacity-90"
           sizes="600px"
@@ -79,7 +85,7 @@ const TABS = [
           <span className="text-[10px] font-semibold text-white">Pinterest</span>
         </div>
         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent px-3 pb-3 pt-8">
-          <p className="text-[12px] font-medium text-white">Solitaire engagement ring inspo</p>
+          <p className="text-[12px] font-medium text-white">Dragon necklace inspo</p>
           <p className="text-[10px] text-white/60">Saved from @bridal.jewels</p>
         </div>
       </div>
@@ -87,6 +93,9 @@ const TABS = [
   },
   {
     id: "reel",
+    outputImage: "/hero/brooch-gemini.jpg",
+    outputVideo: null,
+    outputImageFit: "cover" as const,
     label: "Instagram reel",
     description: "Copy the link to a reel, post, or saved collection and paste it in. We'll watch it, note the design, and come back with what's makeable.",
     icon: (
@@ -95,34 +104,28 @@ const TABS = [
       </svg>
     ),
     inputPreview: (
-      <div className="flex h-full flex-col bg-black">
-        {/* Reel mockup */}
-        <div className="relative flex-1 bg-[#111]">
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-center">
-              <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-white/10">
-                <svg viewBox="0 0 24 24" className="h-6 w-6 fill-white">
-                  <path d="M8 5v14l11-7z" />
-                </svg>
-              </div>
-              <p className="text-xs text-white/50">Bridal jewellery reel</p>
+      <div className="relative h-full w-full bg-black">
+        <Image
+          src="/hero/peacock-brooch.jpeg"
+          alt="Peacock brooch Instagram reel reference"
+          fill
+          className="object-cover opacity-90"
+          sizes="600px"
+        />
+        {/* Instagram reel UI overlay */}
+        <div className="absolute right-3 bottom-20 flex flex-col items-center gap-4">
+          <div className="flex flex-col items-center gap-1">
+            <div className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center">
+              <svg viewBox="0 0 24 24" className="h-4 w-4 fill-white"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" /></svg>
             </div>
+            <span className="text-[10px] text-white/70">8.2k</span>
           </div>
-          {/* Reel UI elements */}
-          <div className="absolute right-3 bottom-20 flex flex-col items-center gap-4">
-            <div className="flex flex-col items-center gap-1">
-              <div className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center">
-                <svg viewBox="0 0 24 24" className="h-4 w-4 fill-white"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" /></svg>
-              </div>
-              <span className="text-[10px] text-white/70">8.2k</span>
-            </div>
-          </div>
-          <div className="absolute bottom-3 left-3 right-12">
-            <p className="text-[11px] font-semibold text-white">@bridal.jewellery.diaries</p>
-            <p className="mt-0.5 text-[10px] text-white/70 line-clamp-2">
-              This polki set is everything ✨ Statement piece for the ceremony look 💍
-            </p>
-          </div>
+        </div>
+        <div className="absolute bottom-0 left-0 right-12 bg-gradient-to-t from-black/70 to-transparent px-3 pb-3 pt-8">
+          <p className="text-[11px] font-semibold text-white">@arham.diamonds</p>
+          <p className="mt-0.5 text-[10px] text-white/70 line-clamp-2">
+            Peacock brooch in emeralds & diamonds ✨ Statement piece for the ceremony look 💍
+          </p>
         </div>
       </div>
     ),
@@ -133,9 +136,15 @@ const TABS = [
 function ContentSlider({
   inputNode,
   tabId,
+  outputImage,
+  outputVideo,
+  outputImageFit,
 }: {
   inputNode: React.ReactNode;
   tabId: string;
+  outputImage: string | null;
+  outputVideo: string | null;
+  outputImageFit: "cover" | "contain";
 }) {
   const [pos, setPos] = useState(42);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -161,13 +170,24 @@ function ContentSlider({
     >
       {/* RIGHT side — finished jewelry output */}
       <div className="absolute inset-0 bg-[#f7f4ef]">
-        <Image
-          src="/hero/hand-rings-nobg.png"
-          alt="Finished AMI jewellery piece"
-          fill
-          className="object-contain p-8"
-          sizes="600px"
-        />
+        {outputVideo ? (
+          <video
+            src={outputVideo}
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+        ) : outputImage ? (
+          <Image
+            src={outputImage}
+            alt="Finished AMI jewellery piece"
+            fill
+            className={outputImageFit === "cover" ? "object-cover" : "object-contain p-8"}
+            sizes="600px"
+          />
+        ) : null}
         <div className="absolute inset-0 flex items-end p-4 pointer-events-none">
           <div className="ml-auto rounded-full bg-black/30 px-3 py-1 backdrop-blur-sm">
             <span className="text-[10px] font-medium uppercase tracking-widest text-white/90">
@@ -309,6 +329,9 @@ export function ReferenceReality() {
                 key={activeTab}
                 inputNode={TABS[activeTab]!.inputPreview}
                 tabId={TABS[activeTab]!.id}
+                outputImage={TABS[activeTab]!.outputImage}
+                outputVideo={TABS[activeTab]!.outputVideo}
+                outputImageFit={TABS[activeTab]!.outputImageFit}
               />
               <p className="text-center text-xs text-muted">
                 Drag to compare your reference with the finished piece
