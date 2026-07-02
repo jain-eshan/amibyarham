@@ -15,6 +15,7 @@ import { z } from "zod";
 
 import { Button } from "@/components/Button";
 import type { InspirationItem } from "@/lib/inspiration";
+import { trackLead } from "@/lib/track";
 
 // ─── Contact schema ──────────────────────────────────────────────────────────
 
@@ -327,6 +328,7 @@ export function SwipeEngine({
             const result = await res.json();
             if (!res.ok) throw new Error(result.error ?? "Something went wrong");
 
+            trackLead("swipe_board");
             setPhase("done");
           } catch (err) {
             setSubmitError(
@@ -358,7 +360,7 @@ export function SwipeEngine({
               ‹ Filters
             </button>
           ) : (
-            <p className="caption-uppercase text-muted">Path B</p>
+            <p className="caption-uppercase text-muted">Discover</p>
           )}
           <h1 className="display-sm mt-1 text-ink">Find your piece</h1>
           {filterSummary && filterSummary !== "No filters — full catalogue" && (
@@ -728,7 +730,7 @@ function ReviewBoard({
                 <input
                   {...register("fullName")}
                   type="text"
-                  placeholder="Priya Mehta"
+                  placeholder="Your full name"
                   autoComplete="name"
                   className={inputCls}
                 />
@@ -765,7 +767,7 @@ function ReviewBoard({
                 <input
                   {...register("email")}
                   type="email"
-                  placeholder="priya@example.com"
+                  placeholder="Your email address"
                   autoComplete="email"
                   className={inputCls}
                 />

@@ -10,6 +10,7 @@ import { z } from "zod";
 import Image from "next/image";
 
 import { Button } from "@/components/Button";
+import { trackLead } from "@/lib/track";
 
 // ─── Schema ──────────────────────────────────────────────────────────────────
 
@@ -327,6 +328,7 @@ export function SubmitForm() {
         has_notes: Boolean(data.designNotes?.trim()),
         has_email: Boolean(data.email),
       });
+      trackLead("submit_reference");
       setDirection(1);
       setStep("done");
     } catch (err) {

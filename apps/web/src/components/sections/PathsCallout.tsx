@@ -20,7 +20,8 @@ export function PathsCallout() {
               <p className="mt-5 max-w-sm text-base opacity-90">
                 Share the photo, link, reel, or board. We&rsquo;ll review it
                 with our craftsmen and tell you what can be made within your
-                occasion, timeline, and budget. No commitment to ask.
+                occasion, timeline, and budget. Asking costs nothing — no
+                commitment.
               </p>
             </div>
             <Button

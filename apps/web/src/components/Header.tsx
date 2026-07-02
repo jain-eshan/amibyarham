@@ -4,9 +4,9 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { BrandMark } from "@/components/BrandMark";
+import { Button } from "@/components/Button";
 
 const NAV_LINKS = [
-  { label: "Send Reference", href: "/submit" },
   { label: "Inspiration", href: "/discover" },
   { label: "Our Legacy", href: "/story" },
   { label: "FAQs", href: "/faqs" },
@@ -64,6 +64,9 @@ export function Header() {
                 {link.label}
               </Link>
             ))}
+            <Button href="/submit" size="md">
+              Send a Reference
+            </Button>
           </nav>
 
           {/* Mobile hamburger */}
@@ -118,6 +121,14 @@ export function Header() {
                 {link.label}
               </Link>
             ))}
+            <Button
+              href="/submit"
+              size="lg"
+              className="mt-8 self-start"
+              onClick={() => setOpen(false)}
+            >
+              Send a Reference →
+            </Button>
           </nav>
         </div>
       )}

@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { Button } from "@/components/Button";
+import { trackLead } from "@/lib/track";
 
 const contactSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -47,6 +48,7 @@ export function ContactForm() {
         return;
       }
 
+      trackLead("contact_form");
       setStatus("success");
       reset();
     } catch {

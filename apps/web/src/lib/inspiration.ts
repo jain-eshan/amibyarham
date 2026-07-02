@@ -64,6 +64,7 @@ type FallbackCard = Omit<
 > & Partial<
   Pick<
     InspirationItem,
+    | "imageUrl"
     | "metalColors"
     | "diamondShapes"
     | "caratWeight"
@@ -78,7 +79,8 @@ type FallbackCard = Omit<
 const FALLBACK_DECK: readonly FallbackCard[] = [
   {
     id: "fallback-solitaire-halo",
-    altText: "Solitaire halo ring concept",
+    imageUrl: "/hero/hand-rings.png",
+    altText: "Classic gold solitaire with a plain band",
     category: "Rings",
     jewelryType: "Ring",
     occasions: ["Engagement", "Wedding"],
@@ -89,7 +91,7 @@ const FALLBACK_DECK: readonly FallbackCard[] = [
     caratWeight: 1.2,
     karatage: ["18K"],
     itemWeightGrams: 4,
-    priceInr: 2_400_000,
+    priceInr: 185_000,
     certifications: ["GIA"],
     stones: ["Diamond"],
     glyph: "◯",
@@ -108,7 +110,7 @@ const FALLBACK_DECK: readonly FallbackCard[] = [
     caratWeight: 0.8,
     karatage: ["18K"],
     itemWeightGrams: 3,
-    priceInr: 950_000,
+    priceInr: 95_000,
     certifications: ["IGI"],
     stones: ["Diamond"],
     glyph: "▢",
@@ -125,7 +127,7 @@ const FALLBACK_DECK: readonly FallbackCard[] = [
     metalColors: ["Yellow Gold", "Rose Gold"],
     karatage: ["22K"],
     itemWeightGrams: 12,
-    priceInr: 380_000,
+    priceInr: 175_000,
     glyph: "☾",
     gradient: "linear-gradient(150deg, #efe9de 0%, #e8d8b8 55%, #e8a55a 145%)",
   },
@@ -142,7 +144,7 @@ const FALLBACK_DECK: readonly FallbackCard[] = [
     caratWeight: 3.5,
     karatage: ["18K"],
     itemWeightGrams: 8,
-    priceInr: 1_800_000,
+    priceInr: 240_000,
     certifications: ["GIA"],
     stones: ["Diamond"],
     glyph: "⋯",
@@ -150,7 +152,8 @@ const FALLBACK_DECK: readonly FallbackCard[] = [
   },
   {
     id: "fallback-polki-choker",
-    altText: "Polki choker concept",
+    imageUrl: "/hero/polki-necklace-output.jpg",
+    altText: "Layered polki necklace set with earrings",
     category: "Necklaces",
     jewelryType: "Necklace",
     occasions: ["Wedding"],
@@ -159,7 +162,7 @@ const FALLBACK_DECK: readonly FallbackCard[] = [
     metalColors: ["Yellow Gold"],
     karatage: ["22K"],
     itemWeightGrams: 35,
-    priceInr: 2_200_000,
+    priceInr: 380_000,
     glyph: "❖",
     gradient: "linear-gradient(150deg, #efe9de 0%, #e3d6c4 55%, #cc785c 150%)",
   },
@@ -176,7 +179,7 @@ const FALLBACK_DECK: readonly FallbackCard[] = [
     caratWeight: 1.0,
     karatage: ["18K"],
     itemWeightGrams: 3,
-    priceInr: 720_000,
+    priceInr: 85_000,
     certifications: ["IGI"],
     stones: ["Diamond"],
     glyph: "∞",
@@ -195,7 +198,7 @@ const FALLBACK_DECK: readonly FallbackCard[] = [
     caratWeight: 0.5,
     karatage: ["18K"],
     itemWeightGrams: 2,
-    priceInr: 280_000,
+    priceInr: 65_000,
     certifications: ["IGI"],
     stones: ["Diamond"],
     glyph: "◇",
@@ -227,7 +230,7 @@ const FALLBACK_DECK: readonly FallbackCard[] = [
     metalColors: ["Yellow Gold"],
     karatage: ["22K"],
     itemWeightGrams: 65,
-    priceInr: 4_500_000,
+    priceInr: 650_000,
     glyph: "❂",
     gradient: "linear-gradient(150deg, #efe9de 0%, #e8d8b8 55%, #e8a55a 150%)",
   },
@@ -242,7 +245,7 @@ const FALLBACK_DECK: readonly FallbackCard[] = [
     metalColors: ["Yellow Gold", "Rose Gold"],
     karatage: ["22K"],
     itemWeightGrams: 9,
-    priceInr: 420_000,
+    priceInr: 120_000,
     glyph: "✸",
     gradient: "linear-gradient(150deg, #efe9de 0%, #e3d6c4 55%, #cc785c 145%)",
   },
@@ -251,7 +254,7 @@ const FALLBACK_DECK: readonly FallbackCard[] = [
 function fallbackDeck(): InspirationItem[] {
   return FALLBACK_DECK.map((c) => ({
     ...c,
-    imageUrl: null,
+    imageUrl: c.imageUrl ?? null,
     stones: c.stones ? [...c.stones] : [],
     motif: [],
     sourceName: null,

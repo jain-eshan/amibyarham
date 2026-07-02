@@ -175,7 +175,7 @@ function StepHeader({
     <header>
       <div className="flex items-center justify-between">
         <p className="caption-uppercase text-muted">
-          Path B · Step {step} of 3
+          Find Your Style · Step {step} of 3
         </p>
         {onBack && (
           <button
@@ -223,7 +223,7 @@ function CtaCount({
       <p className="text-sm text-muted">
         {selectedCount === 0
           ? "Pick a piece + budget to continue."
-          : "Looking good. Next: the gate."}
+          : "Looking good — one quick choice next."}
       </p>
     );
   }
@@ -317,7 +317,8 @@ function Step1({
           <em className="not-italic text-primary">estimated budget</em>?
         </h2>
         <p className="mt-3 max-w-md text-body">
-          One tier helps us anchor the deck. You can always sway up or down.
+          One range helps us anchor what we show you. You can always adjust it
+          later.
         </p>
 
         <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
