@@ -109,7 +109,7 @@ export function ContactForm() {
         <input
           id="contact-email"
           type="email"
-          placeholder="you@example.com"
+          placeholder="Your email address"
           className={inputClass}
           {...register("email")}
         />

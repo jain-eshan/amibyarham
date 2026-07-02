@@ -541,15 +541,19 @@ export function SubmitForm() {
           </div>
 
           <div className="rounded-lg border border-hairline bg-canvas p-6">
-            <p className="caption-uppercase text-muted">Image slot</p>
-            <div className="mt-4 aspect-[4/3] rounded-md border border-dashed border-hairline bg-surface-soft p-4">
-              <div className="flex h-full items-end">
-                <p className="text-sm text-muted">
-                  Add a buyer-safe visual here: WhatsApp feasibility note,
-                  reference board, or craft consultation illustration.
-                </p>
-              </div>
+            <p className="caption-uppercase text-muted">At the bench</p>
+            <div className="relative mt-4 aspect-[4/3] overflow-hidden rounded-md">
+              <Image
+                src="/submit-feasibility-example.jpg"
+                alt="Karigar's workbench: 22K gold bar, loupe, ruby and diamonds, handwritten project notes"
+                fill
+                className="object-cover"
+                sizes="(min-width: 768px) 33vw, 100vw"
+              />
             </div>
+            <p className="mt-3 text-xs leading-relaxed text-muted">
+              Every reference is checked at a real bench before we reply.
+            </p>
           </div>
 
           <p className="text-sm text-muted">
@@ -984,7 +988,7 @@ export function SubmitForm() {
                     <input
                       {...register("fullName")}
                       type="text"
-                      placeholder="Priya Mehta"
+                      placeholder="Your full name"
                       autoComplete="name"
                       className={inputCls}
                     />
@@ -1028,7 +1032,7 @@ export function SubmitForm() {
                     <input
                       {...register("email")}
                       type="email"
-                      placeholder="priya@example.com"
+                      placeholder="Your email address"
                       autoComplete="email"
                       className={inputCls}
                     />
