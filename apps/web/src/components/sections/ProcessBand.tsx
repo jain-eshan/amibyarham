@@ -160,6 +160,7 @@ export function ProcessBand() {
                       ) : s.illustration === "feasibility" ? (
                         <video
                           src="/process-step-03.mp4"
+                          poster="/submit-feasibility-example.jpg"
                           autoPlay
                           loop
                           muted
@@ -169,6 +170,7 @@ export function ProcessBand() {
                       ) : (
                         <video
                           src="/process-step-04.mp4"
+                          poster="/submit-response-example.jpg"
                           autoPlay
                           loop
                           muted
