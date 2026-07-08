@@ -5,9 +5,10 @@ import { getInspirationDeck } from "@/lib/inspiration";
 import { DiscoverFlow } from "./DiscoverFlow";
 
 export const metadata: Metadata = {
-  title: "Discover Inspiration — AMI by Arham",
+  title: "Discover Inspiration",
   description:
-    "Swipe through the studio's curated catalogue. Save what you love and send us your board.",
+    "Swipe through curated jewellery inspiration — polki, jadau, diamonds, and gold. Save what you love and send AMI your board for a feasibility reply within 24 hours.",
+  alternates: { canonical: "/discover" },
 };
 
 // The deck is sourced fresh per request so newly curated images appear without

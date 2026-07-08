@@ -15,9 +15,10 @@ const SECTIONS = [
       "When you submit a vision, contact us, or browse our site, we may collect:",
     ],
     list: [
-      "Name, email address, and contact details you provide through our forms",
-      "Design references, images, and messages you share with us",
-      "Device information, browser type, and pages visited (collected automatically)",
+      "Name, WhatsApp number, email address, and contact details you provide through our forms",
+      "Design references, images, links, and messages you share with us",
+      "Occasion, budget range, and timeline preferences you choose to share",
+      "Device information, browser type, and pages visited (collected automatically via analytics tools such as Google Analytics and PostHog)",
       "Cookies and similar technologies to enhance your browsing experience",
     ],
   },
@@ -27,6 +28,7 @@ const SECTIONS = [
       "Your information helps us craft your experience and serve you better:",
     ],
     list: [
+      "To review your reference and respond over WhatsApp, call, or email — usually within 24 hours",
       "To process and fulfil your bespoke commissions",
       "To respond to enquiries and provide studio support",
       "To share curated inspiration and studio updates (only with your consent)",
@@ -37,7 +39,7 @@ const SECTIONS = [
   {
     title: "How We Protect Your Information",
     content: [
-      "We implement appropriate technical and organisational measures to safeguard your personal information against unauthorised access, alteration, or disclosure. While no transmission over the internet is entirely secure, we take every reasonable step to protect the data you entrust to us.",
+      "Your form submissions and uploaded references are stored on secure, access-controlled cloud infrastructure (Supabase), and we implement appropriate technical and organisational measures to safeguard your personal information against unauthorised access, alteration, or disclosure. While no transmission over the internet is entirely secure, we take every reasonable step to protect the data you entrust to us.",
     ],
   },
   {
@@ -127,7 +129,7 @@ export default function PrivacyPolicyPage() {
           </Reveal>
 
           <Reveal delay={0.05}>
-            <p className="text-sm text-muted">Last revised: June 11, 2026</p>
+            <p className="text-sm text-muted">Last revised: July 2, 2026</p>
           </Reveal>
         </div>
       </div>

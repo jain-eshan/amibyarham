@@ -48,6 +48,7 @@ const ANNOTATIONS = [
 
 interface VideoSketchProps {
   videoSrc?: string;
+  poster?: string;
   showOverlay?: boolean;
   aspectRatio?: string;
   objectFit?: "cover" | "contain";
@@ -57,6 +58,7 @@ interface VideoSketchProps {
 
 export function VideoSketch({
   videoSrc = "/Generate_a_smooth_second_ani.mp4",
+  poster = "/hero/hand-rings.png",
   showOverlay = true,
   aspectRatio = "1 / 1",
   objectFit = "cover",
@@ -87,6 +89,7 @@ export function VideoSketch({
       <video
         ref={videoRef}
         src={videoSrc}
+        poster={poster}
         autoPlay
         muted
         playsInline

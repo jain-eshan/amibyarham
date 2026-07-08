@@ -45,6 +45,17 @@ export function LogoIntro() {
   useEffect(() => {
     if (reduceMotion) return;
 
+    // Ad-attributed landings skip the intro — every second before content
+    // costs conversion on paid traffic.
+    const params = new URLSearchParams(window.location.search);
+    if (
+      params.has("fbclid") ||
+      params.has("gclid") ||
+      params.has("utm_source")
+    ) {
+      return;
+    }
+
     try {
       if (window.sessionStorage.getItem(SESSION_KEY)) return;
       // Claim this browser session before starting, so reloads cannot restart
@@ -97,7 +108,8 @@ export function LogoIntro() {
       {active && (
         <motion.div
           aria-hidden="true"
-          className="fixed inset-0 z-[100] overflow-hidden bg-[#050505] text-ink"
+          onClick={() => setActive(false)}
+          className="fixed inset-0 z-[100] cursor-pointer overflow-hidden bg-[#050505] text-ink"
           exit={{ opacity: 0 }}
           transition={{ duration: 0.22, delay: 0.52, ease: easeOut }}
         >

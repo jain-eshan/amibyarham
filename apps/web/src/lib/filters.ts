@@ -58,30 +58,30 @@ export const BUDGET_TIERS: readonly {
 }[] = [
   {
     key: "Tier 1",
-    label: "Tier 1 · Daily Luxury",
+    label: "Daily Luxury",
     hint: "Under ₹50,000",
     min: 0,
     max: 50_000,
   },
   {
     key: "Tier 2",
-    label: "Tier 2 · Milestones",
-    hint: "₹50,000 – ₹15,00,000",
+    label: "Milestones",
+    hint: "₹50,000 – ₹1,00,000",
     min: 50_000,
-    max: 1_500_000,
+    max: 100_000,
   },
   {
     key: "Tier 3",
-    label: "Tier 3 · Engagement",
-    hint: "₹15,00,000 – ₹30,00,000",
-    min: 1_500_000,
-    max: 3_000_000,
+    label: "Engagement & Bridal",
+    hint: "₹1,00,000 – ₹3,00,000",
+    min: 100_000,
+    max: 300_000,
   },
   {
     key: "Tier 4",
-    label: "Tier 4 · Bespoke Statement",
-    hint: "₹30,00,000+",
-    min: 3_000_000,
+    label: "Bespoke Statement",
+    hint: "₹3,00,000+",
+    min: 300_000,
     max: null,
   },
 ] as const;
@@ -341,7 +341,10 @@ export function totalSelected(filters: FilterState): number {
 export function summarizeFilters(filters: FilterState): string {
   const parts: string[] = [];
   if (filters.jewelryType.length) parts.push(filters.jewelryType.join("/"));
-  if (filters.budgetTier) parts.push(filters.budgetTier);
+  if (filters.budgetTier) {
+    const band = BUDGET_TIERS.find((t) => t.key === filters.budgetTier);
+    parts.push(band ? `${band.label} (${band.hint})` : filters.budgetTier);
+  }
   if (filters.branch)
     parts.push(filters.branch === "diamonds" ? "Gold + Diamonds" : "Gold only");
   if (filters.metalColor.length) parts.push(filters.metalColor.join("/"));

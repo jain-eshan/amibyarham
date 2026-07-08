@@ -47,13 +47,6 @@ export async function POST(req: Request) {
   } catch {
     return NextResponse.json({ error: "bad_request" }, { status: 400 });
   }
-  console.log("DEBUG request parsed:", {
-  likedIds: parsed.likedIds,
-  likedCount: parsed.likedIds.length,
-  dislikedIds: parsed.dislikedIds,
-  seenIds: parsed.seenIds,
-});
-
   if (parsed.likedIds.length === 0) {
     return NextResponse.json({ items: [] satisfies RecommendItem[] });
   }
@@ -75,21 +68,6 @@ export async function POST(req: Request) {
   if (fetchError) {
     return NextResponse.json({ error: "fetch_failed" }, { status: 500 });
   }
-
-  console.log("DEBUG embed fetch:", {
-  rows: rows?.length,
-  sample: rows?.[0]?.id,
-  type: typeof rows?.[0]?.embedding,
-  isArray: Array.isArray(rows?.[0]?.embedding),
-  sample_embed: rows?.[0]?.embedding,
-});
-  
-  console.log(
-  "rows:", rows?.length,
-  "sample type:", typeof rows?.[0]?.embedding,
-  "is array:", Array.isArray(rows?.[0]?.embedding),
-  "sample len:", Array.isArray(rows?.[0]?.embedding) ? rows[0].embedding.length : "n/a"
-);
 
   const byId = new Map<string, number[]>();
   for (const row of rows ?? []) {

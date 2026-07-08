@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { Button } from "@/components/Button";
+import { trackLead } from "@/lib/track";
 
 const contactSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -47,6 +48,7 @@ export function ContactForm() {
         return;
       }
 
+      trackLead("contact_form");
       setStatus("success");
       reset();
     } catch {
@@ -109,7 +111,7 @@ export function ContactForm() {
         <input
           id="contact-email"
           type="email"
-          placeholder="you@example.com"
+          placeholder="Your email address"
           className={inputClass}
           {...register("email")}
         />

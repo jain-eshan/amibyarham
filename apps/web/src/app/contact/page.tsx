@@ -35,7 +35,6 @@ const localBusinessJsonLd = {
     telephone: "+919958863129",
     contactType: "customer service",
     availableLanguage: ["English", "Hindi"],
-    contactOption: "TollFree",
   },
 };
 
@@ -48,7 +47,7 @@ const CHANNELS = [
   {
     label: "Instagram",
     value: "@amibyarham",
-    href: "https://www.instagram.com/amibyahram/",
+    href: "https://www.instagram.com/amibyarham/",
   },
   {
     label: "Location",

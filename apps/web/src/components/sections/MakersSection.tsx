@@ -70,7 +70,7 @@ export function MakersSection() {
                 >
                   <Image
                     src={maker.src}
-                    alt={maker.role}
+                    alt={`AMI ${maker.role.toLowerCase()} — ${maker.detail.toLowerCase()}`}
                     fill
                     loading="eager"
                     sizes="96px"

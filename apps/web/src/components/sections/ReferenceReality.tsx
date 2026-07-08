@@ -173,6 +173,7 @@ function ContentSlider({
         {outputVideo ? (
           <video
             src={outputVideo}
+            poster="/hero/polki-necklace-output.jpg"
             autoPlay
             loop
             muted

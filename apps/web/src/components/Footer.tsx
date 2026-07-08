@@ -15,13 +15,14 @@ const FOOTER_GROUPS = [
     title: "Begin",
     links: [
       { label: "Send Your Reference", href: "/submit" },
-      // { label: "Browse Inspiration", href: "/discover" },
+      { label: "Browse Inspiration", href: "/discover" },
     ],
   },
   {
     title: "Studio",
     links: [
       { label: "Privacy Policy", href: "/privacy-policy" },
+      { label: "Terms of Service", href: "/terms" },
       { label: "Studio Login", href: "/admin/login" },
     ],
   },
