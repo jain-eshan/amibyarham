@@ -4,6 +4,11 @@ import { auth, signOut } from "@/lib/auth";
 import { BrandMark } from "@/components/BrandMark";
 import { AdminNav } from "./AdminNav";
 
+// Auth-gated, Supabase-backed pages — never prerender. Without this, the
+// root loading.tsx's Suspense boundary lets the build attempt a static shell
+// for /admin/* and it crashes when Supabase env vars are absent at build time.
+export const dynamic = "force-dynamic";
+
 async function AdminTopBar() {
   const session = await auth();
   if (!session?.user) return null;

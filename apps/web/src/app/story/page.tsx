@@ -16,27 +16,71 @@ export default function StoryPage() {
     <>
       {/* ── Hero: the legacy ─────────────────────────────────────── */}
       <section className="bg-canvas py-section">
-        <div className="mx-auto max-w-[1200px] px-6">
-          <Reveal>
-            <p className="caption-uppercase text-muted">
-              A 50-Year Delhi Jewellery Legacy
-            </p>
+        <div className="mx-auto grid max-w-[1200px] items-center gap-12 px-6 md:grid-cols-[1.1fr_0.9fr]">
+          <div>
+            <Reveal>
+              <p className="caption-uppercase text-muted">
+                A 50-Year Delhi Jewellery Legacy
+              </p>
+            </Reveal>
+            <Reveal delay={0.05}>
+              <h1 className="display-xl mt-6 max-w-[18ch] text-ink">
+                Your family jeweller,{" "}
+                <em className="not-italic text-primary">now online</em>.
+              </h1>
+            </Reveal>
+            <Reveal delay={0.12}>
+              <p className="mt-8 max-w-2xl text-body md:text-lg">
+                For fifty years, families in Delhi have walked into
+                Arham&rsquo;s with a photograph, an heirloom, or just an idea —
+                and walked out with jewellery made exactly for them. AMI by
+                Arham brings that same relationship online: the trust of a
+                jeweller who knows your family, without needing to be in Delhi
+                to reach him.
+              </p>
+            </Reveal>
+          </div>
+          <Reveal delay={0.15}>
+            <div className="relative aspect-square overflow-hidden rounded-2xl border border-hairline">
+              <Image
+                src="/hero/polki-necklace-output.jpg"
+                alt="Layered polki necklace set with matching earrings beside its hand-drawn design sketch and Arham Diamond card"
+                fill
+                className="object-cover"
+                sizes="(min-width: 768px) 42vw, 100vw"
+                priority
+              />
+            </div>
           </Reveal>
-          <Reveal delay={0.05}>
-            <h1 className="display-xl mt-6 max-w-[18ch] text-ink">
-              Your family jeweller,{" "}
-              <em className="not-italic text-primary">now online</em>.
-            </h1>
-          </Reveal>
-          <Reveal delay={0.12}>
-            <p className="mt-8 max-w-2xl text-body md:text-lg">
-              For fifty years, families in Delhi have walked into Arham&rsquo;s
-              with a photograph, an heirloom, or just an idea — and walked out
-              with jewellery made exactly for them. AMI by Arham brings that
-              same relationship online: the trust of a jeweller who knows your
-              family, without needing to be in Delhi to reach him.
-            </p>
-          </Reveal>
+        </div>
+      </section>
+
+      {/* ── Legacy in numbers ────────────────────────────────────── */}
+      <section className="border-t border-hairline bg-surface-soft py-14 md:py-16">
+        <div className="mx-auto grid max-w-[1200px] gap-10 px-6 sm:grid-cols-3">
+          {[
+            ["50", "years of jewellery, one family"],
+            ["5", "generations at our karigars' benches"],
+            ["24", "hours to your first feasibility reply"],
+          ].map(([stat, label], i) => (
+            <Reveal key={stat} delay={0.05 + i * 0.06}>
+              <div className="border-l border-hairline pl-6">
+                <p
+                  className="text-ink"
+                  style={{
+                    fontFamily: "var(--font-display)",
+                    fontSize: "clamp(3rem, 4vw + 1.5rem, 4.5rem)",
+                    lineHeight: 1,
+                  }}
+                >
+                  {stat}
+                </p>
+                <p className="mt-3 max-w-[22ch] text-sm leading-relaxed text-muted">
+                  {label}
+                </p>
+              </div>
+            </Reveal>
+          ))}
         </div>
       </section>
 
@@ -149,33 +193,49 @@ export default function StoryPage() {
 
       {/* ── The Team / Founder ───────────────────────────────────── */}
       <section className="border-t border-hairline bg-canvas py-section">
-        <div className="mx-auto max-w-[1200px] px-6">
-          <Reveal>
-            <p className="caption-uppercase text-muted">The Studio</p>
+        <div className="mx-auto grid max-w-[1200px] items-center gap-12 px-6 md:grid-cols-[0.9fr_1.1fr]">
+          <Reveal delay={0.15} className="order-2 md:order-1">
+            <div className="relative aspect-[4/5] overflow-hidden rounded-2xl border border-hairline">
+              <Image
+                src="/hero/brooch-gemini.jpg"
+                alt="Emerald and diamond pieces in the Arham Diamonds atelier display case"
+                fill
+                className="object-cover"
+                sizes="(min-width: 768px) 42vw, 100vw"
+              />
+            </div>
           </Reveal>
-          <Reveal delay={0.05}>
-            <h2 className="display-lg mt-6 max-w-3xl text-ink">
-              Young sensibility.{" "}
-              <em className="not-italic text-primary">Deep craft tradition.</em>
-            </h2>
-          </Reveal>
-          <Reveal delay={0.12}>
-            <p className="mt-6 max-w-2xl text-body md:text-lg">
-              AMI by Arham is led by a generation that grew up scrolling
-              Pinterest mood boards and studying gemology in the same breath.
-              We speak the language of modern design — clean lines, considered
-              proportions — while drawing on a craft lineage that predates the
-              brands most people know.
-            </p>
-          </Reveal>
-          <Reveal delay={0.18}>
-            <p className="mt-4 max-w-2xl text-body md:text-lg">
-              Our studio in Delhi is where these two worlds meet: a place where
-              a 3D CAD render sits next to a karigar&rsquo;s hand-filed wax
-              mould, and both are treated with equal reverence. The result is
-              jewellery that feels both timeless and unmistakably yours.
-            </p>
-          </Reveal>
+          <div className="order-1 md:order-2">
+            <Reveal>
+              <p className="caption-uppercase text-muted">The Studio</p>
+            </Reveal>
+            <Reveal delay={0.05}>
+              <h2 className="display-lg mt-6 max-w-3xl text-ink">
+                Young sensibility.{" "}
+                <em className="not-italic text-primary">
+                  Deep craft tradition.
+                </em>
+              </h2>
+            </Reveal>
+            <Reveal delay={0.12}>
+              <p className="mt-6 max-w-2xl text-body md:text-lg">
+                AMI by Arham is led by a generation that grew up scrolling
+                Pinterest mood boards and studying gemology in the same breath.
+                We speak the language of modern design — clean lines,
+                considered proportions — while drawing on a craft lineage that
+                predates the brands most people know.
+              </p>
+            </Reveal>
+            <Reveal delay={0.18}>
+              <p className="mt-4 max-w-2xl text-body md:text-lg">
+                Our studio in Delhi is where these two worlds meet: a place
+                where a 3D CAD render sits next to a karigar&rsquo;s hand-filed
+                wax mould, and both are treated with equal reverence. The
+                result is jewellery that feels both timeless and unmistakably
+                yours.
+              </p>
+            </Reveal>
+          </div>
         </div>
       </section>
 

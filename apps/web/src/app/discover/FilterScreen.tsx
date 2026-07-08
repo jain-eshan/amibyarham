@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useMemo, useState } from "react";
 
 import { Button } from "@/components/Button";
+import { JewelryTypeIcon } from "@/components/JewelryTypeIcon";
 import {
   BUDGET_TIERS,
   CARAT_BRACKETS,
@@ -295,16 +296,30 @@ function Step1({
           pieces across all of them.
         </p>
 
-        <div className="mt-6 flex flex-wrap gap-2.5">
-          {JEWELRY_TYPES.map((type) => (
-            <Chip
-              key={type}
-              active={filters.jewelryType.includes(type)}
-              onClick={() => toggleType(type)}
-            >
-              {type}
-            </Chip>
-          ))}
+        <div className="mt-6 grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-5">
+          {JEWELRY_TYPES.map((type) => {
+            const active = filters.jewelryType.includes(type);
+            return (
+              <button
+                key={type}
+                type="button"
+                onClick={() => toggleType(type)}
+                aria-pressed={active}
+                className={[
+                  "flex flex-col items-center justify-center gap-2.5 rounded-2xl border px-2 py-5 transition-all duration-150",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+                  active
+                    ? "border-primary bg-primary text-on-primary shadow-[0_10px_24px_-12px_rgba(204,120,92,0.7)]"
+                    : "border-hairline bg-surface-soft text-body hover:border-primary/50 hover:bg-surface-card",
+                ].join(" ")}
+              >
+                <span className={active ? "text-on-primary" : "text-primary"}>
+                  <JewelryTypeIcon type={type} />
+                </span>
+                <span className="text-xs font-medium sm:text-sm">{type}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
