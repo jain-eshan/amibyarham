@@ -347,10 +347,10 @@ export function SubmitForm() {
 
   const chipCls = (active: boolean) =>
     [
-      "rounded-full border px-4 py-1.5 text-sm transition-colors cursor-pointer",
+      "rounded-full border px-4 py-1.5 text-sm transition-all duration-150 cursor-pointer",
       active
-        ? "border-primary bg-primary text-on-primary"
-        : "border-hairline text-ink hover:border-primary/50",
+        ? "border-surface-dark bg-surface-dark text-on-dark shadow-[0_10px_20px_-12px_rgba(20,20,19,0.45)]"
+        : "border-hairline bg-white text-ink shadow-sm hover:-translate-y-px hover:border-primary/40",
     ].join(" ");
 
   const labelFor = <T extends string>(
@@ -506,9 +506,38 @@ export function SubmitForm() {
           and reply on WhatsApp within 24 hours with feasibility, possible
           changes, and the next step.
         </p>
-        <Button href="/" variant="secondary" size="lg" className="mt-10">
-          Back to home →
-        </Button>
+
+        <div className="mt-8 w-full max-w-sm rounded-xl border border-hairline bg-white p-5 text-left shadow-sm">
+          <p className="caption-uppercase text-muted">
+            Track it on WhatsApp at
+          </p>
+          <p
+            className="mt-2 text-xl text-ink"
+            style={{ fontFamily: "var(--font-display)" }}
+          >
+            +91 {whatsapp}
+          </p>
+          {email && <p className="mt-1 text-sm text-muted">{email}</p>}
+          <p className="mt-3 text-xs leading-relaxed text-muted">
+            That thread is your reference&rsquo;s home — feasibility, price,
+            approvals, and every step after arrive there. Typed the wrong
+            number? Message us and we&rsquo;ll move it over.
+          </p>
+        </div>
+
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+          <Button
+            href="https://wa.me/919958863129?text=Hi%20AMI%2C%20I%20just%20sent%20a%20reference%20from%20the%20website."
+            target="_blank"
+            rel="noopener noreferrer"
+            size="lg"
+          >
+            Say hi on WhatsApp →
+          </Button>
+          <Button href="/" variant="secondary" size="lg">
+            Back to home
+          </Button>
+        </div>
       </motion.div>
     );
   }
@@ -631,7 +660,7 @@ export function SubmitForm() {
                 </p>
 
                 {/* Mode toggle */}
-                <div className="mt-8 flex gap-1 rounded-lg bg-surface-card p-1">
+                <div className="mt-8 flex gap-1 rounded-lg border border-hairline bg-white p-1 shadow-sm">
                   {(["url", "upload"] as const).map((mode) => (
                     <button
                       key={mode}
@@ -644,7 +673,7 @@ export function SubmitForm() {
                       className={[
                         "flex-1 rounded-md py-2.5 text-sm font-medium transition-colors",
                         referenceMode === mode
-                          ? "bg-canvas text-ink shadow-sm"
+                          ? "bg-surface-dark text-on-dark shadow-sm"
                           : "text-muted hover:text-ink",
                       ].join(" ")}
                     >
@@ -1006,7 +1035,7 @@ export function SubmitForm() {
                       WhatsApp number *
                     </label>
                     <div className="flex items-stretch gap-2">
-                      <span className="flex items-center rounded-lg border border-hairline bg-surface-card px-3 text-sm text-muted">
+                      <span className="flex items-center rounded-lg border border-hairline bg-white px-3 text-sm text-muted shadow-sm">
                         +91
                       </span>
                       <input
@@ -1095,7 +1124,7 @@ export function SubmitForm() {
                 </p>
 
                 <div className="mt-8 space-y-4">
-                  <div className="rounded-lg border border-hairline bg-surface-card p-5">
+                  <div className="rounded-lg border border-hairline bg-white p-5 shadow-sm">
                     <div className="flex items-start justify-between gap-4">
                       <div>
                         <p className="caption-uppercase text-muted">Reference</p>

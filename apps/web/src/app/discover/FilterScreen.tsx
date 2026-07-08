@@ -306,14 +306,14 @@ function Step1({
                 onClick={() => toggleType(type)}
                 aria-pressed={active}
                 className={[
-                  "flex flex-col items-center justify-center gap-2.5 rounded-2xl border px-2 py-5 transition-all duration-150",
+                  "flex flex-col items-center justify-center gap-2.5 rounded-2xl border px-2 py-5 transition-all duration-200",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
                   active
-                    ? "border-primary bg-primary text-on-primary shadow-[0_10px_24px_-12px_rgba(204,120,92,0.7)]"
-                    : "border-hairline bg-surface-soft text-body hover:border-primary/50 hover:bg-surface-card",
+                    ? "border-surface-dark bg-surface-dark text-on-dark shadow-[0_18px_32px_-16px_rgba(20,20,19,0.5)]"
+                    : "border-hairline bg-white text-body shadow-[0_1px_2px_rgba(20,20,19,0.03),0_12px_28px_-18px_rgba(20,20,19,0.2)] hover:-translate-y-0.5 hover:border-primary/40",
                 ].join(" ")}
               >
-                <span className={active ? "text-on-primary" : "text-primary"}>
+                <span className={active ? "text-accent-amber" : "text-primary"}>
                   <JewelryTypeIcon type={type} />
                 </span>
                 <span className="text-xs font-medium sm:text-sm">{type}</span>
@@ -346,15 +346,15 @@ function Step1({
                 onClick={() => setBudget(tier.key)}
                 aria-pressed={active}
                 className={[
-                  "rounded-2xl border px-5 py-4 text-left transition-all duration-150",
+                  "rounded-2xl border px-5 py-4 text-left transition-all duration-200",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
                   active
-                    ? "border-primary bg-primary text-on-primary shadow-[0_10px_24px_-12px_rgba(204,120,92,0.7)]"
-                    : "border-hairline bg-surface-soft text-body hover:border-primary/50",
+                    ? "border-surface-dark bg-surface-dark shadow-[0_18px_32px_-16px_rgba(20,20,19,0.5)]"
+                    : "border-hairline bg-white text-body shadow-[0_1px_2px_rgba(20,20,19,0.03),0_12px_28px_-18px_rgba(20,20,19,0.2)] hover:-translate-y-0.5 hover:border-primary/40",
                 ].join(" ")}
               >
                 <p
-                  className="text-base"
+                  className={["text-base", active ? "text-accent-amber" : "text-ink"].join(" ")}
                   style={{ fontFamily: "var(--font-display)" }}
                 >
                   {tier.label}
@@ -362,7 +362,7 @@ function Step1({
                 <p
                   className={[
                     "mt-1 text-sm",
-                    active ? "text-on-primary/85" : "text-muted",
+                    active ? "text-on-dark-soft" : "text-muted",
                   ].join(" ")}
                 >
                   {tier.hint}
@@ -439,16 +439,16 @@ function GateCard({
       onClick={onClick}
       aria-pressed={active}
       className={[
-        "group flex aspect-[5/4] flex-col items-center justify-center rounded-2xl border p-8 text-center transition-all",
+        "group flex aspect-[5/4] flex-col items-center justify-center rounded-2xl border p-8 text-center transition-all duration-200",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
         active
-          ? "border-primary bg-primary text-on-primary shadow-[0_18px_40px_-18px_rgba(204,120,92,0.7)]"
-          : "border-hairline bg-surface-soft text-ink hover:border-primary hover:bg-surface-card",
+          ? "border-surface-dark bg-surface-dark text-on-dark shadow-[0_20px_40px_-18px_rgba(20,20,19,0.55)]"
+          : "border-hairline bg-white text-ink shadow-[0_1px_2px_rgba(20,20,19,0.03),0_14px_32px_-20px_rgba(20,20,19,0.22)] hover:-translate-y-0.5 hover:border-primary/40",
       ].join(" ")}
     >
       <span
         aria-hidden
-        className={active ? "text-on-primary" : "text-primary"}
+        className={active ? "text-accent-amber" : "text-primary"}
         style={{ fontFamily: "var(--font-display)", fontSize: "4rem" }}
       >
         {glyph}
@@ -462,7 +462,7 @@ function GateCard({
       <p
         className={[
           "mt-2 max-w-[22ch] text-sm",
-          active ? "text-on-primary/85" : "text-muted",
+          active ? "text-on-dark-soft" : "text-muted",
         ].join(" ")}
       >
         {description}
@@ -585,7 +585,7 @@ function DiamondBranchPanel({
         />
       </Fieldset>
 
-      <details className="group rounded-xl border border-hairline bg-surface-soft px-5 py-4">
+      <details className="group rounded-xl border border-hairline bg-white px-5 py-4 shadow-sm">
         <summary className="caption-uppercase flex cursor-pointer items-center justify-between text-ink">
           Advanced Diamond Specs
           <span className="text-xs text-muted transition-transform group-open:rotate-180">
@@ -769,8 +769,8 @@ function Chip({
         "rounded-full border px-4 py-2 text-sm transition-all duration-150",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-canvas",
         active
-          ? "border-primary bg-primary text-on-primary shadow-[0_6px_18px_-8px_rgba(204,120,92,0.7)]"
-          : "border-hairline bg-surface-soft text-body hover:border-primary/50 hover:bg-surface-card",
+          ? "border-surface-dark bg-surface-dark text-on-dark shadow-[0_10px_20px_-12px_rgba(20,20,19,0.45)]"
+          : "border-hairline bg-white text-body shadow-sm hover:-translate-y-px hover:border-primary/40",
       ].join(" ")}
     >
       {children}

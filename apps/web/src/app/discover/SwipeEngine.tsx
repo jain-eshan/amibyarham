@@ -66,6 +66,7 @@ export function SwipeEngine({
   const [phase, setPhase] = useState<"swipe" | "review" | "done">("swipe");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submittedWhatsapp, setSubmittedWhatsapp] = useState<string | null>(null);
   const [deck, setDeck] = useState<InspirationItem[]>(initialDeck);
 
   // Stable per-mount session id so swipe_events / recommend calls correlate.
@@ -275,6 +276,7 @@ export function SwipeEngine({
         canResume={!atEnd}
         isSubmitting={isSubmitting}
         submitError={submitError}
+        submittedWhatsapp={submittedWhatsapp}
         onRemove={(id) => setFavorites((f) => f.filter((x) => x.id !== id))}
         onResume={() => {
           setSubmitError(null);
@@ -329,6 +331,7 @@ export function SwipeEngine({
             if (!res.ok) throw new Error(result.error ?? "Something went wrong");
 
             trackLead("swipe_board");
+            setSubmittedWhatsapp(data.whatsapp);
             setPhase("done");
           } catch (err) {
             setSubmitError(
@@ -583,6 +586,7 @@ function ReviewBoard({
   canResume,
   isSubmitting,
   submitError,
+  submittedWhatsapp,
   onRemove,
   onResume,
   onRestart,
@@ -593,6 +597,7 @@ function ReviewBoard({
   canResume: boolean;
   isSubmitting: boolean;
   submitError: string | null;
+  submittedWhatsapp: string | null;
   onRemove: (id: string) => void;
   onResume: () => void;
   onRestart: () => void;
@@ -628,9 +633,39 @@ function ReviewBoard({
           {favorites.length === 1 ? "" : "s"} and reach out on WhatsApp within 24
           hours.
         </p>
-        <Button href="/" variant="secondary" size="lg" className="mt-10">
-          Back to home →
-        </Button>
+
+        {submittedWhatsapp && (
+          <div className="mt-8 w-full max-w-sm rounded-xl border border-hairline bg-white p-5 text-left shadow-sm">
+            <p className="caption-uppercase text-muted">
+              Track it on WhatsApp at
+            </p>
+            <p
+              className="mt-2 text-xl text-ink"
+              style={{ fontFamily: "var(--font-display)" }}
+            >
+              +91 {submittedWhatsapp}
+            </p>
+            <p className="mt-3 text-xs leading-relaxed text-muted">
+              That thread is your board&rsquo;s home — our reply, feasibility,
+              and every step after arrive there. Typed the wrong number?
+              Message us and we&rsquo;ll move it over.
+            </p>
+          </div>
+        )}
+
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+          <Button
+            href="https://wa.me/919958863129?text=Hi%20AMI%2C%20I%20just%20sent%20my%20inspiration%20board%20from%20the%20website."
+            target="_blank"
+            rel="noopener noreferrer"
+            size="lg"
+          >
+            Say hi on WhatsApp →
+          </Button>
+          <Button href="/" variant="secondary" size="lg">
+            Back to home
+          </Button>
+        </div>
       </motion.div>
     );
   }
@@ -742,7 +777,7 @@ function ReviewBoard({
               <div>
                 <label className="mb-2 block text-sm text-muted">WhatsApp number *</label>
                 <div className="flex items-stretch gap-2">
-                  <span className="flex items-center rounded-lg border border-hairline bg-surface-card px-3 text-sm text-muted">
+                  <span className="flex items-center rounded-lg border border-hairline bg-white px-3 text-sm text-muted shadow-sm">
                     +91
                   </span>
                   <input
