@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 
 import { BudgetGuidance } from "@/components/sections/BudgetGuidance";
 import { BuyerQuestions } from "@/components/sections/BuyerQuestions";
-import { CraftGallery } from "@/components/sections/CraftGallery";
 import { Hero } from "@/components/sections/Hero";
 import { HeritageBand } from "@/components/sections/HeritageBand";
 import { LogoIntro } from "@/components/LogoIntro";
@@ -41,7 +40,6 @@ export default function HomePage() {
       <Hero />
       <ReferenceReality />
       <HeritageBand />
-      <CraftGallery />
       <ProcessBand />
       <MakersSection />
       <BudgetGuidance />
